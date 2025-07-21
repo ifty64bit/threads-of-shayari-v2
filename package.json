@@ -1,0 +1,41 @@
+{
+    "name": "hono-react-cloudflare-worker-starter",
+    "author": {
+        "name": "Ifty",
+        "email": "ifty64bit@gmail.com"
+    },
+    "license": "MIT",
+    "keywords": [
+        "cloudflare",
+        "worker",
+        "hono",
+        "react",
+        "vite"
+    ],
+    "workspaces": [
+        "./api",
+        "./web",
+        "./shared"
+    ],
+    "scripts": {
+        "dev:web": "cd web && npm run dev",
+        "dev:api": "cd api && npm run dev",
+        "dev:shared": "cd shared && npm run dev",
+        "dev": "concurrently \"npm run dev:shared\" \"npm run dev:api\" \"npm run dev:web\"",
+        "build:web": "cd web && npm run build",
+        "build:api": "cd api && npm run build",
+        "build:shared": "cd shared && npm run build",
+        "build": "npm run build:shared && npm run build:api && npm run build:web",
+        "deploy": "npm run build && cd api && npm run deploy",
+        "cf-typegen": "cd api && npm run cf-typegen"
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "dependencies": {
+        "concurrently": "^9.2.0"
+    }
+}
