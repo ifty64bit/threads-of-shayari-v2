@@ -25,7 +25,7 @@
         "build:web": "cd web && npm run build",
         "build:api": "cd api && npm run build",
         "build:shared": "cd shared && npm run build",
-        "build": "npm run build:shared && npm run build:api && npm run build:web",
+        "build": "npm run build:shared && npm run build:web && npm run build:api",
         "deploy": "npm run build && cd api && npm run deploy",
         "cf-typegen": "cd api && npm run cf-typegen"
     },
