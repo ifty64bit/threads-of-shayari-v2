@@ -7,7 +7,7 @@
             "env": ["NODE_ENV"]
         },
         "api#build": {
-            "dependsOn": ["^build"],
+            "dependsOn": ["shared#build"],
             "outputs": [],
             "env": ["NODE_ENV"]
         },

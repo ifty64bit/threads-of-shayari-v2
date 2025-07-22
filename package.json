@@ -25,7 +25,8 @@
         "test": "turbo test",
         "type-check": "turbo type-check",
         "clean": "turbo clean",
-        "deploy": "turbo build && cd api && bun run deploy",
+        "deploy": "bun run build && cd api && bun run deploy",
+        "deploy:staging": "bun run build && cd api && wrangler deploy --dry-run",
         "cf-typegen": "cd api && bun run cf-typegen"
     },
     "devDependencies": {
