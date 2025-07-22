@@ -12,7 +12,7 @@
         "@types/bun": "latest"
     },
     "dependencies": {
-        "zod": ",^4.0.5"
+        "zod": "^4.0.5"
     },
     "exports": {
         ".": {

@@ -1,6 +1,6 @@
 {
     "name": "hono-react-cloudflare-worker-starter",
-    "packageManager": "bun@1.0.0",
+    "packageManager": "bun@1.2.18",
     "author": {
         "name": "Ifty",
         "email": "ifty64bit@gmail.com"
