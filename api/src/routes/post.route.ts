@@ -1,4 +1,4 @@
-import { postTable } from "@/db/schemas";
+import { postTable, usersTable } from "@/db/schemas";
 import authMiddleware from "@/middlewares/auth";
 import dbMiddleware from "@/middlewares/db";
 import { type Variables, type Bindings } from "@api";
@@ -22,15 +22,27 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 limit: z.coerce.number().min(1).max(100).optional().default(10),
             })
         ),
-        (c) => {
+        async (c) => {
             const { offset, limit } = c.req.valid("query");
             const { db } = c.var;
-            const posts = db
-                .select()
+            const posts = await db
+                .select({
+                    id: postTable.id,
+                    content: postTable.content,
+                    authorId: postTable.authorId,
+                    createdAt: postTable.createdAt,
+                    updatedAt: postTable.updatedAt,
+                    author_id: usersTable.id,
+                    author_name: usersTable.name,
+                    author_username: usersTable.username,
+                    author_email: usersTable.email,
+                })
                 .from(postTable)
+                .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
                 .offset(offset)
                 .limit(limit);
-            return c.json({ message: "Success", data: posts });
+
+            return c.json({ message: "Success", data: posts }, 200);
         }
     )
     .get(

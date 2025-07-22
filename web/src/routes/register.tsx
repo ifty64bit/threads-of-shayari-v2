@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, type RegisterSchemaType } from "@shared";
+import { registerSchema, type RegisterSchemaType } from "shared";
 import {
     Form,
     FormControl,

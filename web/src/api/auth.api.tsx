@@ -4,9 +4,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai/react";
 import { authAtom } from "@/lib/store";
 import { toast } from "sonner";
-import type { InferResponseType } from "hono";
-
-type RegisterResponse = InferResponseType<typeof api.api.register.$post, 200>;
 
 export function useRegister() {
     return useMutation({
@@ -20,7 +17,7 @@ export function useRegister() {
                 throw new Error("Registration failed");
             }
 
-            return (await response.json()) as RegisterResponse;
+            return await response.json();
         },
         onMutate: (data) => {
             toast.loading("Registering...", { id: data.email });

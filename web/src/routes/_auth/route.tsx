@@ -8,10 +8,14 @@ export const Route = createFileRoute("/_auth")({
 
 function RouteComponent() {
     const [auth] = useAtom(authAtom);
-    
+
     if (!auth) {
         return <Navigate to="/login" replace />;
     }
 
-    return <Outlet />;
+    return (
+        <div className="max-w-xl mx-auto p-4">
+            <Outlet />
+        </div>
+    );
 }
