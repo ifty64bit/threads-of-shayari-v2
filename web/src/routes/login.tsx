@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSchemaType } from "@shared";
@@ -31,7 +31,13 @@ function RouteComponent() {
                 <form
                     className="flex flex-col gap-4"
                     onSubmit={form.handleSubmit((data) => {
-                        login.mutate(data);
+                        login.mutate(data, {
+                            onSuccess() {
+                                redirect({
+                                    to: "/feed",
+                                });
+                            },
+                        });
                     })}
                 >
                     <h1>Login</h1>

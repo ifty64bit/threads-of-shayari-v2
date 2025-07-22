@@ -1,17 +1,27 @@
 import { api } from "@/lib/api";
 import type { RegisterSchemaType } from "@shared";
 import { useMutation } from "@tanstack/react-query";
+import { useAtom } from "jotai/react";
+import { authAtom } from "@/lib/store";
 import { toast } from "sonner";
+import type { InferResponseType } from "hono";
+
+type RegisterResponse = InferResponseType<typeof api.api.register.$post, 200>;
 
 export function useRegister() {
     return useMutation({
         mutationKey: ["register"],
-        mutationFn: (data: RegisterSchemaType) =>
-            api.api.register
-                .$post({
-                    json: data,
-                })
-                .then((response) => response.json()),
+        mutationFn: async (data: RegisterSchemaType) => {
+            const response = await api.api.register.$post({
+                json: data,
+            });
+
+            if (!response.ok) {
+                throw new Error("Registration failed");
+            }
+
+            return (await response.json()) as RegisterResponse;
+        },
         onMutate: (data) => {
             toast.loading("Registering...", { id: data.email });
         },
@@ -32,20 +42,37 @@ export function useRegister() {
 }
 
 export function useLogin() {
+    const [, setAuth] = useAtom(authAtom);
     return useMutation({
         mutationKey: ["login"],
-        mutationFn: (data: { email: string; password: string }) =>
-            api.api.login
-                .$post({
-                    json: data,
-                })
-                .then((response) => response.json()),
+        mutationFn: async (data: { email: string; password: string }) => {
+            const response = await api.api.login.$post({
+                json: data,
+            });
+
+            if (!response.ok) {
+                throw new Error("Login failed");
+            }
+
+            return await response.json();
+        },
         onMutate: (data) => {
             toast.loading("Logging in...", { id: data.email });
         },
-        onSuccess: (_data, variables) => {
+        onSuccess: (data, variables) => {
             toast.success(`Login successful for ${variables.email}`, {
                 id: variables.email,
+            });
+
+            const { user, token } = data.data;
+            setAuth({
+                token: token,
+                user: {
+                    id: user.id.toString(),
+                    name: user.name,
+                    username: user.username,
+                    email: user.email,
+                },
             });
         },
         onError: (error, variables) => {
