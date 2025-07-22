@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { int, sqliteTable, text, unique, index } from "drizzle-orm/sqlite-core";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const REACTION_TYPES = ["Like", "Love", "Haha", "Wow", "Sad", "Angry"] as const;
 
 export const usersTable = sqliteTable("users", {

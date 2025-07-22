@@ -32,7 +32,7 @@ const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
         }
 
         const token = jwt.sign(
-            { email },
+            { email, id: user[0].id },
             process.env.JWT_SECRET || c.env.JWT_SECRET!
         );
         return c.json({
