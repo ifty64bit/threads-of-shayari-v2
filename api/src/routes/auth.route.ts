@@ -2,30 +2,12 @@ import { Hono } from "hono";
 import jwt from "jsonwebtoken";
 import dbMiddleware from "../middlewares/db";
 import { zValidator } from "@hono/zod-validator";
-import { z } from "zod/v4";
 import { usersTable } from "../db/schemas";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { type Bindings, type Variables } from "..";
+import { registerSchema, loginSchema } from "@shared";
 
-// ================ Validation Schemas ================
-const registerSchema = z.object({
-    name: z.string().min(3, "Name is required"),
-    username: z.string().min(3, "Username is required"),
-    email: z
-        .email({ message: "Invalid email address" })
-        .min(1, "Email is required"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-});
-
-const loginSchema = z.object({
-    email: z
-        .email({ message: "Invalid email address" })
-        .min(1, "Email is required"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-});
-
-// ================ Auth Routes ================
 const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(dbMiddleware)
     .post("/login", zValidator("json", loginSchema), async (c) => {

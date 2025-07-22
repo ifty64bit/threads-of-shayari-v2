@@ -8,12 +8,11 @@ const dbMiddleware = createMiddleware<{
 }>(async (c, next) => {
     if (!c.var.db) {
         const db = getDB({
-            url: c.env.TURSO_DATABASE_URL,
-            authToken: c.env.TURSO_AUTH_TOKEN,
+            url: c.env.TURSO_DATABASE_URL || process.env.TURSO_DATABASE_URL!,
+            authToken: c.env.TURSO_AUTH_TOKEN || process.env.TURSO_AUTH_TOKEN!,
         });
         c.set("db", db);
     }
-
     await next();
 });
 
