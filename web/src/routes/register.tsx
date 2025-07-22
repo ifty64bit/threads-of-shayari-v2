@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchemaType } from "@shared";
@@ -40,6 +40,8 @@ function RouteComponent() {
 
     const register = useRegister();
 
+    const navigate = useNavigate();
+
     return (
         <div className="mx-auto mt-12 max-w-md p-4">
             <Form {...form}>
@@ -48,7 +50,7 @@ function RouteComponent() {
                     onSubmit={form.handleSubmit((data) => {
                         register.mutate(data, {
                             onSuccess() {
-                                redirect({
+                                navigate({
                                     to: "/login",
                                 });
                             },

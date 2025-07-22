@@ -2,7 +2,7 @@ import {
     createRootRoute,
     Link,
     Outlet,
-    redirect,
+    useNavigate,
 } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,10 +25,14 @@ export const Route = createRootRoute({
 
 function RootLayout() {
     const [auth, setAuth] = useAtom(authAtom);
+    const navigate = useNavigate();
 
     function handleLogout() {
         setAuth(null);
-        redirect({ to: "/login", reloadDocument: true });
+        navigate({
+            to: "/login",
+            reloadDocument: true,
+        });
     }
 
     return (

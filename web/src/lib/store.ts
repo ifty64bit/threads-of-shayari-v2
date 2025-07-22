@@ -10,4 +10,11 @@ type AuthType = {
     };
 };
 
-export const authAtom = atomWithStorage<AuthType | null>("auth", null);
+export const authAtom = atomWithStorage<AuthType | null>(
+    "auth",
+    null,
+    undefined,
+    {
+        getOnInit: true,
+    }
+);
