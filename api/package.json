@@ -2,7 +2,7 @@
     "name": "api",
     "scripts": {
         "dev": "wrangler dev",
-        "build": "wrangler build",
+        "build": "echo 'Build script not defined, use wrangler build directly'",
         "type-check": "tsc --noEmit",
         "deploy": "wrangler deploy --minify",
         "cf-typegen": "wrangler types --env-interface CloudflareBindings",
