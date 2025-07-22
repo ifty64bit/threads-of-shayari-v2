@@ -5,6 +5,7 @@ import { type LibSQLDatabase } from "drizzle-orm/libsql";
 export type Bindings = {
     TURSO_DATABASE_URL: string;
     TURSO_AUTH_TOKEN: string;
+    JWT_SECRET: string;
 };
 
 export type Variables = {
