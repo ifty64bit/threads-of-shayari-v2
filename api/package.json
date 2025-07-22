@@ -2,7 +2,7 @@
     "name": "api",
     "scripts": {
         "dev": "wrangler dev",
-        "build": "wrangler deploy --dry-run",
+        "build": "wrangler build",
         "type-check": "tsc --noEmit",
         "deploy": "wrangler deploy --minify",
         "cf-typegen": "wrangler types --env-interface CloudflareBindings",

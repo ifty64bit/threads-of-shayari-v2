@@ -30,8 +30,8 @@
         "cf-typegen": "cd api && bun run cf-typegen"
     },
     "devDependencies": {
-        "@types/bun": "latest",
-        "rimraf": "^6.0.1",
+         "rimraf": "^6.0.1",
+       "@types/bun": "latest",
         "turbo": "^2.5.5"
     },
     "peerDependencies": {
