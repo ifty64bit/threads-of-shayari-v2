@@ -1,5 +1,6 @@
 {
     "name": "hono-react-cloudflare-worker-starter",
+    "packageManager": "bun@1.0.0",
     "author": {
         "name": "Ifty",
         "email": "ifty64bit@gmail.com"
@@ -18,24 +19,21 @@
         "./shared"
     ],
     "scripts": {
-        "dev:web": "cd web && npm run dev",
-        "dev:api": "cd api && npm run dev",
-        "dev:shared": "cd shared && npm run dev",
-        "dev": "concurrently \"npm run dev:shared\" \"npm run dev:api\" \"npm run dev:web\"",
-        "build:web": "cd web && npm run build",
-        "build:api": "cd api && npm run build",
-        "build:shared": "cd shared && npm run build",
-        "build": "npm run build:shared && npm run build:web && npm run build:api",
-        "deploy": "npm run build && cd api && npm run deploy",
-        "cf-typegen": "cd api && npm run cf-typegen"
+        "build": "turbo build",
+        "dev": "turbo dev",
+        "lint": "turbo lint",
+        "test": "turbo test",
+        "type-check": "turbo type-check",
+        "clean": "turbo clean",
+        "deploy": "turbo build && cd api && bun run deploy",
+        "cf-typegen": "cd api && bun run cf-typegen"
     },
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "rimraf": "^6.0.1",
+        "turbo": "^2.5.5"
     },
     "peerDependencies": {
         "typescript": "^5"
-    },
-    "dependencies": {
-        "concurrently": "^9.2.0"
     }
 }

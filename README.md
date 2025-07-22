@@ -1,14 +1,15 @@
-# 🌩️ Cloudflare Worker + Vite + React + SPA FullStack Template
+# 🌩️ Threads of Shayari v2 - Turborepo Monorepo
 
-A lightweight fullstack monorepo template using:
+A lightning-fast fullstack monorepo powered by Turborepo, featuring:
 
--   ⚡️ **Cloudflare Workers** — backend with blazing-fast edge execution
--   🧩 **Hono** — routing + type-safe API with RPC client
--   ⚛️ **React + Vite** — modern frontend SPA
--   📁 **Monorepo structure** — organized workspace with shared code
--   📦 **TypeScript everywhere** — full type safety across the stack
--   🔄 **Bun** — fast package manager and runtime
--   🚀 **Instant deploy** with `wrangler`
+- ⚡️ **Turborepo** — supercharged monorepo with caching and parallelization
+- 🔥 **Bun** — blazing-fast package manager and runtime
+- 🌩️ **Cloudflare Workers** — backend with blazing-fast edge execution
+- 🧩 **Hono** — routing + type-safe API with RPC client
+- ⚛️ **React + Vite** — modern frontend SPA
+- 📁 **Monorepo structure** — organized workspace with shared code
+- 📦 **TypeScript everywhere** — full type safety across the stack
+- 🚀 **Instant deploy** with `wrangler`
 
 ---
 
@@ -47,19 +48,52 @@ cd yourproject
 bun install
 ```
 
-## 🌐 Dev Mode
+## ⚡ Turborepo Commands
+
+### Development Mode
+
+```bash
+# Start all packages in development mode
+bun run dev
+```
+
+This will start:
+
+- **Shared**: TypeScript watch mode
+- **API**: Cloudflare Worker dev server at `http://127.0.0.1:8787`
+- **Web**: Vite dev server at `http://localhost:5173`
+
+### Building
+
+```bash
+# Build all packages
+bun run build
+
+# Build specific package
+bunx turbo build --filter=api
+```
+
+### Other Commands
+
+```bash
+bun run type-check    # Type checking
+bun run lint         # Linting
+bun run clean        # Clean build artifacts
+```
+
+## 🌐 Development
 
 Run both frontend and backend together:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 This will:
 
--   Start shared library in watch mode
--   Start Cloudflare Worker via `wrangler dev`
--   Start Vite dev server for the React frontend
+- Start shared library in watch mode
+- Start Cloudflare Worker via `wrangler dev`
+- Start Vite dev server for the React frontend
 
 ## 🏗️ Build for Production
 
@@ -69,9 +103,9 @@ npm run build
 
 This will:
 
--   Build shared library
--   Build backend Worker logic
--   Build frontend React SPA into `web/dist`
+- Build shared library
+- Build backend Worker logic
+- Build frontend React SPA into `web/dist`
 
 ## 🚀 Deploy to Cloudflare
 
@@ -79,9 +113,9 @@ This will:
 npm run deploy
 ```
 
--   Deploys your Worker + SPA to Cloudflare edge
--   Static files served from `web/dist`
--   API routes handled under `/api`
+- Deploys your Worker + SPA to Cloudflare edge
+- Static files served from `web/dist`
+- API routes handled under `/api`
 
 ## 📦 Scripts
 
@@ -110,20 +144,20 @@ npm run deploy
 
 ## 🧠 Features
 
--   ✅ Full TypeScript support
--   ✅ Type-safe Hono RPC client (via hc<AppType>())
--   ✅ SPA fallback (index.html) for frontend routing
--   ✅ Dev-first workflow with hot reloading
--   ✅ Fast Cloudflare edge deployment
--   ✅ Monorepo structure with shared code
--   ✅ Path aliases for clean imports
+- ✅ Full TypeScript support
+- ✅ Type-safe Hono RPC client (via hc<AppType>())
+- ✅ SPA fallback (index.html) for frontend routing
+- ✅ Dev-first workflow with hot reloading
+- ✅ Fast Cloudflare edge deployment
+- ✅ Monorepo structure with shared code
+- ✅ Path aliases for clean imports
 
 ## 🧰 Tools Used
 
--   **Cloudflare Workers** — Serverless backend runtime
--   **Wrangler** — CLI for Cloudflare Workers
--   **Hono** — Fast, lightweight web framework
--   **React** — Frontend UI library
--   **Vite** — Fast build tool and dev server
--   **TypeScript** — Type-safe JavaScript
--   **Bun** — Fast package manager and runtime
+- **Cloudflare Workers** — Serverless backend runtime
+- **Wrangler** — CLI for Cloudflare Workers
+- **Hono** — Fast, lightweight web framework
+- **React** — Frontend UI library
+- **Vite** — Fast build tool and dev server
+- **TypeScript** — Type-safe JavaScript
+- **Bun** — Fast package manager and runtime

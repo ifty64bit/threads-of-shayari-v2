@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import type { RegisterSchemaType } from "@shared";
+import type { RegisterSchemaType } from "shared";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai/react";
 import { authAtom } from "@/lib/store";

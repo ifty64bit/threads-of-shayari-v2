@@ -1,6 +1,10 @@
 # prod
 dist/
 
+# environment files
+.env
+.dev.vars
+
 # dev
 .yarn/
 !.yarn/releases
