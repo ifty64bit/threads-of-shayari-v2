@@ -1,9 +1,14 @@
-import { postTable, usersTable } from "../db/schemas";
+import {
+    postTable,
+    REACTION_TYPES,
+    reactionTable,
+    usersTable,
+} from "../db/schemas";
 import authMiddleware from "../middlewares/auth";
 import dbMiddleware from "../middlewares/db";
 import { type Variables, type Bindings } from "..";
 import { zValidator } from "@hono/zod-validator";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
 import { createPostSchema } from "@shared";
@@ -35,24 +40,95 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
         async c => {
             const { offset, limit } = c.req.valid("query");
             const { db } = c.var;
-            const posts = await db
+
+            // First, get posts with author details
+            const postsWithAuthors = await db
                 .select({
                     id: postTable.id,
                     content: postTable.content,
                     authorId: postTable.authorId,
                     createdAt: postTable.createdAt,
                     updatedAt: postTable.updatedAt,
-                    author_id: usersTable.id,
-                    author_name: usersTable.name,
-                    author_username: usersTable.username,
-                    author_avatar: usersTable.profilePicture,
-                    author_email: usersTable.email,
+                    author: {
+                        id: usersTable.id,
+                        name: usersTable.name,
+                        username: usersTable.username,
+                        avatar: usersTable.profilePicture,
+                        email: usersTable.email,
+                    },
                 })
                 .from(postTable)
                 .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
                 .offset(offset)
                 .limit(limit)
                 .orderBy(desc(postTable.createdAt));
+
+            // Get all reactions for these posts with user details
+            const postIds = postsWithAuthors.map(post => post.id);
+            const reactions =
+                postIds.length > 0
+                    ? await db
+                          .select({
+                              postId: reactionTable.postId,
+                              id: reactionTable.id,
+                              userId: reactionTable.userId,
+                              type: reactionTable.type,
+                              createdAt: reactionTable.createdAt,
+                              user: {
+                                  id: usersTable.id,
+                                  name: usersTable.name,
+                                  username: usersTable.username,
+                                  avatar: usersTable.profilePicture,
+                              },
+                          })
+                          .from(reactionTable)
+                          .leftJoin(
+                              usersTable,
+                              eq(reactionTable.userId, usersTable.id)
+                          )
+                          .where(inArray(reactionTable.postId, postIds))
+                    : [];
+
+            // Group reactions by post ID
+            const reactionsByPost = reactions.reduce(
+                (acc, reaction) => {
+                    const postId = reaction.postId;
+                    if (postId !== null) {
+                        if (!acc[postId]) {
+                            acc[postId] = [];
+                        }
+                        acc[postId].push({
+                            id: reaction.id,
+                            userId: reaction.userId,
+                            type: reaction.type,
+                            createdAt: reaction.createdAt,
+                            user: reaction.user,
+                        });
+                    }
+                    return acc;
+                },
+                {} as Record<
+                    number,
+                    {
+                        id: number;
+                        userId: number;
+                        type: string;
+                        createdAt: string;
+                        user: {
+                            id: number;
+                            name: string;
+                            username: string;
+                            avatar: string | null;
+                        } | null;
+                    }[]
+                >
+            );
+
+            // Combine posts with their reactions
+            const posts = postsWithAuthors.map(post => ({
+                ...post,
+                reactions: reactionsByPost[post.id] || [],
+            }));
 
             return c.json({ message: "Success", data: posts }, 200);
         }
@@ -113,6 +189,28 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 message: `Post deleted for id: ${id}`,
                 data: null,
             });
+        }
+    )
+    .post(
+        "/:id/reactions",
+        zValidator(
+            "param",
+            z.object({ id: z.string().transform(val => parseInt(val, 10)) })
+        ),
+        zValidator("json", z.object({ reaction: z.enum(REACTION_TYPES) })),
+        async c => {
+            const id = c.req.valid("param").id;
+            const { reaction } = c.req.valid("json");
+            const { db } = c.var;
+            const post = await db
+                .insert(reactionTable)
+                .values({
+                    postId: id,
+                    userId: c.get("user").id,
+                    type: reaction,
+                })
+                .returning();
+            return c.json({ message: "Reaction added", data: post[0] }, 201);
         }
     );
 
