@@ -1,21 +1,21 @@
-import { authAtom } from "@/lib/store";
-import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
-import { useAtom } from "jotai/react";
+import { authAtom } from '@/lib/store';
+import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
+import { useAtom } from 'jotai/react';
 
-export const Route = createFileRoute("/_auth")({
-    component: RouteComponent,
+export const Route = createFileRoute('/_auth')({
+  component: RouteComponent,
 });
 
 function RouteComponent() {
-    const [auth] = useAtom(authAtom);
+  const [auth] = useAtom(authAtom);
 
-    if (!auth) {
-        return <Navigate to="/login" replace />;
-    }
+  if (!auth) {
+    return <Navigate to="/login" replace />;
+  }
 
-    return (
-        <div className="max-w-xl mx-auto p-4">
-            <Outlet />
-        </div>
-    );
+  return (
+    <div className="mx-auto max-w-xl p-4">
+      <Outlet />
+    </div>
+  );
 }

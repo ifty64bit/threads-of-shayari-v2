@@ -1,16 +1,32 @@
-import type { APIType } from "api";
-import { hc } from "hono/client";
-import { createStore } from "jotai/vanilla";
-import { authAtom } from "./store";
+import type { APIType } from 'api';
+import { hc } from 'hono/client';
 
-const store = createStore();
+const api = hc<APIType>('/', {
+  headers: () => {
+    const storedAuth = localStorage.getItem('auth');
+    let token: string | undefined;
 
-function getAuthToken() {
-    return store.get(authAtom)?.token;
-}
+    try {
+      if (storedAuth) {
+        const authData = JSON.parse(storedAuth);
+        token = authData?.token;
+      }
+    } catch (error) {
+      console.warn('Failed to parse auth from localStorage:', error);
+    }
 
-export const api = hc<APIType>("/", {
-    headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
-    },
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+      console.log(
+        'Setting Authorization header:',
+        `Bearer ${token.slice(0, 10)}...`
+      );
+    } else {
+      console.log('No token found for Authorization header');
+    }
+    return headers;
+  },
 });
+
+export default api.api;

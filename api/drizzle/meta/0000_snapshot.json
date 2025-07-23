@@ -58,12 +58,8 @@
           "name": "comments_postId_posts_id_fk",
           "tableFrom": "comments",
           "tableTo": "posts",
-          "columnsFrom": [
-            "postId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["postId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -71,12 +67,8 @@
           "name": "comments_userId_users_id_fk",
           "tableFrom": "comments",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -129,16 +121,12 @@
       "indexes": {
         "post_author_id_idx": {
           "name": "post_author_id_idx",
-          "columns": [
-            "authorId"
-          ],
+          "columns": ["authorId"],
           "isUnique": false
         },
         "post_created_at_idx": {
           "name": "post_created_at_idx",
-          "columns": [
-            "createdAt"
-          ],
+          "columns": ["createdAt"],
           "isUnique": false
         }
       },
@@ -147,12 +135,8 @@
           "name": "posts_authorId_users_id_fk",
           "tableFrom": "posts",
           "tableTo": "users",
-          "columnsFrom": [
-            "authorId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["authorId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -211,39 +195,27 @@
       "indexes": {
         "reaction_user_id_idx": {
           "name": "reaction_user_id_idx",
-          "columns": [
-            "userId"
-          ],
+          "columns": ["userId"],
           "isUnique": false
         },
         "reaction_post_id_idx": {
           "name": "reaction_post_id_idx",
-          "columns": [
-            "postId"
-          ],
+          "columns": ["postId"],
           "isUnique": false
         },
         "reaction_comment_id_idx": {
           "name": "reaction_comment_id_idx",
-          "columns": [
-            "commentId"
-          ],
+          "columns": ["commentId"],
           "isUnique": false
         },
         "reactions_userId_postId_unique": {
           "name": "reactions_userId_postId_unique",
-          "columns": [
-            "userId",
-            "postId"
-          ],
+          "columns": ["userId", "postId"],
           "isUnique": true
         },
         "reactions_userId_commentId_unique": {
           "name": "reactions_userId_commentId_unique",
-          "columns": [
-            "userId",
-            "commentId"
-          ],
+          "columns": ["userId", "commentId"],
           "isUnique": true
         }
       },
@@ -252,12 +224,8 @@
           "name": "reactions_postId_posts_id_fk",
           "tableFrom": "reactions",
           "tableTo": "posts",
-          "columnsFrom": [
-            "postId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["postId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -265,12 +233,8 @@
           "name": "reactions_commentId_comments_id_fk",
           "tableFrom": "reactions",
           "tableTo": "comments",
-          "columnsFrom": [
-            "commentId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["commentId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -278,12 +242,8 @@
           "name": "reactions_userId_users_id_fk",
           "tableFrom": "reactions",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -371,16 +331,12 @@
       "indexes": {
         "users_username_unique": {
           "name": "users_username_unique",
-          "columns": [
-            "username"
-          ],
+          "columns": ["username"],
           "isUnique": true
         },
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },

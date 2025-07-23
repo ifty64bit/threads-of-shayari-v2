@@ -1,46 +1,56 @@
 {
-  "name": "threads-of-shayari-v2",
-  "packageManager": "bun@1.2.18",
-  "author": {
-    "name": "Ifty",
-    "email": "ifty64bit@gmail.com"
-  },
-  "license": "MIT",
-  "description": "A full-stack TypeScript monorepo with Cloudflare deployment support",
-  "keywords": [
-    "cloudflare",
-    "worker",
-    "hono",
-    "react",
-    "vite",
-    "typescript",
-    "monorepo"
-  ],
-  "workspaces": [
-    "./api",
-    "./web",
-    "./shared"
-  ],
-  "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "build:api": "turbo run build --filter=api",
-    "build:web": "turbo run build --filter=web",
-    "build:shared": "turbo run build --filter=shared",
-    "dev:api": "turbo run dev --filter=api",
-    "dev:web": "turbo run dev --filter=web",
-    "dev:shared": "turbo run dev --filter=shared",
-    "lint": "turbo lint",
-    "test": "turbo test",
-    "type-check": "turbo type-check",
-    "clean": "turbo clean",
-    "deploy": "bun run build && cd api && bun run deploy",
-    "deploy:staging": "bun run build && cd api && wrangler deploy --dry-run",
-    "cf-typegen": "cd api && bun run cf-typegen"
-  },
-  "devDependencies": {
-    "rimraf": "^6.0.1",
-    "@types/bun": "latest",
-    "turbo": "^2.5.5"
-  }
+    "name": "threads-of-shayari-v2",
+    "packageManager": "bun@1.2.18",
+    "author": {
+        "name": "Ifty",
+        "email": "ifty64bit@gmail.com"
+    },
+    "license": "MIT",
+    "description": "A full-stack TypeScript monorepo with Cloudflare deployment support",
+    "keywords": [
+        "cloudflare",
+        "worker",
+        "hono",
+        "react",
+        "vite",
+        "typescript",
+        "monorepo"
+    ],
+    "workspaces": [
+        "./api",
+        "./web",
+        "./shared"
+    ],
+    "scripts": {
+        "build": "turbo build",
+        "dev": "turbo dev",
+        "build:api": "turbo run build --filter=api",
+        "build:web": "turbo run build --filter=web",
+        "build:shared": "turbo run build --filter=shared",
+        "dev:api": "turbo run dev --filter=api",
+        "dev:web": "turbo run dev --filter=web",
+        "dev:shared": "turbo run dev --filter=shared",
+        "lint": "turbo lint",
+        "lint:fix": "turbo lint:fix",
+        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
+        "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
+        "test": "turbo test",
+        "type-check": "turbo type-check",
+        "clean": "turbo clean",
+        "deploy": "bun run build && cd api && bun run deploy",
+        "deploy:staging": "bun run build && cd api && wrangler deploy --dry-run",
+        "cf-typegen": "cd api && bun run cf-typegen"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.30.1",
+        "@types/bun": "latest",
+        "eslint": "^9.30.1",
+        "globals": "^16.3.0",
+        "prettier": "^3.3.3",
+        "prettier-plugin-tailwindcss": "^0.6.8",
+        "rimraf": "^6.0.1",
+        "turbo": "^2.5.5",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.35.1"
+    }
 }

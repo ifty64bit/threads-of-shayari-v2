@@ -1,25 +1,29 @@
 {
-  "name": "shared",
-  "version": "0.1.0",
-  "description": "Shared TypeScript types and utilities for the monorepo",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "type-check": "tsc --noEmit",
-    "clean": "rimraf dist .turbo"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "zod": "^4.0.5"
-  },
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
+    "name": "shared",
+    "version": "0.1.0",
+    "description": "Shared TypeScript types and utilities for the monorepo",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts --fix",
+        "format": "prettier --write \"src/**/*.{ts,json}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,json}\"",
+        "type-check": "tsc --noEmit",
+        "clean": "rimraf dist .turbo"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "^5.6.3"
+    },
+    "dependencies": {
+        "zod": "^4.0.5"
+    },
+    "exports": {
+        ".": {
+            "default": "./src/index.ts"
+        }
     }
-  }
 }
