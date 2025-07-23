@@ -1,39 +1,39 @@
-import { postTable, usersTable } from '../db/schemas';
-import authMiddleware from '../middlewares/auth';
-import dbMiddleware from '../middlewares/db';
-import { type Variables, type Bindings } from '..';
-import { zValidator } from '@hono/zod-validator';
-import { eq } from 'drizzle-orm';
-import { Hono } from 'hono';
-import z from 'zod/v4';
-import { createPostSchema } from '@shared';
+import { postTable, usersTable } from "../db/schemas";
+import authMiddleware from "../middlewares/auth";
+import dbMiddleware from "../middlewares/db";
+import { type Variables, type Bindings } from "..";
+import { zValidator } from "@hono/zod-validator";
+import { desc, eq } from "drizzle-orm";
+import { Hono } from "hono";
+import z from "zod/v4";
+import { createPostSchema } from "@shared";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
     .use(dbMiddleware)
-    .post('/', zValidator('json', createPostSchema), async c => {
-        const { content } = c.req.valid('json');
+    .post("/", zValidator("json", createPostSchema), async c => {
+        const { content } = c.req.valid("json");
         const { db } = c.var;
         const post = await db
             .insert(postTable)
             .values({
                 content,
-                authorId: c.get('user').id,
+                authorId: c.get("user").id,
             })
             .returning();
-        return c.json({ message: 'Post created', data: post[0] }, 201);
+        return c.json({ message: "Post created", data: post[0] }, 201);
     })
     .get(
-        '/',
+        "/",
         zValidator(
-            'query',
+            "query",
             z.object({
                 offset: z.coerce.number().min(0).optional().default(0),
                 limit: z.coerce.number().min(1).max(100).optional().default(10),
             })
         ),
         async c => {
-            const { offset, limit } = c.req.valid('query');
+            const { offset, limit } = c.req.valid("query");
             const { db } = c.var;
             const posts = await db
                 .select({
@@ -51,19 +51,20 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 .from(postTable)
                 .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
                 .offset(offset)
-                .limit(limit);
+                .limit(limit)
+                .orderBy(desc(postTable.createdAt));
 
-            return c.json({ message: 'Success', data: posts }, 200);
+            return c.json({ message: "Success", data: posts }, 200);
         }
     )
     .get(
-        '/:id',
+        "/:id",
         zValidator(
-            'param',
+            "param",
             z.object({ id: z.string().transform(val => parseInt(val, 10)) })
         ),
         c => {
-            const id = c.req.valid('param').id;
+            const id = c.req.valid("param").id;
             const { db } = c.var;
             const post = db
                 .select()
@@ -76,15 +77,15 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
         }
     )
     .put(
-        '/:id',
+        "/:id",
         zValidator(
-            'param',
+            "param",
             z.object({ id: z.string().transform(val => parseInt(val, 10)) })
         ),
-        zValidator('json', z.object({ content: z.string().min(1) })),
+        zValidator("json", z.object({ content: z.string().min(1) })),
         async c => {
-            const id = c.req.valid('param').id;
-            const { content } = c.req.valid('json');
+            const id = c.req.valid("param").id;
+            const { content } = c.req.valid("json");
             const { db } = c.var;
             const post = await db
                 .update(postTable)
@@ -99,13 +100,13 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
         }
     )
     .delete(
-        '/:id',
+        "/:id",
         zValidator(
-            'param',
+            "param",
             z.object({ id: z.string().transform(val => parseInt(val, 10)) })
         ),
         async c => {
-            const id = c.req.valid('param').id;
+            const id = c.req.valid("param").id;
             const { db } = c.var;
             await db.delete(postTable).where(eq(postTable.id, id));
             return c.json({
