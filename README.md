@@ -1,13 +1,26 @@
-# 🌩️ Threads of Shayari v2 - Turborepo Monorepo
+# Threads of Shayari v2 🎭
 
-A lightning-fast fullstack monorepo powered by Turborepo, featuring:
+A full-stack TypeScript monorepo with shared types, using Bun, Hono, Vite, React, and Cloudflare Workers for deployment.
 
-- ⚡️ **Turborepo** — supercharged monorepo with caching and parallelization
-- 🔥 **Bun** — blazing-fast package manager and runtime
-- 🌩️ **Cloudflare Workers** — backend with blazing-fast edge execution
-- 🧩 **Hono** — routing + type-safe API with RPC client
-- ⚛️ **React + Vite** — modern frontend SPA
-- 📁 **Monorepo structure** — organized workspace with shared code
+## Why This Stack?
+
+This monorepo combines the flexibility of modern web development tools with the power of Cloudflare's edge platform. Built with end-to-end type safety and optimized for full-stack deployment on Cloudflare Workers.
+
+## Features
+
+- **Full-Stack TypeScript**: End-to-end type safety between client and server
+- **Shared Types**: Common type definitions shared between client and server
+- **Monorepo Structure**: Organized as a workspaces-based monorepo with Turbo for build orchestration
+- **Cloudflare Workers**: Deploy both frontend and backend on Cloudflare's edge platform
+- **Modern Stack**:
+  - [Bun](https://bun.sh) as the JavaScript runtime and package manager
+  - [Hono](https://hono.dev) as the backend framework
+  - [Vite](https://vitejs.dev) for frontend bundling
+  - [React](https://react.dev) for the frontend UI
+  - [Turbo](https://turbo.build) for monorepo build orchestration and caching
+  - [Drizzle ORM](https://orm.drizzle.team) for database management
+  - [TanStack Router](https://tanstack.com/router) for client-side routing
+  - [Tailwind CSS](https://tailwindcss.com) for styling
 - 📦 **TypeScript everywhere** — full type safety across the stack
 - 🚀 **Instant deploy** with `wrangler`
 

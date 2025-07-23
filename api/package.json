@@ -1,31 +1,34 @@
 {
-    "name": "api",
-    "scripts": {
-        "dev": "wrangler dev",
-        "build": "echo 'Build script not defined, use wrangler build directly'",
-        "type-check": "tsc --noEmit",
-        "deploy": "wrangler deploy --minify",
-        "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-        "clean": "rimraf dist .turbo"
-    },
-    "dependencies": {
-        "@hono/zod-validator": "^0.7.2",
-        "@libsql/client": "^0.15.10",
-        "bcryptjs": "^3.0.2",
-        "drizzle-orm": "^0.44.3",
-        "hono": "^4.8.4",
-        "jsonwebtoken": "^9.0.2",
-        "zod": "^4.0.5"
-    },
-    "devDependencies": {
-        "@types/jsonwebtoken": "^9.0.10",
-        "drizzle-kit": "^0.31.4",
-        "wrangler": "^4.25.1"
-    },
-    "exports": {
-        ".": {
-            "default": "./src/index.ts",
-            "types": "./src/index.ts"
-        }
+  "name": "api",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc && echo 'API built successfully'",
+    "type-check": "tsc --noEmit",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.2",
+    "@libsql/client": "^0.15.10",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.44.3",
+    "hono": "^4.8.4",
+    "jsonwebtoken": "^9.0.2",
+    "shared": "workspace:*",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.0.0",
+    "drizzle-kit": "^0.31.4",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.25.1"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
     }
+  }
 }

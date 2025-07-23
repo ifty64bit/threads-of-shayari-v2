@@ -25,7 +25,7 @@ function FeedRoute() {
                     <Card key={post.id}>
                         <CardHeader>
                             <CardTitle>
-                                <h3>{post.author}</h3>
+                                {/* <h3>{post.author}</h3> */}
                             </CardTitle>
                         </CardHeader>
                         <p>{post.content}</p>

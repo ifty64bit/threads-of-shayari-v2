@@ -1,42 +1,46 @@
 {
-    "$schema": "https://turbo.build/schema.json",
-    "ui": "tui",
-    "tasks": {
-        "build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
-            "env": ["NODE_ENV"]
-        },
-        "api#build": {
-            "dependsOn": ["shared#build"],
-            "outputs": [],
-            "env": ["NODE_ENV"]
-        },
-        "web#build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**"],
-            "env": ["NODE_ENV"]
-        },
-        "shared#build": {
-            "outputs": [],
-            "env": ["NODE_ENV"]
-        },
-        "dev": {
-            "cache": false,
-            "persistent": true,
-            "dependsOn": ["^build"]
-        },
-        "lint": {
-            "dependsOn": ["^build"]
-        },
-        "test": {
-            "dependsOn": ["^build"]
-        },
-        "type-check": {
-            "dependsOn": ["^build"]
-        },
-        "clean": {
-            "cache": false
-        }
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
+      "env": ["NODE_ENV"]
+    },
+    "api#build": {
+      "dependsOn": ["shared#build"],
+      "outputs": [],
+      "env": ["NODE_ENV", "DATABASE_URL", "JWT_SECRET"]
+    },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV", "VITE_API_URL"]
+    },
+    "shared#build": {
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false,
+      "outputs": []
     }
+  }
 }
