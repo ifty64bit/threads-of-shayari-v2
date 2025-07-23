@@ -1,14 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { createPostSchema, type CreatePostSchemaType } from 'shared';
-import { Form, FormField, FormItem } from './ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { useCreatePost } from '@/api/post.api';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { createPostSchema, type CreatePostSchemaType } from "shared";
+import { Form, FormField, FormItem } from "./ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useCreatePost } from "@/api/post.api";
 
 function CreatePost() {
     const form = useForm<CreatePostSchemaType>({
         resolver: zodResolver(createPostSchema),
+        defaultValues: {
+            content: "",
+        },
     });
 
     const createPost = useCreatePost();
