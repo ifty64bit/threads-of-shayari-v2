@@ -1,6 +1,6 @@
 {
-  "id": "d27e91d1-d0fb-4e98-b3aa-03a2fdb809e4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "245036ff-c2b2-4c00-b506-3aad11c18ce6",
+  "prevId": "d27e91d1-d0fb-4e98-b3aa-03a2fdb809e4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -449,12 +449,6 @@
           "name": "id",
           "type": "serial",
           "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
           "notNull": true
         },
         "username": {

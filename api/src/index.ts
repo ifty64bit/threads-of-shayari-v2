@@ -1,29 +1,29 @@
-import { Hono } from 'hono';
-import authRoute from './routes/auth.route';
-import { type LibSQLDatabase } from 'drizzle-orm/libsql';
-import postRoute from './routes/post.route';
+import { Hono } from "hono";
+import authRoute from "./routes/auth.route";
+
+import postRoute from "./routes/post.route";
+import getDB from "./db";
 
 export type Bindings = {
-    TURSO_DATABASE_URL: string;
-    TURSO_AUTH_TOKEN: string;
+    NEON_DATABASE_URL: string;
     JWT_SECRET: string;
 };
 
 export type Variables = {
-    db: LibSQLDatabase;
+    db: ReturnType<typeof getDB>;
     user: { email: string; id: number };
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
-    .basePath('/api')
-    .get('/', c => {
-        return c.text('Hello Hono!');
+    .basePath("/api")
+    .get("/", c => {
+        return c.text("Hello Hono!");
     })
-    .get('/health', c => {
-        return c.json({ status: 'ok' });
+    .get("/health", c => {
+        return c.json({ status: "ok" });
     })
-    .route('/', authRoute)
-    .route('/posts', postRoute);
+    .route("/", authRoute)
+    .route("/posts", postRoute);
 
 export default app;
 export type APIType = typeof app;

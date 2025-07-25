@@ -66,7 +66,6 @@ export function useLogin() {
         token: token,
         user: {
           id: user.id.toString(),
-          name: user.name,
           username: user.username,
           email: user.email,
         },

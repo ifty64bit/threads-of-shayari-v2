@@ -1,20 +1,19 @@
-import { atomWithStorage } from 'jotai/utils';
+import { atomWithStorage } from "jotai/utils";
 
 type AuthType = {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    username: string;
-    email: string;
-  };
+    token: string;
+    user: {
+        id: string;
+        username: string;
+        email: string;
+    };
 };
 
 export const authAtom = atomWithStorage<AuthType | null>(
-  'auth',
-  null,
-  undefined,
-  {
-    getOnInit: true,
-  }
+    "auth",
+    null,
+    undefined,
+    {
+        getOnInit: true,
+    }
 );
