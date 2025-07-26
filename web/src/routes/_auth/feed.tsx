@@ -10,12 +10,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 
@@ -69,7 +65,17 @@ function FeedRoute() {
                             </CardContent>
                             <CardFooter className="flex justify-between gap-4 border-t">
                                 <ReactBtn post={post} />
-                                <Button className="flex-1">Comment</Button>
+                                <Link
+                                    to="/$username/$postId"
+                                    params={{
+                                        username: post.author
+                                            .username as string,
+                                        postId: post.id.toString(),
+                                    }}
+                                    className="flex-1"
+                                >
+                                    <Button className="w-full">Comment</Button>
+                                </Link>
                             </CardFooter>
                         </Card>
                     ))}

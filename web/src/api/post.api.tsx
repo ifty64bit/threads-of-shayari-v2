@@ -1,6 +1,7 @@
 import api from "@/lib/api";
 import {
     infiniteQueryOptions,
+    queryOptions,
     useMutation,
     useQueryClient,
 } from "@tanstack/react-query";
@@ -25,6 +26,51 @@ export function getPosts() {
             const posts = await postsBuffer.json();
 
             return posts;
+        },
+        getNextPageParam: lastPage => {
+            const nextOffset = lastPage.data.length;
+            return nextOffset < 100 ? undefined : nextOffset;
+        },
+        initialPageParam: 1,
+    });
+}
+
+export function getPostById(postId: string) {
+    return queryOptions({
+        queryKey: ["posts", postId],
+        queryFn: async () => {
+            const postBuffer = await api.posts[":id"].$get({
+                param: { id: postId },
+            });
+
+            if (!postBuffer.ok) {
+                throw new Error("Failed to fetch post");
+            }
+
+            return postBuffer.json();
+        },
+    });
+}
+
+export function getCommentsByPostId(postId: string) {
+    return infiniteQueryOptions({
+        queryKey: ["comments", postId],
+        queryFn: async () => {
+            const commentsBuffer = await api.posts[":id"].comments.$get({
+                param: { id: postId },
+                query: {
+                    limit: String(10),
+                    offset: String(0),
+                },
+            });
+
+            if (!commentsBuffer.ok) {
+                throw new Error("Failed to fetch comments");
+            }
+
+            const comments = await commentsBuffer.json();
+
+            return comments;
         },
         getNextPageParam: lastPage => {
             const nextOffset = lastPage.data.length;
@@ -100,6 +146,43 @@ export function useReactToPost() {
         },
         onError(error, __, context) {
             toast.error(`Error reacting to post: ${error.message}`, {
+                id: context?.toastId,
+            });
+        },
+    });
+}
+
+export function useCreateComment() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationKey: ["createComment"],
+        mutationFn: async (data: { postId: string; content: string }) => {
+            const response = await api.posts[":postId"].comments.$post({
+                param: { postId: data.postId },
+                json: { content: data.content },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to create comment");
+            }
+
+            return response.json();
+        },
+        onMutate() {
+            const toastId = toast.loading("Creating comment...");
+            return { toastId };
+        },
+        onSuccess(_, { postId }, context) {
+            toast.success("Comment created successfully", {
+                id: context.toastId,
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["comments", postId],
+            });
+        },
+        onError(error, __, context) {
+            toast.error(`Error creating comment: ${error.message}`, {
                 id: context?.toastId,
             });
         },

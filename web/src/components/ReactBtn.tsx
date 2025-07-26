@@ -1,3 +1,4 @@
+import type { InferResponseType } from "hono/client";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -6,6 +7,8 @@ import {
 } from "@/components/ui/popover";
 import { REACTION_TYPES } from "../../../api/src/db/schemas";
 import { useReactToPost } from "@/api/post.api";
+import type api from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 const reacts = REACTION_TYPES.map(type => ({
     label: type,
@@ -29,35 +32,31 @@ function getEmojiForReaction(type: string) {
     }
 }
 
+type ReactionType = InferResponseType<
+    typeof api.posts.$get
+>["data"][number]["reactions"][number];
+
 type ReactBtnProps = {
     post: {
-        reactions: any[];
         id: number;
-        content: string;
-        authorId: number;
-        createdAt: string;
-        updatedAt: string;
-        author: {
-            id: number;
-            name: string;
-            username: string;
-            avatar: string | null;
-            email: string;
-        } | null;
+        reactions: ReactionType[];
     };
+    className?: string;
 };
 
-function ReactBtn({ post }: ReactBtnProps) {
+function ReactBtn({ post, className }: ReactBtnProps) {
     const reactToPost = useReactToPost();
 
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button className="flex-1">React</Button>
+                <Button className={cn("flex-1", className)}>React</Button>
             </PopoverTrigger>
             <PopoverContent
                 side="top"
-                className="flex w-fit gap-2 border-0 bg-transparent p-0 shadow-none"
+                className={
+                    "flex w-fit gap-2 border-0 bg-transparent p-0 shadow-none"
+                }
             >
                 {reacts.map(react => (
                     <Button

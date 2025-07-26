@@ -1,4 +1,5 @@
 import {
+    commentTable,
     postTable,
     REACTION_TYPES,
     reactionTable,
@@ -93,9 +94,12 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                     `.as("reactions"),
                 })
                 .from(postTable)
-                .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
-                .leftJoin(reactionTable, eq(postTable.id, reactionTable.postId))
-                .leftJoin(
+                .innerJoin(usersTable, eq(postTable.authorId, usersTable.id))
+                .innerJoin(
+                    reactionTable,
+                    eq(postTable.id, reactionTable.postId)
+                )
+                .innerJoin(
                     reactionUsers,
                     eq(reactionTable.userId, reactionUsers.id)
                 )
@@ -117,9 +121,68 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const id = c.req.valid("param").id;
             const { db } = c.var;
             const post = await db
-                .select()
+                .select({
+                    id: postTable.id,
+                    content: postTable.content,
+                    author: {
+                        id: usersTable.id,
+                        username: usersTable.username,
+                        avatar: usersTable.profilePicture,
+                        email: usersTable.email,
+                    },
+                    reactions: sql`
+                        COALESCE(
+                            ARRAY_AGG(
+                                CASE 
+                                    WHEN ${reactionTable.id} IS NOT NULL 
+                                    THEN json_build_object(
+                                        'id', ${reactionTable.id},
+                                        'userId', ${reactionTable.userId},
+                                        'type', ${reactionTable.type},
+                                        'createdAt', ${reactionTable.createdAt},
+                                        'user', json_build_object(
+                                            'id', ${usersTable.id},
+                                            'username', ${usersTable.username},
+                                            'avatar', ${usersTable.profilePicture}
+                                        )
+                                    )
+                                    ELSE NULL
+                                END
+                                ORDER BY ${reactionTable.createdAt} DESC
+                                    ) FILTER (WHERE ${reactionTable.id} IS NOT NULL),
+                            ARRAY[]::json[]
+                            )
+                    `.as("reactions"),
+                    // comments: sql`
+                    //     COALESCE(
+                    //         ARRAY_AGG(
+                    //             JSON_BUILD_OBJECT(
+                    //                 'id', ${commentTable.id},
+                    //                 'content', ${commentTable.content},
+                    //                 'createdAt', ${commentTable.createdAt},
+                    //                 'updatedAt', ${commentTable.updatedAt},
+                    //                 'author', JSON_BUILD_OBJECT(
+                    //                     'id', ${usersTable.id},
+                    //                     'username', ${usersTable.username},
+                    //                     'avatar', ${usersTable.profilePicture}
+                    //                 )
+                    //             )
+                    //         ) FILTER (WHERE ${commentTable.id} IS NOT NULL),
+                    //         ARRAY[]::json[]
+                    //     )`,
+                    createdAt: postTable.createdAt,
+                    updatedAt: postTable.updatedAt,
+                })
                 .from(postTable)
-                .where(eq(postTable.id, id));
+                .innerJoin(usersTable, eq(postTable.authorId, usersTable.id))
+                .innerJoin(
+                    reactionTable,
+                    eq(postTable.id, reactionTable.postId)
+                )
+                // .leftJoin(commentTable, eq(postTable.id, commentTable.postId))
+                .limit(1)
+                .where(eq(postTable.id, id))
+                .groupBy(postTable.id, usersTable.id);
             return c.json({
                 message: `Post details for id: ${id}`,
                 data: post[0] || null,
@@ -185,6 +248,66 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 })
                 .returning();
             return c.json({ message: "Reaction added", data: post[0] }, 201);
+        }
+    )
+    .get(
+        "/:id/comments",
+        zValidator(
+            "param",
+            z.object({ id: z.string().transform(val => parseInt(val, 10)) })
+        ),
+        zValidator(
+            "query",
+            z.object({
+                offset: z.coerce.number().min(0).optional().default(0),
+                limit: z.coerce.number().min(1).max(100).optional().default(10),
+            })
+        ),
+        async c => {
+            const { id } = c.req.valid("param");
+            const { db } = c.var;
+            const comments = await db
+                .select({
+                    id: commentTable.id,
+                    content: commentTable.content,
+                    author: {
+                        id: usersTable.id,
+                        username: usersTable.username,
+                        avatar: usersTable.profilePicture,
+                    },
+                    createdAt: commentTable.createdAt,
+                    updatedAt: commentTable.updatedAt,
+                })
+                .from(commentTable)
+                .innerJoin(usersTable, eq(commentTable.userId, usersTable.id))
+                .where(eq(commentTable.postId, id));
+
+            return c.json({
+                message: `Comments for post id: ${id}`,
+                data: comments,
+            });
+        }
+    )
+    .post(
+        "/:postId/comments",
+        zValidator(
+            "param",
+            z.object({ postId: z.string().transform(val => parseInt(val, 10)) })
+        ),
+        zValidator("json", z.object({ content: z.string().min(1) })),
+        async c => {
+            const { postId } = c.req.valid("param");
+            const { content } = c.req.valid("json");
+            const { db } = c.var;
+            const comment = await db
+                .insert(commentTable)
+                .values({
+                    content,
+                    postId,
+                    userId: c.get("user").id,
+                })
+                .returning();
+            return c.json({ message: "Comment added", data: comment[0] }, 201);
         }
     );
 

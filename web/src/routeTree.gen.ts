@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthFeedRouteImport } from './routes/_auth/feed'
+import { Route as AuthUsernamePostIdRouteImport } from './routes/_auth/$username.$postId'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -39,18 +40,25 @@ const AuthFeedRoute = AuthFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthUsernamePostIdRoute = AuthUsernamePostIdRouteImport.update({
+  id: '/$username/$postId',
+  path: '/$username/$postId',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/feed': typeof AuthFeedRoute
+  '/$username/$postId': typeof AuthUsernamePostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/feed': typeof AuthFeedRoute
+  '/$username/$postId': typeof AuthUsernamePostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,13 +67,21 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_auth/feed': typeof AuthFeedRoute
+  '/_auth/$username/$postId': typeof AuthUsernamePostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/feed'
+  fullPaths: '/' | '/login' | '/register' | '/feed' | '/$username/$postId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/feed'
-  id: '__root__' | '/' | '/_auth' | '/login' | '/register' | '/_auth/feed'
+  to: '/' | '/login' | '/register' | '/feed' | '/$username/$postId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/login'
+    | '/register'
+    | '/_auth/feed'
+    | '/_auth/$username/$postId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -112,15 +128,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthFeedRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_auth/$username/$postId': {
+      id: '/_auth/$username/$postId'
+      path: '/$username/$postId'
+      fullPath: '/$username/$postId'
+      preLoaderRoute: typeof AuthUsernamePostIdRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
   }
 }
 
 interface AuthRouteRouteChildren {
   AuthFeedRoute: typeof AuthFeedRoute
+  AuthUsernamePostIdRoute: typeof AuthUsernamePostIdRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthFeedRoute: AuthFeedRoute,
+  AuthUsernamePostIdRoute: AuthUsernamePostIdRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
