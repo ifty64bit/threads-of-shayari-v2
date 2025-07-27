@@ -9,28 +9,14 @@ import { REACTION_TYPES } from "../../../api/src/db/schemas";
 import { useReactToPost } from "@/api/post.api";
 import type api from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { getEmojiForReaction } from "shared";
+import { useAtom } from "jotai/react";
+import { authAtom } from "@/lib/store";
 
 const reacts = REACTION_TYPES.map(type => ({
     label: type,
     emoji: getEmojiForReaction(type),
 }));
-
-function getEmojiForReaction(type: string) {
-    switch (type) {
-        case "dhon":
-            return "🍆";
-        case "horny":
-            return "🥵";
-        case "wet":
-            return "💦";
-        case "pussy":
-            return "🐱";
-        case "cum":
-            return "🌊";
-        default:
-            return "❓";
-    }
-}
 
 type ReactionType = InferResponseType<
     typeof api.posts.$get
@@ -46,7 +32,15 @@ type ReactBtnProps = {
 
 function ReactBtn({ post, className }: ReactBtnProps) {
     const reactToPost = useReactToPost();
+    const [auth] = useAtom(authAtom);
 
+    function hasReacted(reactionType: string) {
+        return post.reactions.some(
+            reaction =>
+                reaction.userId === auth?.user.id &&
+                reaction.type === reactionType
+        );
+    }
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -62,7 +56,12 @@ function ReactBtn({ post, className }: ReactBtnProps) {
                     <Button
                         key={react.label}
                         variant="ghost"
-                        className="flex flex-col items-center justify-center rounded-full border bg-transparent p-2 text-xl backdrop-blur hover:-translate-y-1 hover:shadow-md"
+                        className={cn(
+                            "flex flex-col items-center justify-center rounded-full border bg-transparent p-2 text-xl backdrop-blur hover:-translate-y-1 hover:shadow-md",
+                            hasReacted(react.label)
+                                ? "bg-gray-200"
+                                : "bg-transparent"
+                        )}
                         title={react.label}
                         onClick={() => {
                             reactToPost.mutate({
@@ -70,6 +69,7 @@ function ReactBtn({ post, className }: ReactBtnProps) {
                                 reaction: react.label,
                             });
                         }}
+                        disabled={hasReacted(react.label)}
                     >
                         {
                             post.reactions.filter(

@@ -12,6 +12,8 @@ import type { InferResponseType } from "hono/client";
 import api from "@/lib/api";
 import { format } from "date-fns";
 import ReactBtn from "@/components/ReactBtn";
+import { getEmojiForReaction } from "shared";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 type Post = InferResponseType<typeof api.posts.$get>["data"][number];
 
@@ -20,8 +22,27 @@ type PostCardProps = {
 };
 
 function PostCard({ post }: PostCardProps) {
+    const groupedReactions = Object.values(
+        post.reactions.reduce(
+            (acc, reaction) => {
+                if (!acc[reaction.type]) {
+                    acc[reaction.type] = {
+                        type: reaction.type,
+                        reactions: [],
+                    };
+                }
+                acc[reaction.type].reactions.push(reaction);
+                return acc;
+            },
+            {} as Record<
+                string,
+                { type: string; reactions: typeof post.reactions }
+            >
+        )
+    );
+
     return (
-        <Card>
+        <Card className="gap-4">
             <CardHeader className="flex items-center gap-4 border-b shadow-lg">
                 <Avatar>
                     <AvatarImage src={post.author?.avatar as string} />
@@ -40,6 +61,26 @@ function PostCard({ post }: PostCardProps) {
             </CardHeader>
             <CardContent className="whitespace-pre-wrap">
                 {post.content}
+                <div className="mt-2">
+                    {groupedReactions.map(reaction => (
+                        <span
+                            key={reaction.type}
+                            className="mr-2 rounded-full border p-1"
+                        >
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    {reaction.reactions.length}{" "}
+                                    {getEmojiForReaction(reaction.type)}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {reaction.reactions
+                                        .map(r => r.user.username)
+                                        .join(", ")}
+                                </TooltipContent>
+                            </Tooltip>
+                        </span>
+                    ))}
+                </div>
             </CardContent>
             <CardFooter className="flex justify-between gap-4 border-t">
                 <ReactBtn post={post} />

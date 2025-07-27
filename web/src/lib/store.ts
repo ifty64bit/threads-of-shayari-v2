@@ -3,7 +3,7 @@ import { atomWithStorage } from "jotai/utils";
 type AuthType = {
     token: string;
     user: {
-        id: string;
+        id: number;
         username: string;
         email: string;
     };

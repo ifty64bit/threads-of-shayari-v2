@@ -65,7 +65,7 @@ export function useLogin() {
       setAuth({
         token: token,
         user: {
-          id: user.id.toString(),
+          id: user.id,
           username: user.username,
           email: user.email,
         },
