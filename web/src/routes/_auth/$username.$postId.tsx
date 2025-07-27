@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 
@@ -98,7 +99,9 @@ function RouteComponent() {
                         </form>
                     </Form>
 
-                    <Comments />
+                    <Suspense fallback={<Comments.Loader />}>
+                        <Comments />
+                    </Suspense>
                 </div>
             </Card>
         </div>

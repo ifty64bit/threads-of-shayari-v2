@@ -2,6 +2,7 @@ import { getCommentsByPostId } from "@/api/post.api";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { UserRound } from "lucide-react";
+import { Skeleton } from "./ui/skeleton";
 
 function Comments() {
     const { postId } = useParams({
@@ -50,5 +51,26 @@ function Comments() {
         </ul>
     );
 }
+
+Comments.Loader = function () {
+    return (
+        <ul>
+            {Array.from({ length: 3 }).map((_, index) => (
+                <li
+                    key={index}
+                    className="flex items-center gap-4 border-b py-2"
+                >
+                    <span className="mt-1 self-start">
+                        <Skeleton className="h-6 w-6 rounded-full border" />
+                    </span>
+                    <span>
+                        <Skeleton className="mb-2 h-4 w-24 rounded-full" />
+                        <Skeleton className="h-4 w-32" />
+                    </span>
+                </li>
+            ))}
+        </ul>
+    );
+};
 
 export default Comments;
