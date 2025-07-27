@@ -3,7 +3,6 @@ import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard/PostCard";
 import PostCardLoader from "@/components/PostCard/PostCardLoader";
 import {
-    useInfiniteQuery,
     useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
