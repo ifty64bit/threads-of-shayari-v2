@@ -3,6 +3,7 @@ import authRoute from "./routes/auth.route";
 
 import postRoute from "./routes/post.route";
 import getDB from "./db";
+import userRoute from "./routes/user.route";
 
 export type Bindings = {
     NEON_DATABASE_URL: string;
@@ -23,7 +24,8 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
         return c.json({ status: "ok" });
     })
     .route("/", authRoute)
-    .route("/posts", postRoute);
+    .route("/posts", postRoute)
+    .route("/users", userRoute);
 
 export default app;
 export type APIType = typeof app;

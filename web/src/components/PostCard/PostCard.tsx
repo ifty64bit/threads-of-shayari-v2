@@ -52,7 +52,15 @@ function PostCard({ post }: PostCardProps) {
                 </Avatar>
                 <CardTitle>
                     {/* <h3>{post.author_name}</h3> */}
-                    <h5>@{post.author?.username}</h5>
+                    <Link
+                        to="/$username"
+                        params={{
+                            username: post.author?.username as string,
+                        }}
+                        className="hover:underline"
+                    >
+                        <h5>@{post.author?.username}</h5>
+                    </Link>
                     <p className="text-muted-foreground text-xs">
                         Posted on{" "}
                         {format(new Date(post.createdAt), "dd MMM yyyy HH:mm")}

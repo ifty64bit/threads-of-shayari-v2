@@ -13,7 +13,7 @@ function PostCardLoader() {
             <CardHeader className="flex items-center gap-4 border-b shadow-lg">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <CardTitle>
-                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="mb-2 h-6 w-24" />
                     <Skeleton className="h-4 w-32" />
                 </CardTitle>
             </CardHeader>
