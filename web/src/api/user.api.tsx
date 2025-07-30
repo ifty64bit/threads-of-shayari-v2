@@ -16,5 +16,6 @@ export function getUserByUsername(username: string) {
             const user = await response.json();
             return user;
         },
+        select: data => data.data,
     });
 }

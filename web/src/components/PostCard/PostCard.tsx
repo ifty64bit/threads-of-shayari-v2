@@ -14,14 +14,16 @@ import { format } from "date-fns";
 import ReactBtn from "@/components/ReactBtn";
 import { getEmojiForReaction } from "shared";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { cn } from "@/lib/utils";
 
 type Post = InferResponseType<typeof api.posts.$get>["data"][number];
 
 type PostCardProps = {
     post: Post;
+    className?: string;
 };
 
-function PostCard({ post }: PostCardProps) {
+function PostCard({ post, className }: PostCardProps) {
     const groupedReactions = Object.values(
         post.reactions.reduce(
             (acc, reaction) => {
@@ -42,7 +44,7 @@ function PostCard({ post }: PostCardProps) {
     );
 
     return (
-        <Card className="gap-4">
+        <Card className={cn("gap-4", className)}>
             <CardHeader className="flex items-center gap-4 border-b shadow-lg">
                 <Avatar>
                     <AvatarImage src={post.author?.avatar as string} />

@@ -1,46 +1,87 @@
 {
     "$schema": "https://turbo.build/schema.json",
-    "ui": "tui",
+    "globalDependencies": [
+        "**/.env",
+        "**/.env.*",
+        "**/.env.local",
+        "**/.env.*.local",
+        ".gitignore",
+        "turbo.json",
+        "package.json",
+        "bun.lock",
+        "tsconfig.json"
+    ],
+    "globalEnv": [
+        "NODE_ENV",
+        "CI",
+        "TURBO_TOKEN",
+        "TURBO_TEAM",
+        "TURBO_REMOTE_ONLY"
+    ],
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
-            "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
-            "env": ["NODE_ENV"]
-        },
-        "api#build": {
-            "dependsOn": ["shared#build"],
-            "outputs": [],
-            "env": ["NODE_ENV", "DATABASE_URL", "JWT_SECRET"]
-        },
-        "web#build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**"],
-            "env": ["NODE_ENV", "VITE_API_URL"]
-        },
-        "shared#build": {
-            "outputs": ["dist/**"],
-            "env": ["NODE_ENV"]
+            "env": ["NODE_ENV", "VITE_*"],
+            "inputs": [
+                "src/**/*.ts",
+                "src/**/*.tsx",
+                "src/**/*.js",
+                "src/**/*.jsx",
+                "src/**/*.json",
+                "tsconfig.json",
+                "tsconfig.*.json",
+                "vite.config.ts",
+                "package.json",
+                "bun.lock",
+                "eslint.config.js",
+                "index.html"
+            ],
+            "outputs": ["dist/**", "build/**", ".turbo/**"]
         },
         "dev": {
             "cache": false,
-            "persistent": true,
-            "dependsOn": ["^build"]
+            "env": ["NODE_ENV", "PORT", "VITE_*"],
+            "inputs": [
+                "src/**/*.ts",
+                "src/**/*.tsx",
+                "src/**/*.js",
+                "src/**/*.jsx",
+                "tsconfig.json",
+                "tsconfig.*.json",
+                "vite.config.ts",
+                "package.json"
+            ],
+            "persistent": true
         },
         "lint": {
             "dependsOn": ["^build"],
-            "outputs": []
-        },
-        "test": {
-            "dependsOn": ["^build"],
-            "outputs": []
+            "env": ["NODE_ENV"],
+            "inputs": [
+                "src/**/*.ts",
+                "src/**/*.tsx",
+                "src/**/*.js",
+                "src/**/*.jsx",
+                "eslint.config.js",
+                ".eslintrc*",
+                "package.json",
+                "tsconfig.json",
+                "tsconfig.*.json"
+            ],
+            "outputs": [".eslintcache"]
         },
         "type-check": {
             "dependsOn": ["^build"],
-            "outputs": []
-        },
-        "clean": {
-            "cache": false,
-            "outputs": []
+            "env": ["NODE_ENV"],
+            "inputs": [
+                "src/**/*.ts",
+                "src/**/*.tsx",
+                "src/**/*.d.ts",
+                "tsconfig.json",
+                "tsconfig.*.json",
+                "package.json"
+            ],
+            "outputs": ["dist/**/*.d.ts", ".tsbuildinfo"]
         }
-    }
+    },
+    "ui": "tui"
 }

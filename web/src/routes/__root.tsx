@@ -21,6 +21,9 @@ const queryClient = new QueryClient({
 
 export const Route = createRootRoute({
     component: RootLayout,
+    context: () => ({
+        queryClient,
+    }),
 });
 
 function RootLayout() {

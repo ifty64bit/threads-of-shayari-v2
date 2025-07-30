@@ -13,35 +13,32 @@ const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .post("/login", zValidator("json", loginSchema), async c => {
         const { email, password } = c.req.valid("json");
 
-        const user = await c.var.db
+        const [user] = await c.var.db
             .select()
             .from(usersTable)
             .where(eq(usersTable.email, email))
             .limit(1);
 
-        if (user.length === 0) {
+        if (!user) {
             return c.json({ message: "Invalid email or password" }, 401);
         }
 
-        const isValidPassword = await bcrypt.compare(
-            password,
-            user[0].password
-        );
+        const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
             return c.json({ message: "Invalid email or password" }, 401);
         }
 
         const token = jwt.sign(
-            { email, id: user[0].id },
+            { email, id: user.id },
             process.env.JWT_SECRET || c.env.JWT_SECRET!
         );
         return c.json({
             message: "Login successful",
             data: {
                 user: {
-                    id: user[0].id,
-                    username: user[0].username,
-                    email: user[0].email,
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
                 },
                 token,
             },

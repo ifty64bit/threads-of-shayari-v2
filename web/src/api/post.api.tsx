@@ -188,3 +188,34 @@ export function useCreateComment() {
         },
     });
 }
+
+export function getPostsByUsername(
+    username: string,
+    { limit = 10, offset = 0 }
+) {
+    return infiniteQueryOptions({
+        queryKey: ["posts", "user", username, { limit, offset }],
+        queryFn: async () => {
+            const res = await api.users[":username"].posts.$get({
+                param: { username },
+                query: {
+                    limit: String(limit),
+                    offset: String(offset),
+                },
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(
+                    `Failed to fetch posts for user ${username}: ${err.message}`
+                );
+            }
+            const posts = await res.json();
+            return posts;
+        },
+        getNextPageParam: lastPage => {
+            const nextOffset = lastPage.data.length;
+            return nextOffset < 100 ? undefined : nextOffset;
+        },
+        initialPageParam: 1,
+    });
+}

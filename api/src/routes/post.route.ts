@@ -5,14 +5,14 @@ import {
     reactionTable,
     usersTable,
 } from "../db/schemas";
-import authMiddleware from "../middlewares/auth";
-import dbMiddleware from "../middlewares/db";
+import authMiddleware from "@/middlewares/auth";
+import dbMiddleware from "@/middlewares/db";
 import { type Variables, type Bindings } from "..";
 import { zValidator } from "@hono/zod-validator";
-import { desc, eq, sql, inArray } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
-import { createPostSchema } from "@shared";
+import { createPostSchema } from "shared";
 import { alias } from "drizzle-orm/pg-core";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -310,5 +310,4 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             return c.json({ message: "Comment added", data: comment[0] }, 201);
         }
     );
-
 export default postRoute;

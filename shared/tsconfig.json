@@ -1,36 +1,23 @@
 {
+    "extends": "../tsconfig.json",
     "compilerOptions": {
-        // Environment setup & latest features
+        // Environment setup
         "lib": ["ESNext"],
         "target": "ESNext",
         "module": "ESNext",
-        "moduleDetection": "force",
-        "allowJs": true,
 
         // Output configuration
-        "outDir": "./dist",
-        "rootDir": "./src",
         "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "composite": true,
-
-        // Bundler mode
-        "moduleResolution": "bundler",
-        "verbatimModuleSyntax": false,
+        "outDir": "./dist",
         "noEmit": false,
 
-        // Best practices
+        // Type checking
         "strict": true,
         "skipLibCheck": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUncheckedIndexedAccess": true,
-        "noImplicitOverride": true,
 
-        // Some stricter flags (disabled by default)
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "noPropertyAccessFromIndexSignature": false
+        // Additional checks
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true
     },
     "include": ["src/**/*"],
     "exclude": [
