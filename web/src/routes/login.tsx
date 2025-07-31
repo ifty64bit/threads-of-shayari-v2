@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/api/auth.api";
+import { Loader } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
     component: LoginPage,
@@ -80,7 +81,16 @@ function LoginPage() {
                         )}
                     />
 
-                    <Button type="submit">Login</Button>
+                    <Button type="submit" disabled={login.isPending}>
+                        {login.isPending ? (
+                            <>
+                                <Loader className="animate-spin" /> Logging
+                                in...
+                            </>
+                        ) : (
+                            "Login"
+                        )}
+                    </Button>
                 </form>
             </Form>
         </div>

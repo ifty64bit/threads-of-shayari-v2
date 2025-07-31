@@ -5,6 +5,7 @@ import { Form, FormField, FormItem } from "./ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useCreatePost } from "@/api/post.api";
+import { Loader } from "lucide-react";
 
 function CreatePost() {
     const form = useForm<CreatePostSchemaType>({
@@ -42,8 +43,18 @@ function CreatePost() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="ml-auto">
-                    Post
+                <Button
+                    type="submit"
+                    className="ml-auto"
+                    disabled={createPost.isPending}
+                >
+                    {createPost.isPending ? (
+                        <>
+                            <Loader className="animate-spin" /> Posting...
+                        </>
+                    ) : (
+                        "Post"
+                    )}
                 </Button>
             </form>
         </Form>
