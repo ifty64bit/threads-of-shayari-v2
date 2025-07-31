@@ -9,11 +9,10 @@ import authMiddleware from "@/middlewares/auth";
 import dbMiddleware from "@/middlewares/db";
 import { type Variables, type Bindings } from "..";
 import { zValidator } from "@hono/zod-validator";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql, and } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
 import { createPostSchema } from "shared";
-import { alias } from "drizzle-orm/pg-core";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
@@ -43,14 +42,13 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const { offset, limit } = c.req.valid("query");
             const { db } = c.var;
 
-            const reactionUsers = alias(usersTable, "reactionUsers");
             const posts = await db
                 .select({
                     id: postTable.id,
                     content: postTable.content,
-                    authorId: postTable.authorId,
-                    createdAt: postTable.createdAt,
-                    updatedAt: postTable.updatedAt,
+                    author_id: postTable.authorId,
+                    created_at: postTable.createdAt,
+                    updated_at: postTable.updatedAt,
                     author: {
                         id: usersTable.id,
                         username: usersTable.username,
@@ -71,39 +69,35 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                         }[]
                     >`
                         COALESCE(
-                            array_agg(
-                                CASE 
-                                    WHEN ${reactionTable.id} IS NOT NULL 
-                                    THEN json_build_object(
-                                        'id', ${reactionTable.id},
-                                        'userId', ${reactionTable.userId},
-                                        'type', ${reactionTable.type},
-                                        'createdAt', ${reactionTable.createdAt},
+                            (
+                                SELECT array_agg(
+                                    json_build_object(
+                                        'id', r.id,
+                                        'userId', r.user_id,
+                                        'type', r.type,
+                                        'createdAt', r.created_at,
                                         'user', json_build_object(
-                                            'id', ${reactionUsers.id},
-                                            'username', ${reactionUsers.username},
-                                            'avatar', ${reactionUsers.profilePicture}
+                                            'id', ru.id,
+                                            'username', ru.username,
+                                            'avatar', ru.profile_picture
                                         )
-                                    )
-                                    ELSE NULL
-                                END
-                                ORDER BY ${reactionTable.createdAt} DESC
-                            ) FILTER (WHERE ${reactionTable.id} IS NOT NULL),
+                                    ) ORDER BY r.created_at DESC
+                                )
+                                FROM reactions r
+                                JOIN users ru ON r.user_id = ru.id
+                                WHERE r.post_id = ${postTable.id}
+                            ),
                             ARRAY[]::json[]
                         )
                     `.as("reactions"),
+                    comment_count: sql<number>`
+                        COUNT(DISTINCT ${commentTable.id})
+                    `.as("comment_count"),
                 })
                 .from(postTable)
                 .innerJoin(usersTable, eq(postTable.authorId, usersTable.id))
-                .innerJoin(
-                    reactionTable,
-                    eq(postTable.id, reactionTable.postId)
-                )
-                .innerJoin(
-                    reactionUsers,
-                    eq(reactionTable.userId, reactionUsers.id)
-                )
-                .groupBy(postTable.id, reactionUsers.id, usersTable.id)
+                .leftJoin(commentTable, eq(postTable.id, commentTable.postId))
+                .groupBy(postTable.id, usersTable.id)
                 .orderBy(desc(postTable.createdAt))
                 .offset(offset)
                 .limit(limit);
@@ -130,7 +124,19 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                         avatar: usersTable.profilePicture,
                         email: usersTable.email,
                     },
-                    reactions: sql`
+                    reactions: sql<
+                        {
+                            id: number;
+                            userId: number;
+                            type: (typeof REACTION_TYPES)[number];
+                            createdAt: Date;
+                            user: {
+                                id: number;
+                                username: string;
+                                avatar: string | null;
+                            };
+                        }[]
+                    >`
                         COALESCE(
                             ARRAY_AGG(
                                 CASE 
@@ -149,40 +155,19 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                                     ELSE NULL
                                 END
                                 ORDER BY ${reactionTable.createdAt} DESC
-                                    ) FILTER (WHERE ${reactionTable.id} IS NOT NULL),
+                            ) FILTER (WHERE ${reactionTable.id} IS NOT NULL),
                             ARRAY[]::json[]
-                            )
+                        )
                     `.as("reactions"),
-                    // comments: sql`
-                    //     COALESCE(
-                    //         ARRAY_AGG(
-                    //             JSON_BUILD_OBJECT(
-                    //                 'id', ${commentTable.id},
-                    //                 'content', ${commentTable.content},
-                    //                 'createdAt', ${commentTable.createdAt},
-                    //                 'updatedAt', ${commentTable.updatedAt},
-                    //                 'author', JSON_BUILD_OBJECT(
-                    //                     'id', ${usersTable.id},
-                    //                     'username', ${usersTable.username},
-                    //                     'avatar', ${usersTable.profilePicture}
-                    //                 )
-                    //             )
-                    //         ) FILTER (WHERE ${commentTable.id} IS NOT NULL),
-                    //         ARRAY[]::json[]
-                    //     )`,
-                    createdAt: postTable.createdAt,
-                    updatedAt: postTable.updatedAt,
+                    created_at: postTable.createdAt,
+                    updated_at: postTable.updatedAt,
                 })
                 .from(postTable)
                 .innerJoin(usersTable, eq(postTable.authorId, usersTable.id))
-                .innerJoin(
-                    reactionTable,
-                    eq(postTable.id, reactionTable.postId)
-                )
-                // .leftJoin(commentTable, eq(postTable.id, commentTable.postId))
-                .limit(1)
-                .where(eq(postTable.id, id))
-                .groupBy(postTable.id, usersTable.id);
+                .leftJoin(reactionTable, eq(postTable.id, reactionTable.postId))
+                .groupBy(postTable.id, usersTable.id)
+                .where(eq(postTable.id, id));
+
             return c.json({
                 message: `Post details for id: ${id}`,
                 data: post[0] || null,
@@ -239,15 +224,71 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const id = c.req.valid("param").id;
             const { reaction } = c.req.valid("json");
             const { db } = c.var;
-            const post = await db
-                .insert(reactionTable)
-                .values({
-                    postId: id,
-                    userId: c.get("user").id,
-                    type: reaction,
-                })
-                .returning();
-            return c.json({ message: "Reaction added", data: post[0] }, 201);
+            const userId = c.get("user").id;
+
+            try {
+                const result = await db.transaction(async tx => {
+                    const existingReactions = await tx
+                        .select()
+                        .from(reactionTable)
+                        .where(
+                            and(
+                                eq(reactionTable.postId, id),
+                                eq(reactionTable.userId, userId)
+                            )
+                        )
+                        .limit(1);
+
+                    const existingReaction = existingReactions[0];
+
+                    if (existingReaction) {
+                        if (existingReaction.type === reaction) {
+                            // User is removing their reaction
+                            await tx
+                                .delete(reactionTable)
+                                .where(
+                                    eq(reactionTable.id, existingReaction.id)
+                                );
+                            return {
+                                rowsAffected: existingReactions.length,
+                            };
+                        } else {
+                            // User is changing their reaction
+                            const [updatedReaction] = await tx
+                                .update(reactionTable)
+                                .set({ type: reaction })
+                                .where(
+                                    eq(reactionTable.id, existingReaction.id)
+                                )
+                                .returning();
+                            return {
+                                status: 200,
+                                body: {
+                                    message: "Reaction updated",
+                                    data: updatedReaction,
+                                },
+                            };
+                        }
+                    } else {
+                        // User is adding a new reaction
+                        const [newReaction] = await tx
+                            .insert(reactionTable)
+                            .values({
+                                postId: id,
+                                userId: userId,
+                                type: reaction,
+                            })
+                            .returning();
+
+                        return newReaction;
+                    }
+                });
+                return c.json(result, 201);
+            } catch (error) {
+                // Handle potential transaction errors
+                console.error("Transaction failed:", error);
+                return c.json({ message: "An error occurred" }, 500);
+            }
         }
     )
     .get(

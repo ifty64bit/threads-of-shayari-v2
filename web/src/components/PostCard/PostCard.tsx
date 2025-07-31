@@ -16,7 +16,9 @@ import { getEmojiForReaction } from "shared";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
 
-type Post = InferResponseType<typeof api.posts.$get>["data"][number];
+type Post = InferResponseType<typeof api.posts.$get>["data"][number] & {
+    comment_count?: number;
+};
 
 type PostCardProps = {
     post: Post;
@@ -65,7 +67,7 @@ function PostCard({ post, className }: PostCardProps) {
                     </Link>
                     <p className="text-muted-foreground text-xs">
                         Posted on{" "}
-                        {format(new Date(post.createdAt), "dd MMM yyyy HH:mm")}
+                        {format(new Date(post.created_at), "dd MMM yyyy HH:mm")}
                     </p>
                 </CardTitle>
             </CardHeader>
@@ -102,7 +104,9 @@ function PostCard({ post, className }: PostCardProps) {
                     }}
                     className="flex-1"
                 >
-                    <Button className="w-full">Comment</Button>
+                    <Button className="w-full">
+                        {post.comment_count} Comments
+                    </Button>
                 </Link>
             </CardFooter>
         </Card>

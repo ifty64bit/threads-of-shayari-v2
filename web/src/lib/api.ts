@@ -1,27 +1,26 @@
 import type { APIType } from "api";
 import { hc } from "hono/client";
+import { getDefaultStore } from "jotai/vanilla";
+import { authAtom } from "./store";
+
+const store = getDefaultStore();
 
 const api = hc<APIType>("/", {
     headers: () => {
-        const storedAuth = localStorage.getItem("auth");
-        let token: string | undefined;
-
-        try {
-            if (storedAuth) {
-                const authData = JSON.parse(storedAuth);
-                token = authData?.token;
-            }
-        } catch (error) {
-            console.warn("Failed to parse auth from localStorage:", error);
-        }
-
+        const auth = store.get(authAtom);
         const headers: Record<string, string> = {};
-        if (token) {
-            headers.Authorization = `Bearer ${token}`;
-        } else {
-            console.log("No token found for Authorization header");
+        if (auth?.token) {
+            headers.Authorization = `Bearer ${auth.token}`;
         }
         return headers;
+    },
+    async fetch(input, requestInit, _Env, _executionCtx) {
+        const res = await fetch(input, requestInit);
+        if (res.status === 401) {
+            console.log("Unauthorized request, clearing auth atom", res.status);
+            store.set(authAtom, null);
+        }
+        return res;
     },
 });
 

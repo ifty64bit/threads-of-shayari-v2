@@ -100,24 +100,28 @@ const userRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                         }[]
                     >`COALESCE(
                         array_agg(
-                            CASE 
-                                WHEN ${reactionTable.id} IS NOT NULL 
-                                THEN json_build_object(
+                            CASE
+                                WHEN ${reactionTable.id} IS NOT NULL THEN json_build_object(
                                     'id', ${reactionTable.id},
                                     'userId', ${reactionTable.userId},
                                     'type', ${reactionTable.type},
                                     'createdAt', ${reactionTable.createdAt},
                                     'user', json_build_object(
-                                    'id', ${reactionUsers.id},
-                                    'username', ${reactionUsers.username},
-                                    'avatar', ${reactionUsers.profilePicture})
+                                        'id', ${reactionUsers.id},
+                                        'username', ${reactionUsers.username},
+                                        'avatar', ${reactionUsers.profilePicture}
                                     )
+                                )
                                 ELSE NULL
-                                    END
-                                ORDER BY ${reactionTable.createdAt} DESC
-                                ) FILTER (WHERE ${reactionTable.id} IS NOT NULL),
-                                ARRAY[]::json[]
-                                )`.as("reactions"),
+                            END
+                            ORDER BY
+                                ${reactionTable.createdAt} DESC
+                        ) FILTER (
+                            WHERE
+                                ${reactionTable.id} IS NOT NULL
+                        ),
+                        ARRAY[]::json[]
+                    )`.as("reactions"),
                 })
                 .from(postTable)
                 .where(eq(postTable.authorId, user.id))

@@ -69,7 +69,7 @@ function ReactBtn({ post, className }: ReactBtnProps) {
                                 reaction: react.label,
                             });
                         }}
-                        disabled={hasReacted(react.label)}
+                        // disabled={hasReacted(react.label)}
                     >
                         {
                             post.reactions.filter(

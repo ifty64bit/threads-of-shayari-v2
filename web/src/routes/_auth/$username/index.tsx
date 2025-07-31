@@ -19,9 +19,7 @@ export const Route = createFileRoute("/_auth/$username/")({
 function UserProfilePage() {
     const { username } = Route.useParams();
 
-    const { data: user, isLoading: isUserLoading } = useQuery(
-        getUserByUsername(username)
-    );
+    const { data: user } = useQuery(getUserByUsername(username));
 
     return (
         <div className="space-y-4">
@@ -106,7 +104,10 @@ function PostsSection({ username }: PostsSectionProps) {
                         id: user.id,
                         email: user.email,
                     },
-                    authorId: user.id,
+                    author_id: user.id,
+                    created_at: post.createdAt,
+                    updated_at: post.updatedAt,
+                    comment_count: 0,
                 }}
             />
         );
