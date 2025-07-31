@@ -1,7 +1,6 @@
 import {
     commentTable,
     postTable,
-    REACTION_TYPES,
     reactionTable,
     usersTable,
 } from "../db/schemas";
@@ -12,7 +11,7 @@ import { zValidator } from "@hono/zod-validator";
 import { desc, eq, sql, and } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
-import { createPostSchema } from "shared";
+import { createPostSchema, REACTION_TYPES } from "shared";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
@@ -206,11 +205,45 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
         async c => {
             const id = c.req.valid("param").id;
             const { db } = c.var;
-            await db.delete(postTable).where(eq(postTable.id, id));
-            return c.json({
-                message: `Post deleted for id: ${id}`,
-                data: null,
+            const userId = c.get("user").id;
+
+            const result = await db.transaction(async tx => {
+                const [user] = await tx
+                    .select({
+                        id: usersTable.id,
+                        username: usersTable.username,
+                    })
+                    .from(usersTable)
+                    .where(eq(usersTable.id, userId))
+                    .limit(1);
+
+                if (user?.id === userId) {
+                    await tx
+                        .delete(reactionTable)
+                        .where(eq(reactionTable.postId, id));
+                    await tx
+                        .delete(commentTable)
+                        .where(eq(commentTable.postId, id));
+                    await tx.delete(postTable).where(eq(postTable.id, id));
+                    return true;
+                } else {
+                    return false;
+                }
             });
+
+            if (!result) {
+                return c.json(
+                    { message: "You are not authorized to delete this post" },
+                    403
+                );
+            }
+            return c.json(
+                {
+                    message: `Post deleted for id: ${id}`,
+                    data: null,
+                },
+                202
+            );
         }
     )
     .post(

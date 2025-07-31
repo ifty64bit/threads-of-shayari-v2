@@ -1,9 +1,4 @@
-import {
-    postTable,
-    REACTION_TYPES,
-    reactionTable,
-    usersTable,
-} from "../db/schemas";
+import { postTable, reactionTable, usersTable } from "../db/schemas";
 import authMiddleware from "@/middlewares/auth";
 import dbMiddleware from "@/middlewares/db";
 import { type Bindings, type Variables } from "..";
@@ -12,6 +7,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
 import { alias } from "drizzle-orm/pg-core";
+import type { REACTION_TYPES } from "shared";
 
 const userRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
@@ -151,6 +147,7 @@ const userRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 200
             );
         }
-    );
+    )
+    .get("/me", async c => {});
 
 export default userRoute;

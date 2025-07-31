@@ -6,7 +6,7 @@ import {
     useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { REACTION_TYPES } from "../../../api/src/db/schemas";
+import type { REACTION_TYPES } from "shared";
 
 export function getPosts() {
     return infiniteQueryOptions({
@@ -183,6 +183,43 @@ export function useCreateComment() {
         },
         onError(error, __, context) {
             toast.error(`Error creating comment: ${error.message}`, {
+                id: context?.toastId,
+            });
+        },
+    });
+}
+
+export function useDeletePost() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationKey: ["deletePost"],
+        mutationFn: async (postId: string) => {
+            const response = await api.posts[":id"].$delete({
+                param: { id: postId },
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(`Failed to delete post: ${err.message}`);
+            }
+
+            return response.json();
+        },
+        onMutate() {
+            const toastId = toast.loading("Deleting post...");
+            return { toastId };
+        },
+        onSuccess(_, postId, context) {
+            toast.success("Post deleted successfully", {
+                id: context.toastId,
+            });
+            // Invalidate queries to refresh the posts list
+            queryClient.invalidateQueries({ queryKey: ["posts"] });
+            // Optionally, you can also invalidate comments for the deleted post
+            queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+        },
+        onError(error, __, context) {
+            toast.error(`Error deleting post: ${error.message}`, {
                 id: context?.toastId,
             });
         },

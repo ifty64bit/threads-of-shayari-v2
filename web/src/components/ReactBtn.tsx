@@ -5,7 +5,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { REACTION_TYPES } from "../../../api/src/db/schemas";
+import { REACTION_TYPES } from "shared";
 import { useReactToPost } from "@/api/post.api";
 import type api from "@/lib/api";
 import { cn } from "@/lib/utils";

@@ -39,6 +39,7 @@ const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                     id: user.id,
                     username: user.username,
                     email: user.email,
+                    profile_picture: user.profilePicture,
                 },
                 token,
             },

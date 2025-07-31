@@ -9,8 +9,7 @@ import {
     unique,
     index,
 } from "drizzle-orm/pg-core";
-
-export const REACTION_TYPES = ["dhon", "horny", "wet", "pussy", "cum"] as const;
+import { REACTION_TYPES } from "shared";
 
 // Create PostgreSQL enum for reaction types
 export const reactionTypeEnum = pgEnum("reaction_type", REACTION_TYPES);

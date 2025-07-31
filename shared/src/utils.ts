@@ -14,3 +14,5 @@ export function getEmojiForReaction(type: string) {
             return "❓";
     }
 }
+
+export const REACTION_TYPES = ["dhon", "horny", "wet", "pussy", "cum"] as const;

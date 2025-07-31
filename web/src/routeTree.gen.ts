@@ -13,6 +13,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
 import { Route as AuthFeedRouteImport } from './routes/_auth/feed'
 import { Route as AuthUsernameIndexRouteImport } from './routes/_auth/$username/index'
 import { Route as AuthUsernamePostIdRouteImport } from './routes/_auth/$username/$postId'
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthProfileRoute = AuthProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AuthFeedRoute = AuthFeedRouteImport.update({
   id: '/feed',
   path: '/feed',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/feed': typeof AuthFeedRoute
+  '/profile': typeof AuthProfileRoute
   '/$username/$postId': typeof AuthUsernamePostIdRoute
   '/$username': typeof AuthUsernameIndexRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/feed': typeof AuthFeedRoute
+  '/profile': typeof AuthProfileRoute
   '/$username/$postId': typeof AuthUsernamePostIdRoute
   '/$username': typeof AuthUsernameIndexRoute
 }
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_auth/feed': typeof AuthFeedRoute
+  '/_auth/profile': typeof AuthProfileRoute
   '/_auth/$username/$postId': typeof AuthUsernamePostIdRoute
   '/_auth/$username/': typeof AuthUsernameIndexRoute
 }
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/feed'
+    | '/profile'
     | '/$username/$postId'
     | '/$username'
   fileRoutesByTo: FileRoutesByTo
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/feed'
+    | '/profile'
     | '/$username/$postId'
     | '/$username'
   id:
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/_auth/feed'
+    | '/_auth/profile'
     | '/_auth/$username/$postId'
     | '/_auth/$username/'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/profile': {
+      id: '/_auth/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthProfileRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_auth/feed': {
       id: '/_auth/feed'
       path: '/feed'
@@ -169,12 +188,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteRouteChildren {
   AuthFeedRoute: typeof AuthFeedRoute
+  AuthProfileRoute: typeof AuthProfileRoute
   AuthUsernamePostIdRoute: typeof AuthUsernamePostIdRoute
   AuthUsernameIndexRoute: typeof AuthUsernameIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthFeedRoute: AuthFeedRoute,
+  AuthProfileRoute: AuthProfileRoute,
   AuthUsernamePostIdRoute: AuthUsernamePostIdRoute,
   AuthUsernameIndexRoute: AuthUsernameIndexRoute,
 }

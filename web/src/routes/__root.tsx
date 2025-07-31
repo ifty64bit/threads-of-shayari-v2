@@ -9,6 +9,15 @@ import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai/react";
 import { authAtom } from "@/lib/store";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User } from "lucide-react";
+import { getDefaultStore } from "jotai/vanilla";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -21,9 +30,14 @@ const queryClient = new QueryClient({
 
 export const Route = createRootRoute({
     component: RootLayout,
-    context: () => ({
-        queryClient,
-    }),
+    context: () => {
+        const store = getDefaultStore();
+        const auth = store.get(authAtom);
+        return {
+            queryClient,
+            auth,
+        };
+    },
 });
 
 function RootLayout() {
@@ -48,7 +62,29 @@ function RootLayout() {
                     Home
                 </Link>
                 {auth ? (
-                    <nav>
+                    <nav className="flex items-center gap-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="rounded-full border bg-white">
+                                <Avatar>
+                                    <AvatarImage
+                                        src={auth?.user?.profile_picture}
+                                    />
+                                    <AvatarFallback>
+                                        {auth?.user?.username.slice(0, 2)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem>
+                                    <Link
+                                        to={`/profile`}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <User /> Profile
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <Button variant={"destructive"} onClick={handleLogout}>
                             Logout
                         </Button>

@@ -119,7 +119,7 @@
     }
 
     button {
-        @apply cursor-pointer;
+        @apply hover:cursor-pointer disabled:cursor-not-allowed;
     }
 
     h1 {
