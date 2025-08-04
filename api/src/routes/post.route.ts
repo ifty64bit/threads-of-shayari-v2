@@ -12,6 +12,7 @@ import { desc, eq, sql, and } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
 import { createPostSchema, REACTION_TYPES } from "shared";
+import { sendNotification } from "@/services/notification.service";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
@@ -401,15 +402,75 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const { postId } = c.req.valid("param");
             const { content } = c.req.valid("json");
             const { db } = c.var;
-            const comment = await db
-                .insert(commentTable)
-                .values({
-                    content,
-                    postId,
-                    userId: c.get("user").id,
-                })
-                .returning();
-            return c.json({ message: "Comment added", data: comment[0] }, 201);
+            const { PUSHER_INSTANCE_ID, PUSHER_SECRET_KEY } = c.env;
+
+            try {
+                const result = await db.transaction(async tx => {
+                    const [comment] = await db
+                        .insert(commentTable)
+                        .values({
+                            content,
+                            postId,
+                            userId: c.get("user").id,
+                        })
+                        .returning();
+
+                    const [post] = await tx
+                        .select({
+                            id: postTable.id,
+                            content: postTable.content,
+                            author: {
+                                id: usersTable.id,
+                                username: usersTable.username,
+                                avatar: usersTable.profilePicture,
+                            },
+                            createdAt: postTable.createdAt,
+                            updatedAt: postTable.updatedAt,
+                        })
+                        .from(postTable)
+                        .where(eq(postTable.id, postId))
+                        .limit(1);
+
+                    const [commentAuthor] = await tx
+                        .select({
+                            id: usersTable.id,
+                            username: usersTable.username,
+                            avatar: usersTable.profilePicture,
+                        })
+                        .from(usersTable)
+                        .where(eq(usersTable.id, c.get("user").id))
+                        .limit(1);
+
+                    return {
+                        comment: comment,
+                        post: post,
+                        comment_author: commentAuthor,
+                    };
+                });
+
+                if (result.comment_author) {
+                    await sendNotification({
+                        INSTANCE_ID: PUSHER_INSTANCE_ID,
+                        SECRET_KEY: PUSHER_SECRET_KEY,
+                        payload: {
+                            interests: [`post-${postId}`],
+                            web: {
+                                notification: {
+                                    title: `New comment on your post`,
+                                    body: `${result.comment_author.username} commented on your post.`,
+                                },
+                            },
+                        },
+                    });
+                }
+
+                return c.json(
+                    { message: "Comment added", data: result.comment },
+                    201
+                );
+            } catch (error) {
+                return c.json({ message: "Error adding comment" }, 500);
+            }
         }
     );
 export default postRoute;
