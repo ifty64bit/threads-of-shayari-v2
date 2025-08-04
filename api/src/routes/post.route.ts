@@ -320,17 +320,37 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 });
                 const [postAuthor] = await db
                     .select({
-                        id: usersTable.id,
-                        username: usersTable.username,
-                        avatar: usersTable.profilePicture,
+                        post: {
+                            id: postTable.id,
+                            content: postTable.content,
+                        },
+                        author: {
+                            id: usersTable.id,
+                            username: usersTable.username,
+                            avatar: usersTable.profilePicture,
+                        },
                     })
                     .from(postTable)
                     .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
                     .where(eq(postTable.id, id))
                     .limit(1);
 
-                if (!postAuthor) {
+                const [reactorAuthor] = await db
+                    .select({
+                        id: usersTable.id,
+                        username: usersTable.username,
+                        avatar: usersTable.profilePicture,
+                    })
+                    .from(usersTable)
+                    .where(eq(usersTable.id, userId))
+                    .limit(1);
+
+                if (!postAuthor?.author) {
                     return c.json({ message: "Post not found" }, 404);
+                }
+
+                if (!reactorAuthor) {
+                    return c.json({ message: "Reactor not found" }, 404);
                 }
 
                 try {
@@ -338,11 +358,11 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                         INSTANCE_ID: PUSHER_INSTANCE_ID,
                         SECRET_KEY: PUSHER_SECRET_KEY,
                         payload: {
-                            interests: [`user-${postAuthor.id}`],
+                            interests: [`user-${postAuthor.author.id}`],
                             web: {
                                 notification: {
                                     title: "New Reaction",
-                                    body: `User ${postAuthor.username} reacted to your post.`,
+                                    body: `User ${reactorAuthor.username} reacted to your post ${postAuthor.post.content.slice(0, 10)}...`,
                                 },
                             },
                         },
