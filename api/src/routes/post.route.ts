@@ -12,6 +12,7 @@ import { desc, eq, sql, and } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
 import { createPostSchema, REACTION_TYPES } from "shared";
+import { sendNotification } from "@/services/notification.service";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
@@ -257,6 +258,7 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const id = c.req.valid("param").id;
             const { reaction } = c.req.valid("json");
             const { db } = c.var;
+            const { PUSHER_INSTANCE_ID, PUSHER_SECRET_KEY } = c.env;
             const userId = c.get("user").id;
 
             try {
@@ -315,6 +317,34 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
                         return newReaction;
                     }
+                });
+                const [postAuthor] = await db
+                    .select({
+                        id: usersTable.id,
+                        username: usersTable.username,
+                        avatar: usersTable.profilePicture,
+                    })
+                    .from(postTable)
+                    .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
+                    .where(eq(postTable.id, id))
+                    .limit(1);
+
+                if (!postAuthor) {
+                    return c.json({ message: "Post not found" }, 404);
+                }
+
+                sendNotification({
+                    INSTANCE_ID: PUSHER_INSTANCE_ID,
+                    SECRET_KEY: PUSHER_SECRET_KEY,
+                    payload: {
+                        interests: [`user-${postAuthor.id}`],
+                        web: {
+                            notification: {
+                                title: "New Reaction",
+                                body: `User ${postAuthor.username} reacted to your post.`,
+                            },
+                        },
+                    },
                 });
                 return c.json(result, 201);
             } catch (error) {

@@ -8,6 +8,9 @@ import userRoute from "./routes/user.route";
 export type Bindings = {
     NEON_DATABASE_URL: string;
     JWT_SECRET: string;
+    PUSHER_INSTANCE_ID: string;
+    PUSHER_SECRET_KEY: string;
+    PUSHER_PUBLIC_KEY: string;
 };
 
 export type Variables = {

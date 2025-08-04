@@ -102,7 +102,7 @@ function RootLayout() {
             </header>
             <hr />
             <Outlet />
-            <Toaster />
+            <Toaster richColors />
         </QueryClientProvider>
     );
 }
