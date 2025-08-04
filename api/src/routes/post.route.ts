@@ -345,6 +345,23 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                     };
                 });
 
+                if (result.reactor) {
+                    await sendNotification({
+                        INSTANCE_ID: c.env.PUSHER_INSTANCE_ID,
+                        SECRET_KEY: c.env.PUSHER_SECRET_KEY,
+
+                        payload: {
+                            interests: [`user-${id}`],
+                            web: {
+                                notification: {
+                                    title: `New reaction on your post`,
+                                    body: `${result.reactor.username} reacted with ${result.reaction.type} to your post ${result.post?.content.slice(0, 10)}...`,
+                                },
+                            },
+                        },
+                    });
+                }
+
                 return c.json(result, 201);
             } catch (error) {
                 // Handle potential transaction errors
@@ -402,16 +419,19 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const { postId } = c.req.valid("param");
             const { content } = c.req.valid("json");
             const { db } = c.var;
+            const userId = c.get("user").id;
             const { PUSHER_INSTANCE_ID, PUSHER_SECRET_KEY } = c.env;
+
+            console.log("Adding comment to post:", postId, "by user:", userId);
 
             try {
                 const result = await db.transaction(async tx => {
-                    const [comment] = await db
+                    const [comment] = await tx
                         .insert(commentTable)
                         .values({
                             content,
                             postId,
-                            userId: c.get("user").id,
+                            userId,
                         })
                         .returning();
 
@@ -428,6 +448,10 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                             updatedAt: postTable.updatedAt,
                         })
                         .from(postTable)
+                        .leftJoin(
+                            usersTable,
+                            eq(postTable.authorId, usersTable.id)
+                        )
                         .where(eq(postTable.id, postId))
                         .limit(1);
 
@@ -452,6 +476,7 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                     await sendNotification({
                         INSTANCE_ID: PUSHER_INSTANCE_ID,
                         SECRET_KEY: PUSHER_SECRET_KEY,
+
                         payload: {
                             interests: [`post-${postId}`],
                             web: {
@@ -469,7 +494,9 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                     201
                 );
             } catch (error) {
-                return c.json({ message: "Error adding comment" }, 500);
+                console.error("Error adding comment:", error);
+
+                return c.json({ message: "Error adding comment", error }, 500);
             }
         }
     );
