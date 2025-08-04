@@ -21,9 +21,7 @@ export async function sendNotification({
             "Content-Type": "application/json",
             Authorization: `Bearer ${SECRET_KEY}`,
         },
-        body: JSON.stringify({
-            payload,
-        }),
+        body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
