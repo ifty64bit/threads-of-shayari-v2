@@ -1,31 +1,23 @@
-importScripts("https://js.pusher.com/beams/service-worker.js");
-
 PusherPushNotifications.onNotificationReceived = ({ pushEvent, payload, handleNotification }) => {
   const promise = self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
     .then(clients => {
-      const isFocused = clients.some(client => client.focused);
+      const anyClientVisible = clients.some(client => client.visibilityState === "visible");
 
-      if (clients.length > 0) {
-        // Post message to all open tabs
-        clients.forEach(client => {
-          client.postMessage({ type: 'PUSH_NOTIFICATION', payload });
+      // Post message to all open tabs
+      clients.forEach(client => {
+        client.postMessage({ type: 'PUSH_NOTIFICATION', payload });
+      });
+
+      // Only suppress if the app can show it inline (visible and focused)
+      if (!anyClientVisible) {
+        return self.registration.showNotification(payload.notification.title, {
+          body: payload.notification.body,
+          icon: payload.notification.icon,
+          data: payload.data,
         });
-
-        // Show native notification only if not focused (i.e. minimized/in background)
-        if (!isFocused) {
-          return self.registration.showNotification(payload.notification.title, {
-            body: payload.notification.body,
-            icon: payload.notification.icon,
-            data: payload.data,
-          });
-        }
-
-        // Do nothing if focused and visible
-        return;
       }
 
-      // No tabs open at all — show notification
-      return handleNotification(payload);
+      return;
     });
 
   pushEvent.waitUntil(promise);
