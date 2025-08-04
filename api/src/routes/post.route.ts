@@ -264,7 +264,7 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             try {
                 const result = await db.transaction(async tx => {
                     const existingReactions = await tx
-                        .select()
+                        .select({ id: reactionTable.id,type: reactionTable.type })
                         .from(reactionTable)
                         .where(
                             and(
