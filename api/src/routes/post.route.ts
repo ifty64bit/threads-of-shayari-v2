@@ -333,19 +333,23 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                     return c.json({ message: "Post not found" }, 404);
                 }
 
-                sendNotification({
-                    INSTANCE_ID: PUSHER_INSTANCE_ID,
-                    SECRET_KEY: PUSHER_SECRET_KEY,
-                    payload: {
-                        interests: [`user-${postAuthor.id}`],
-                        web: {
-                            notification: {
-                                title: "New Reaction",
-                                body: `User ${postAuthor.username} reacted to your post.`,
+                try {
+                    await sendNotification({
+                        INSTANCE_ID: PUSHER_INSTANCE_ID,
+                        SECRET_KEY: PUSHER_SECRET_KEY,
+                        payload: {
+                            interests: [`user-${postAuthor.id}`],
+                            web: {
+                                notification: {
+                                    title: "New Reaction",
+                                    body: `User ${postAuthor.username} reacted to your post.`,
+                                },
                             },
                         },
-                    },
-                });
+                    });
+                } catch (error) {
+                    console.error("Failed to send notification:", error);
+                }
                 return c.json(result, 201);
             } catch (error) {
                 // Handle potential transaction errors
