@@ -351,7 +351,7 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                         SECRET_KEY: c.env.PUSHER_SECRET_KEY,
 
                         payload: {
-                            interests: [`user-${id}`],
+                            interests: [`user-${result.post?.author?.id}`],
                             web: {
                                 notification: {
                                     title: `New reaction on your post`,
