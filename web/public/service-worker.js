@@ -1,3 +1,5 @@
+importScripts("https://js.pusher.com/beams/service-worker.js");
+
 PusherPushNotifications.onNotificationReceived = ({ pushEvent, payload, handleNotification }) => {
   const promise = self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
     .then(clients => {
