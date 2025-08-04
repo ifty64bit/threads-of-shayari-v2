@@ -1,26 +1,28 @@
 importScripts("https://js.pusher.com/beams/service-worker.js");
 
+self.addEventListener('push', () => {
+  // Beams service worker handles push internally; no need to handle here
+});
+
+// Override default Beams handler
 PusherPushNotifications.onNotificationReceived = ({ pushEvent, payload, handleNotification }) => {
-  const promise = self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
-    .then(clients => {
-      const anyClientVisible = clients.some(client => client.visibilityState === "visible");
+  pushEvent.waitUntil((async () => {
+    // Check all controlled clients (tabs/windows)
+    const allClients = await self.clients.matchAll({ includeUncontrolled: false, type: 'window' });
+    const focused = allClients.some(c => c.visibilityState === 'visible');
 
-      // Post message to all open tabs
-      clients.forEach(client => {
-        client.postMessage({ type: 'PUSH_NOTIFICATION', payload });
-      });
-
-      // Only suppress if the app can show it inline (visible and focused)
-      if (!anyClientVisible) {
-        return self.registration.showNotification(payload.notification.title, {
-          body: payload.notification.body,
-          icon: payload.notification.icon,
-          data: payload.data,
+    if (focused) {
+      // Send message to page(s)
+      allClients.forEach(client => {
+        client.postMessage({
+          type: 'PUSH_NOTIFICATION',
+          payload
         });
-      }
-
-      return;
-    });
-
-  pushEvent.waitUntil(promise);
+      });
+      // Don't call default notification display
+    } else {
+      // Use default Beams notification behavior:
+      return handleNotification(payload);
+    }
+  })());
 };
