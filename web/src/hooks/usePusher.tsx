@@ -2,7 +2,7 @@ import config from "@/lib/config";
 import { authAtom } from "@/lib/store";
 import * as PusherPushNotifications from "@pusher/push-notifications-web";
 import { useAtom } from "jotai/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 function usePusher() {

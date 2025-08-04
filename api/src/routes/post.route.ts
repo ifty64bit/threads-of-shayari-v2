@@ -12,7 +12,6 @@ import { desc, eq, sql, and } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod/v4";
 import { createPostSchema, REACTION_TYPES } from "shared";
-import { sendNotification } from "@/services/notification.service";
 
 const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
@@ -258,13 +257,17 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
             const id = c.req.valid("param").id;
             const { reaction } = c.req.valid("json");
             const { db } = c.var;
-            const { PUSHER_INSTANCE_ID, PUSHER_SECRET_KEY } = c.env;
             const userId = c.get("user").id;
 
             try {
                 const result = await db.transaction(async tx => {
-                    const existingReactions = await tx
-                        .select({ id: reactionTable.id,type: reactionTable.type })
+                    let STATE: "INSERTED" | "UPDATED" = "INSERTED";
+
+                    const [existingReaction] = await tx
+                        .select({
+                            id: reactionTable.id,
+                            type: reactionTable.type,
+                        })
                         .from(reactionTable)
                         .where(
                             and(
@@ -274,8 +277,6 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                         )
                         .limit(1);
 
-                    const existingReaction = existingReactions[0];
-
                     if (existingReaction) {
                         if (existingReaction.type === reaction) {
                             // User is removing their reaction
@@ -284,92 +285,65 @@ const postRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                                 .where(
                                     eq(reactionTable.id, existingReaction.id)
                                 );
-                            return {
-                                rowsAffected: existingReactions.length,
-                            };
                         } else {
                             // User is changing their reaction
-                            const [updatedReaction] = await tx
+                            await tx
                                 .update(reactionTable)
                                 .set({ type: reaction })
                                 .where(
                                     eq(reactionTable.id, existingReaction.id)
-                                )
-                                .returning();
-                            return {
-                                status: 200,
-                                body: {
-                                    message: "Reaction updated",
-                                    data: updatedReaction,
-                                },
-                            };
+                                );
                         }
+                        STATE = "UPDATED";
                     } else {
                         // User is adding a new reaction
-                        const [newReaction] = await tx
-                            .insert(reactionTable)
-                            .values({
-                                postId: id,
-                                userId: userId,
-                                type: reaction,
-                            })
-                            .returning();
+                        await tx.insert(reactionTable).values({
+                            postId: id,
+                            userId: userId,
+                            type: reaction,
+                        });
 
-                        return newReaction;
+                        STATE = "INSERTED";
                     }
-                });
-                const [postAuthor] = await db
-                    .select({
-                        post: {
+
+                    const [post_author] = await tx
+                        .select({
                             id: postTable.id,
                             content: postTable.content,
-                        },
-                        author: {
+                            author: {
+                                id: usersTable.id,
+                                username: usersTable.username,
+                                avatar: usersTable.profilePicture,
+                            },
+                        })
+                        .from(postTable)
+                        .leftJoin(
+                            usersTable,
+                            eq(postTable.authorId, usersTable.id)
+                        )
+                        .where(eq(postTable.id, id))
+                        .limit(1);
+
+                    const [reactor] = await tx
+                        .select({
                             id: usersTable.id,
                             username: usersTable.username,
-                            avatar: usersTable.profilePicture,
+                            profilePicture: usersTable.profilePicture,
+                        })
+                        .from(usersTable)
+                        .where(eq(usersTable.id, userId))
+                        .limit(1);
+
+                    return {
+                        post: post_author,
+                        reactor,
+                        reaction: {
+                            type: reaction,
+                            state: STATE,
                         },
-                    })
-                    .from(postTable)
-                    .leftJoin(usersTable, eq(postTable.authorId, usersTable.id))
-                    .where(eq(postTable.id, id))
-                    .limit(1);
+                    };
+                });
 
-                const [reactorAuthor] = await db
-                    .select({
-                        id: usersTable.id,
-                        username: usersTable.username,
-                        avatar: usersTable.profilePicture,
-                    })
-                    .from(usersTable)
-                    .where(eq(usersTable.id, userId))
-                    .limit(1);
-
-                if (!postAuthor?.author) {
-                    return c.json({ message: "Post not found" }, 404);
-                }
-
-                if (!reactorAuthor) {
-                    return c.json({ message: "Reactor not found" }, 404);
-                }
-
-                try {
-                    await sendNotification({
-                        INSTANCE_ID: PUSHER_INSTANCE_ID,
-                        SECRET_KEY: PUSHER_SECRET_KEY,
-                        payload: {
-                            interests: [`user-${postAuthor.author.id}`],
-                            web: {
-                                notification: {
-                                    title: "New Reaction",
-                                    body: `User ${reactorAuthor.username} reacted to your post ${postAuthor.post.content.slice(0, 10)}...`,
-                                },
-                            },
-                        },
-                    });
-                } catch (error) {
-                    console.error("Failed to send notification:", error);
-                }
                 return c.json(result, 201);
             } catch (error) {
                 // Handle potential transaction errors
