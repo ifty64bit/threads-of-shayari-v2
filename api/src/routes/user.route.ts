@@ -12,8 +12,27 @@ import type { REACTION_TYPES } from "shared";
 const userRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     .use(authMiddleware)
     .use(dbMiddleware)
+    .get("/me", async c => {
+        const { db, user } = c.var;
+        const userId = user.id;
+        const [userData] = await db
+            .select({
+                id: usersTable.id,
+                username: usersTable.username,
+                email: usersTable.email,
+                profilePicture: usersTable.profilePicture,
+                coverPicture: usersTable.coverPicture,
+                createdAt: usersTable.createdAt,
+                updatedAt: usersTable.updatedAt,
+            })
+            .from(usersTable)
+            .where(eq(usersTable.id, userId))
+            .limit(1);
+
+        return c.json({ message: "User found", data: userData }, 200);
+    })
     .get(
-        "/:username",
+        "/u/:username",
         zValidator(
             "param",
             z.object({
@@ -147,7 +166,6 @@ const userRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
                 200
             );
         }
-    )
-    .get("/me", async c => {});
+    );
 
 export default userRoute;

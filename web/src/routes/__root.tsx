@@ -59,7 +59,7 @@ function RootLayout() {
                     to={auth ? "/feed" : "/"}
                     className="[&.active]:font-bold"
                 >
-                    Home
+                    <img src="/logo.png" alt="Logo" className="h-16" />
                 </Link>
                 {auth ? (
                     <nav className="flex items-center gap-2">
