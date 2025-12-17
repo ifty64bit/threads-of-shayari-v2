@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v3";
+import { z } from "zod/v4";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
