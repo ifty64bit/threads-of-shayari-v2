@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod/v4";
+import { CLOUDINARY_CLOUD_NAME } from "./env";
 import { getSignature } from "./server/cloudinary";
 
 export const getCloudinarySignature = createServerFn({ method: "GET" })
@@ -13,5 +14,5 @@ export const getCloudinarySignature = createServerFn({ method: "GET" })
 	});
 
 export const getCloudinaryUrl = (publicId: string) => {
-	return `https://res.cloudinary.com/${process.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
+	return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
 };
