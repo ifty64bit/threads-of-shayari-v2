@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { z } from "zod/v4";
+import { z } from "zod/v3";
 import { db } from "@/db";
 import { postImages, posts } from "@/db/schema";
 import { auth } from "@/lib/auth";

@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod/v3";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/signup")({
 const userSchema = z.object({
 	name: z.string(),
 	username: z.string(),
-	email: z.email(),
+	email: z.string().email(),
 	password: z.string().min(4),
 });
 
