@@ -33,6 +33,7 @@
     "@tanstack/router-plugin": "^1.141.2",
     "better-auth": "^1.4.7",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",

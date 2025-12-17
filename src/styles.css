@@ -163,4 +163,8 @@ code {
     h6{
         @apply text-base font-semibold;
     }
+
+    button{
+        @apply hover:cursor-pointer;
+    }
 }

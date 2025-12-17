@@ -1,9 +1,4 @@
-import { createServerOnlyFn } from "@tanstack/react-start";
+const CLOUDINARY_CLOUD_NAME = process.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_API_KEY = process.env.VITE_CLOUDINARY_API_KEY;
 
-export const DATABASE_URL = createServerOnlyFn(() => {
-	const url = process.env.DATABASE_URL;
-	if (!url) {
-		throw new Error("DATABASE_URL is not defined");
-	}
-	return url;
-})();
+export { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY };

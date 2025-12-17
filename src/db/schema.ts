@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
 	boolean,
 	integer,
@@ -15,8 +16,13 @@ export const users = pgTable("users", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("email_verified").notNull(),
 	image: text("image"),
+	coverImage: text("cover_image"),
 	...timestamps,
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+	posts: many(posts),
+}));
 
 export const sessions = pgTable("sessions", {
 	id: serial("id").primaryKey(),
@@ -54,3 +60,39 @@ export const verifications = pgTable("verifications", {
 	expiresAt: timestamp("expires_at").notNull(),
 	...timestamps,
 });
+
+export const posts = pgTable("posts", (t) => ({
+	id: t.serial("id").primaryKey(),
+	content: t.text("content").notNull(),
+	authorId: t
+		.integer("author_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	...timestamps,
+}));
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+	author: one(users, {
+		fields: [posts.authorId],
+		references: [users.id],
+	}),
+	images: many(postImages),
+}));
+
+export const postImages = pgTable("post_images", (t) => ({
+	id: t.serial("id").primaryKey(),
+	url: t.text("url").notNull(),
+	altText: t.text("alt_text"),
+	postId: t
+		.integer("post_id")
+		.notNull()
+		.references(() => posts.id, { onDelete: "cascade" }),
+	...timestamps,
+}));
+
+export const postImagesRelations = relations(postImages, ({ one }) => ({
+	post: one(posts, {
+		fields: [postImages.postId],
+		references: [posts.id],
+	}),
+}));
