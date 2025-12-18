@@ -28,7 +28,7 @@ function RouteComponent() {
 	return (
 		<main className="max-w-md mx-auto h-dvh pt-2">
 			<section className="flex justify-between items-center border-b pb-2 px-4">
-				<h4>Feed</h4>
+				<h4>NostaGram</h4>
 				<div>
 					<DropdownMenu>
 						<DropdownMenuTrigger>
