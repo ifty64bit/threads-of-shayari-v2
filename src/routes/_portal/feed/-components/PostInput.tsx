@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { ImageUp, SendHorizontal } from "lucide-react";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -14,7 +13,8 @@ import {
 	FormItem,
 	FormMessage,
 } from "@/components/ui/form";
-import { createPost } from "@/functions/posts";
+import { createPost, type getPosts } from "@/functions/posts";
+import { postsQueryOptions } from "@/hooks/api/posts";
 import { getCloudinarySignature } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,6 @@ const postSchema = z.object({
 type PostType = z.infer<typeof postSchema>;
 
 function PostInput() {
-	const router = useRouter();
 	const queryClient = useQueryClient();
 	const form = useForm<PostType>({
 		resolver: zodResolver(postSchema),
@@ -82,7 +81,7 @@ function PostInput() {
 				});
 				imageUrls = await Promise.all(uploadPromises);
 			}
-			await createPost({
+			const newPost = await createPost({
 				data: { content: data.content.trim(), images: imageUrls },
 			});
 			toast.success("Post created!");
@@ -90,8 +89,29 @@ function PostInput() {
 			if (textareaRef.current) {
 				textareaRef.current.style.height = "auto";
 			}
+
+			// Optimistic update for infinite query
+			queryClient.setQueryData<
+				InfiniteData<Awaited<ReturnType<typeof getPosts>>, number | undefined>
+			>(postsQueryOptions.queryKey, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page, index) => {
+						if (index === 0) {
+							return {
+								...page,
+								data: [newPost, ...page.data],
+							};
+						}
+						return page;
+					}),
+				};
+			});
+
+			// Invalidate to ensure consistency in background
 			queryClient.invalidateQueries({
-				queryKey: ["posts"],
+				queryKey: postsQueryOptions.queryKey,
 			});
 		} catch (error) {
 			toast.error("Failed to create post");

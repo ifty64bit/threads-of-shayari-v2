@@ -8,6 +8,10 @@ export const authMiddleware = createMiddleware().server(
 		if (!session) {
 			throw redirect({ to: "/login" });
 		}
-		return await next();
+		return await next({
+			context: {
+				userId: Number(session.user.id),
+			},
+		});
 	},
 );

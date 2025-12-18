@@ -1,9 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { db } from "@/db";
 import { postImages, posts } from "@/db/schema";
-import { auth } from "@/lib/server/auth";
+import { authMiddleware } from "@/middleware/auth";
 
 const createPostSchema = z.object({
 	content: z.string().min(1).max(280),
@@ -11,20 +10,14 @@ const createPostSchema = z.object({
 });
 
 export const createPost = createServerFn({ method: "POST" })
+	.middleware([authMiddleware])
 	.inputValidator(createPostSchema)
-	.handler(async ({ data }) => {
-		const session = await auth.api.getSession({
-			headers: getRequest().headers,
-		});
-		if (!session?.user) {
-			throw new Error("Unauthorized");
-		}
-
+	.handler(async ({ data, context }) => {
 		const [post] = await db
 			.insert(posts)
 			.values({
 				content: data.content,
-				authorId: parseInt(session.user.id, 10),
+				authorId: context.userId,
 			})
 			.returning();
 
@@ -37,16 +30,52 @@ export const createPost = createServerFn({ method: "POST" })
 			);
 		}
 
-		return post;
+		const newPost = await db.query.posts.findFirst({
+			where: (posts, { eq }) => eq(posts.id, post.id),
+			with: {
+				images: true,
+				author: true,
+			},
+		});
+
+		if (!newPost) {
+			throw new Error("Failed to create post");
+		}
+
+		return newPost;
 	});
 
-export const getPosts = createServerFn({ method: "GET" }).handler(async () => {
-	const posts = await db.query.posts.findMany({
-		orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-		with: {
-			images: true,
-			author: true,
-		},
-	});
-	return posts;
+const getPostsSchema = z.object({
+	cursor: z.number().optional(),
+	limit: z.number().default(5),
 });
+
+export const getPosts = createServerFn({ method: "GET" })
+	.middleware([authMiddleware])
+	.inputValidator(getPostsSchema)
+	.handler(async ({ data }) => {
+		const { cursor, limit } = data;
+
+		const postsData = await db.query.posts.findMany({
+			where: (posts, { lt }) => (cursor ? lt(posts.id, cursor) : undefined),
+			orderBy: (posts, { desc }) => [desc(posts.id)],
+			limit: limit + 1, // Fetch one extra to check for next page
+			with: {
+				images: true,
+				author: true,
+			},
+		});
+
+		let nextCursor: number | null = null;
+		if (postsData.length > limit) {
+			const nextItem = postsData.pop(); // Remove the extra item
+			if (nextItem) {
+				nextCursor = nextItem.id;
+			}
+		}
+
+		return {
+			data: postsData,
+			nextCursor,
+		};
+	});

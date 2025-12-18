@@ -25,6 +25,9 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"style": {
+				"useImportType": "error"
+			},
 			"suspicious": {
 				"noArrayIndexKey": "off"
 			},

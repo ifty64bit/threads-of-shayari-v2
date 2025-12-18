@@ -1,8 +1,9 @@
+import { Image } from "@unpic/react";
 import type { getPosts } from "@/functions/posts";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 type PostElementProps = {
-	post: Awaited<ReturnType<typeof getPosts>>[number];
+	post: Awaited<ReturnType<typeof getPosts>>["data"][number];
 };
 
 function PostElement({ post }: PostElementProps) {
@@ -23,8 +24,11 @@ function PostElement({ post }: PostElementProps) {
 			{post.images && post.images.length > 0 && (
 				<div className="mt-2 flex gap-2 overflow-x-auto">
 					{post.images.map((img) => (
-						<img
+						<Image
+							layout="constrained"
 							key={img.id}
+							width={600}
+							height={338}
 							src={getCloudinaryUrl(img.url)}
 							alt="Post attachment"
 							className="rounded-lg max-h-60 mx-auto w-full object-cover"
