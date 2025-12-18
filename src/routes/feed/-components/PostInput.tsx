@@ -1,4 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { ImageUp, SendHorizontal } from "lucide-react";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -23,6 +25,8 @@ const postSchema = z.object({
 type PostType = z.infer<typeof postSchema>;
 
 function PostInput() {
+	const router = useRouter();
+	const queryClient = useQueryClient();
 	const form = useForm<PostType>({
 		resolver: zodResolver(postSchema),
 		defaultValues: {
@@ -86,6 +90,9 @@ function PostInput() {
 			if (textareaRef.current) {
 				textareaRef.current.style.height = "auto";
 			}
+			queryClient.invalidateQueries({
+				queryKey: ["posts"],
+			});
 		} catch (error) {
 			toast.error("Failed to create post");
 			console.error(error);

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getPosts } from "@/functions/posts";
 import { authClient } from "@/lib/auth-client";
-import { getCloudinaryUrl } from "@/lib/cloudinary";
+import PostElement from "./-components/PostElement";
 import PostInput from "./-components/PostInput";
 
 const postsQueryOptions = queryOptions({
@@ -26,8 +26,8 @@ function RouteComponent() {
 	const { data: posts } = useSuspenseQuery(postsQueryOptions);
 
 	return (
-		<main className="max-w-md mx-auto h-dvh pt-2">
-			<section className="flex justify-between items-center border-b pb-2 px-4">
+		<main className="max-w-md mx-auto min-h-dvh">
+			<section className="sticky top-0 backdrop-blur-lg flex justify-between items-center border-b py-2 px-4">
 				<h4>NostaGram</h4>
 				<div>
 					<DropdownMenu>
@@ -56,30 +56,7 @@ function RouteComponent() {
 
 			<div className="flex flex-col">
 				{posts.map((post) => (
-					<div key={post.id} className="p-4 border-b">
-                        <div className="flex items-center gap-2 mb-2">
-                            <img src={getCloudinaryUrl(post.author.image)} alt={post.author.name} className="rounded-full" />
-                            <div>
-                                <h6 className="font-semibold">{post.author.name}</h6>
-							    <p className="text-gray-500 text-sm font-light">
-								    @{post.author.username}
-							    </p>
-                            </div>
-						</div>
-						<p className="whitespace-pre-wrap">{post.content}</p>
-						{post.images && post.images.length > 0 && (
-							<div className="mt-2 flex gap-2 overflow-x-auto">
-								{post.images.map((img) => (
-									<img
-										key={img.id}
-										src={getCloudinaryUrl(img.url)}
-										alt="Post attachment"
-										className="rounded-lg max-h-60 object-cover"
-									/>
-								))}
-							</div>
-						)}
-					</div>
+					<PostElement key={post.id} post={post} />
 				))}
 			</div>
 		</main>
