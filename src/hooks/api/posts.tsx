@@ -1,5 +1,59 @@
-import { infiniteQueryOptions } from "@tanstack/react-query";
-import { getPosts } from "@/functions/posts";
+import {
+	type InfiniteData,
+	infiniteQueryOptions,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
+import { createPost, getPosts } from "@/functions/posts";
+import { uploadImages } from "@/lib/cloudinary";
+
+export function createPostMutation() {
+	const queryClient = useQueryClient();
+
+	return useMutation<
+		Awaited<ReturnType<typeof createPost>>,
+		Error,
+		{ data: { content: string; images?: File[] } }
+	>({
+		mutationFn: async ({ data }) => {
+			let imageUrls: string[] = [];
+			if (data.images && data.images.length > 0) {
+				imageUrls = await uploadImages(data.images);
+			}
+			return await createPost({
+				data: { content: data.content.trim(), images: imageUrls },
+			});
+		},
+		onSuccess: (data) => {
+			// Optimistic update for infinite query
+			queryClient.setQueryData<
+				InfiniteData<Awaited<ReturnType<typeof getPosts>>, number | undefined>
+			>(postsQueryOptions.queryKey, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page, index) => {
+						if (index === 0) {
+							return {
+								...page,
+								data: [data, ...page.data],
+							};
+						}
+						return page;
+					}),
+				};
+			});
+			queryClient.invalidateQueries({
+				queryKey: postsQueryOptions.queryKey,
+			});
+			toast.success("Posted");
+		},
+		onError: () => {
+			toast.error("Failed to post");
+		},
+	});
+}
 
 export const postsQueryOptions = infiniteQueryOptions({
 	queryKey: ["posts"],

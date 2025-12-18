@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { ImageUp, SendHorizontal } from "lucide-react";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -13,9 +12,7 @@ import {
 	FormItem,
 	FormMessage,
 } from "@/components/ui/form";
-import { createPost, type getPosts } from "@/functions/posts";
-import { postsQueryOptions } from "@/hooks/api/posts";
-import { getCloudinarySignature } from "@/lib/cloudinary";
+import { createPostMutation } from "@/hooks/api/posts";
 import { cn } from "@/lib/utils";
 
 const postSchema = z.object({
@@ -25,7 +22,7 @@ const postSchema = z.object({
 type PostType = z.infer<typeof postSchema>;
 
 function PostInput() {
-	const queryClient = useQueryClient();
+	const createPost = createPostMutation();
 	const form = useForm<PostType>({
 		resolver: zodResolver(postSchema),
 		defaultValues: {
@@ -55,64 +52,17 @@ function PostInput() {
 
 	const onSubmit = async (data: PostType) => {
 		try {
-			const signature = await getCloudinarySignature({
-				data: {
-					folder: "threads_of_shayari_posts",
-				},
-			});
-			let imageUrls: string[] = [];
-			if (data.images && data.images.length > 0) {
-				const uploadPromises = data.images.map(async (image) => {
-					const formData = new FormData();
-					formData.append("file", image);
-					formData.append("api_key", signature.apiKey as string);
-					formData.append("timestamp", signature.timestamp.toString());
-					formData.append("folder", signature.folder);
-					formData.append("signature", signature.signature);
-					const res = await fetch(
-						`https://api.cloudinary.com/v1_1/${signature.cloudName}/image/upload`,
-						{
-							method: "POST",
-							body: formData,
-						},
-					);
-					const data = await res.json();
-					return data.public_id as string;
-				});
-				imageUrls = await Promise.all(uploadPromises);
-			}
-			const newPost = await createPost({
-				data: { content: data.content.trim(), images: imageUrls },
-			});
-			toast.success("Post created!");
-			form.reset();
-			if (textareaRef.current) {
-				textareaRef.current.style.height = "auto";
-			}
-
-			// Optimistic update for infinite query
-			queryClient.setQueryData<
-				InfiniteData<Awaited<ReturnType<typeof getPosts>>, number | undefined>
-			>(postsQueryOptions.queryKey, (oldData) => {
-				if (!oldData) return oldData;
-				return {
-					...oldData,
-					pages: oldData.pages.map((page, index) => {
-						if (index === 0) {
-							return {
-								...page,
-								data: [newPost, ...page.data],
-							};
+			createPost.mutate(
+				{ data },
+				{
+					onSuccess: () => {
+						form.reset();
+						if (textareaRef.current) {
+							textareaRef.current.style.height = "auto";
 						}
-						return page;
-					}),
-				};
-			});
-
-			// Invalidate to ensure consistency in background
-			queryClient.invalidateQueries({
-				queryKey: postsQueryOptions.queryKey,
-			});
+					},
+				},
+			);
 		} catch (error) {
 			toast.error("Failed to create post");
 			console.error(error);
@@ -184,7 +134,8 @@ function PostInput() {
 						<Button
 							variant={"ghost"}
 							size="sm"
-							disabled={!form.formState.isValid || form.formState.isSubmitting}
+							disabled={!form.formState.isValid}
+							isLoading={createPost.isPending}
 							type="submit"
 						>
 							<SendHorizontal />

@@ -26,3 +26,39 @@ export const getCloudinaryUrl = (publicId?: string | null) => {
 		return `https://placehold.co/40x40.png?text=Avatar`;
 	}
 };
+
+export const uploadImages = async (files: File[]) => {
+	if (files.length === 0) return [];
+
+	const signature = await getCloudinarySignature({
+		data: {
+			folder: "threads_of_shayari_posts",
+		},
+	});
+
+	const uploadPromises = files.map(async (image) => {
+		const formData = new FormData();
+		formData.append("file", image);
+		formData.append("api_key", signature.apiKey as string);
+		formData.append("timestamp", signature.timestamp.toString());
+		formData.append("folder", signature.folder);
+		formData.append("signature", signature.signature);
+
+		const res = await fetch(
+			`https://api.cloudinary.com/v1_1/${signature.cloudName}/image/upload`,
+			{
+				method: "POST",
+				body: formData,
+			},
+		);
+
+		if (!res.ok) {
+			throw new Error("Failed to upload image");
+		}
+
+		const data = await res.json();
+		return data.public_id as string;
+	});
+
+	return Promise.all(uploadPromises);
+};
