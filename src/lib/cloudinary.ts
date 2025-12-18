@@ -13,6 +13,11 @@ export const getCloudinarySignature = createServerFn({ method: "GET" })
 		return getSignature(data.folder);
 	});
 
-export const getCloudinaryUrl = (publicId: string) => {
-	return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
+export const getCloudinaryUrl = (publicId?: string| null) => {
+    if (publicId) {
+        return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
+    }
+    else {
+        return `https://placehold.co/40x40.png?text=Avatar`
+    }
 };

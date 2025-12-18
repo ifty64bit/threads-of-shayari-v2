@@ -57,11 +57,14 @@ function RouteComponent() {
 			<div className="flex flex-col">
 				{posts.map((post) => (
 					<div key={post.id} className="p-4 border-b">
-						<div className="flex items-center gap-2 mb-2">
-							<div className="font-bold">{post.author.name}</div>
-							<div className="text-gray-500 text-sm">
-								@{post.author.username}
-							</div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <img src={getCloudinaryUrl(post.author.image)} alt={post.author.name} className="rounded-full" />
+                            <div>
+                                <h6 className="font-semibold">{post.author.name}</h6>
+							    <p className="text-gray-500 text-sm font-light">
+								    @{post.author.username}
+							    </p>
+                            </div>
 						</div>
 						<p className="whitespace-pre-wrap">{post.content}</p>
 						{post.images && post.images.length > 0 && (
