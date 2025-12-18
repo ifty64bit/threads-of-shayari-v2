@@ -13,7 +13,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/server/auth";
 
 export const Route = createFileRoute("/signup")({
 	component: SignupPage,

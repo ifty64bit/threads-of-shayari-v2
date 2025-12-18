@@ -11,9 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as FeedRouteRouteImport } from './routes/feed/route'
+import { Route as PortalRouteRouteImport } from './routes/_portal/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FeedIndexRouteImport } from './routes/feed/index'
+import { Route as PortalProfileIndexRouteImport } from './routes/_portal/profile/index'
+import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const SignupRoute = SignupRouteImport.update({
@@ -26,9 +27,8 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FeedRouteRoute = FeedRouteRouteImport.update({
-  id: '/feed',
-  path: '/feed',
+const PortalRouteRoute = PortalRouteRouteImport.update({
+  id: '/_portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -36,10 +36,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FeedIndexRoute = FeedIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => FeedRouteRoute,
+const PortalProfileIndexRoute = PortalProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => PortalRouteRoute,
+} as any)
+const PortalFeedIndexRoute = PortalFeedIndexRouteImport.update({
+  id: '/feed/',
+  path: '/feed/',
+  getParentRoute: () => PortalRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -49,46 +54,49 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/feed': typeof FeedRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/feed/': typeof FeedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/feed': typeof PortalFeedIndexRoute
+  '/profile': typeof PortalProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/feed': typeof FeedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/feed': typeof PortalFeedIndexRoute
+  '/profile': typeof PortalProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/feed': typeof FeedRouteRouteWithChildren
+  '/_portal': typeof PortalRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/feed/': typeof FeedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_portal/feed/': typeof PortalFeedIndexRoute
+  '/_portal/profile/': typeof PortalProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feed' | '/login' | '/signup' | '/feed/' | '/api/auth/$'
+  fullPaths: '/' | '/login' | '/signup' | '/api/auth/$' | '/feed' | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/feed' | '/api/auth/$'
+  to: '/' | '/login' | '/signup' | '/api/auth/$' | '/feed' | '/profile'
   id:
     | '__root__'
     | '/'
-    | '/feed'
+    | '/_portal'
     | '/login'
     | '/signup'
-    | '/feed/'
     | '/api/auth/$'
+    | '/_portal/feed/'
+    | '/_portal/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  FeedRouteRoute: typeof FeedRouteRouteWithChildren
+  PortalRouteRoute: typeof PortalRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -110,11 +118,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/feed': {
-      id: '/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof FeedRouteRouteImport
+    '/_portal': {
+      id: '/_portal'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PortalRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -124,12 +132,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/feed/': {
-      id: '/feed/'
-      path: '/'
-      fullPath: '/feed/'
-      preLoaderRoute: typeof FeedIndexRouteImport
-      parentRoute: typeof FeedRouteRoute
+    '/_portal/profile/': {
+      id: '/_portal/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof PortalProfileIndexRouteImport
+      parentRoute: typeof PortalRouteRoute
+    }
+    '/_portal/feed/': {
+      id: '/_portal/feed/'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof PortalFeedIndexRouteImport
+      parentRoute: typeof PortalRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -141,21 +156,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface FeedRouteRouteChildren {
-  FeedIndexRoute: typeof FeedIndexRoute
+interface PortalRouteRouteChildren {
+  PortalFeedIndexRoute: typeof PortalFeedIndexRoute
+  PortalProfileIndexRoute: typeof PortalProfileIndexRoute
 }
 
-const FeedRouteRouteChildren: FeedRouteRouteChildren = {
-  FeedIndexRoute: FeedIndexRoute,
+const PortalRouteRouteChildren: PortalRouteRouteChildren = {
+  PortalFeedIndexRoute: PortalFeedIndexRoute,
+  PortalProfileIndexRoute: PortalProfileIndexRoute,
 }
 
-const FeedRouteRouteWithChildren = FeedRouteRoute._addFileChildren(
-  FeedRouteRouteChildren,
+const PortalRouteRouteWithChildren = PortalRouteRoute._addFileChildren(
+  PortalRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  FeedRouteRoute: FeedRouteRouteWithChildren,
+  PortalRouteRoute: PortalRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

@@ -1,34 +1,43 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+	createFileRoute,
+	Link,
+	Navigate,
+	Outlet,
+	useRouter,
+} from "@tanstack/react-router";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getPosts } from "@/functions/posts";
 import { authClient } from "@/lib/auth-client";
-import PostElement from "./-components/PostElement";
-import PostInput from "./-components/PostInput";
+import { authMiddleware } from "@/middleware/auth";
 
-const postsQueryOptions = queryOptions({
-	queryKey: ["posts"],
-	queryFn: () => getPosts(),
-});
-
-export const Route = createFileRoute("/feed/")({
+export const Route = createFileRoute("/_portal")({
 	component: RouteComponent,
-	loader: ({ context }) =>
-		context.queryClient.ensureQueryData(postsQueryOptions),
+	server: {
+		middleware: [authMiddleware],
+	},
 });
 
 function RouteComponent() {
-	const { data: posts } = useSuspenseQuery(postsQueryOptions);
+	const queryClient = useQueryClient();
+	const router = useRouter();
+
+	const { isPending, data: session } = authClient.useSession();
+
+	if (!isPending && !session) {
+		return <Navigate to="/login" />;
+	}
 
 	return (
 		<main className="max-w-md mx-auto min-h-dvh">
 			<section className="sticky top-0 backdrop-blur-lg flex justify-between items-center border-b py-2 px-4">
-				<h4>NostaGram</h4>
+				<Link to="/feed">
+					<h4>NostaGram</h4>
+				</Link>
 				<div>
 					<DropdownMenu>
 						<DropdownMenuTrigger>
@@ -39,10 +48,15 @@ function RouteComponent() {
 							/>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
+							<DropdownMenuItem asChild>
+								<Link to="/profile">Profile</Link>
+							</DropdownMenuItem>
 							<DropdownMenuItem
 								variant="destructive"
-								onClick={() => {
-									authClient.signOut();
+								onClick={async () => {
+									queryClient.clear();
+									router.invalidate();
+									await authClient.signOut();
 								}}
 							>
 								Logout
@@ -52,13 +66,7 @@ function RouteComponent() {
 				</div>
 			</section>
 
-			<PostInput />
-
-			<div className="flex flex-col">
-				{posts.map((post) => (
-					<PostElement key={post.id} post={post} />
-				))}
-			</div>
+			<Outlet />
 		</main>
 	);
 }

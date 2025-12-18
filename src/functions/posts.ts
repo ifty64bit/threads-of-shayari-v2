@@ -3,7 +3,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { db } from "@/db";
 import { postImages, posts } from "@/db/schema";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/server/auth";
 
 const createPostSchema = z.object({
 	content: z.string().min(1).max(280),
