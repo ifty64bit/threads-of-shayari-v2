@@ -12,6 +12,19 @@ const config = defineConfig({
     devtools(),
     nitro({
       preset: 'vercel',
+      rollupConfig: {
+        external: [],
+      },
+      // Prevent TanStack packages from being externalized during SSR
+      externals: {
+        inline: [
+          '@tanstack/router-core',
+          '@tanstack/react-router',
+          '@tanstack/react-start',
+          '@tanstack/start-server-core',
+          '@tanstack/start-client-core',
+        ],
+      },
     }),
     neon,
     // this is the plugin that enables path aliases
