@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { CLOUDINARY_CLOUD_NAME } from "./env";
 import { getSignature } from "./server/cloudinary";
 
