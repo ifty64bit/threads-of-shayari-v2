@@ -11,7 +11,8 @@ const config = defineConfig({
   plugins: [
     devtools(),
     nitro({
-      preset: 'vercel',
+        preset: 'vercel',
+        //=========Temporary Fix untill stable release========= Start
       rollupConfig: {
         external: [],
       },
@@ -24,7 +25,8 @@ const config = defineConfig({
           '@tanstack/start-server-core',
           '@tanstack/start-client-core',
         ],
-      },
+        },
+       //=========Temporary Fix untill stable release========= End
     }),
     neon,
     // this is the plugin that enables path aliases
