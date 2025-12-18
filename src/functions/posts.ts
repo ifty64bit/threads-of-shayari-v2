@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { postImages, posts } from "@/db/schema";
@@ -78,4 +79,27 @@ export const getPosts = createServerFn({ method: "GET" })
 			data: postsData,
 			nextCursor,
 		};
+	});
+
+export const deletePost = createServerFn({ method: "POST" })
+	.middleware([authMiddleware])
+	.inputValidator(z.object({ postId: z.number() }))
+	.handler(async ({ data, context }) => {
+		const post = await db.query.posts.findFirst({
+			where: (posts, { eq }) => eq(posts.id, data.postId),
+			with: {
+				author: true,
+			},
+		});
+
+		if (!post) {
+			throw new Error("Post not found");
+		}
+
+		if (post.author.id !== context.userId) {
+			throw new Error("Unauthorized");
+		}
+		await db.delete(posts).where(eq(posts.id, data.postId));
+		await db.delete(postImages).where(eq(postImages.postId, data.postId));
+		return true;
 	});

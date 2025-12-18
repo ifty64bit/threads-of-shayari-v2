@@ -5,7 +5,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createPost, getPosts } from "@/functions/posts";
+import { createPost, deletePost, getPosts } from "@/functions/posts";
 import { uploadImages } from "@/lib/cloudinary";
 
 export function createPostMutation() {
@@ -66,3 +66,38 @@ export const postsQueryOptions = infiniteQueryOptions({
 	initialPageParam: undefined as number | undefined,
 	getNextPageParam: (lastPage) => lastPage.nextCursor,
 });
+
+export function useDeletePostMutation() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ postId }: { postId: number }) =>
+			deletePost({ data: { postId } }),
+		onMutate: async ({ postId }) => {
+			queryClient.setQueryData(postsQueryOptions.queryKey, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page, index) => {
+						if (index === 0) {
+							return {
+								...page,
+								data: page.data.filter((post) => post.id !== postId),
+							};
+						}
+						return page;
+					}),
+				};
+			});
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: postsQueryOptions.queryKey,
+			});
+			toast.success("Post deleted");
+		},
+		onError: () => {
+			toast.error("Failed to delete post");
+		},
+	});
+}
