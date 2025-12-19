@@ -14,8 +14,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PortalRouteRouteImport } from './routes/_portal/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalProfileIndexRouteImport } from './routes/_portal/profile/index'
+import { Route as PortalPostsIndexRouteImport } from './routes/_portal/posts/index'
 import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as PortalPostsPostIdRouteImport } from './routes/_portal/posts/$postId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -41,6 +43,11 @@ const PortalProfileIndexRoute = PortalProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => PortalRouteRoute,
 } as any)
+const PortalPostsIndexRoute = PortalPostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => PortalRouteRoute,
+} as any)
 const PortalFeedIndexRoute = PortalFeedIndexRouteImport.update({
   id: '/feed/',
   path: '/feed/',
@@ -51,21 +58,30 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalPostsPostIdRoute = PortalPostsPostIdRouteImport.update({
+  id: '/posts/$postId',
+  path: '/posts/$postId',
+  getParentRoute: () => PortalRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/posts/$postId': typeof PortalPostsPostIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/feed': typeof PortalFeedIndexRoute
+  '/posts': typeof PortalPostsIndexRoute
   '/profile': typeof PortalProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/posts/$postId': typeof PortalPostsPostIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/feed': typeof PortalFeedIndexRoute
+  '/posts': typeof PortalPostsIndexRoute
   '/profile': typeof PortalProfileIndexRoute
 }
 export interface FileRoutesById {
@@ -74,23 +90,43 @@ export interface FileRoutesById {
   '/_portal': typeof PortalRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_portal/posts/$postId': typeof PortalPostsPostIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_portal/feed/': typeof PortalFeedIndexRoute
+  '/_portal/posts/': typeof PortalPostsIndexRoute
   '/_portal/profile/': typeof PortalProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup' | '/api/auth/$' | '/feed' | '/profile'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/posts/$postId'
+    | '/api/auth/$'
+    | '/feed'
+    | '/posts'
+    | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/api/auth/$' | '/feed' | '/profile'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/posts/$postId'
+    | '/api/auth/$'
+    | '/feed'
+    | '/posts'
+    | '/profile'
   id:
     | '__root__'
     | '/'
     | '/_portal'
     | '/login'
     | '/signup'
+    | '/_portal/posts/$postId'
     | '/api/auth/$'
     | '/_portal/feed/'
+    | '/_portal/posts/'
     | '/_portal/profile/'
   fileRoutesById: FileRoutesById
 }
@@ -139,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalProfileIndexRouteImport
       parentRoute: typeof PortalRouteRoute
     }
+    '/_portal/posts/': {
+      id: '/_portal/posts/'
+      path: '/posts'
+      fullPath: '/posts'
+      preLoaderRoute: typeof PortalPostsIndexRouteImport
+      parentRoute: typeof PortalRouteRoute
+    }
     '/_portal/feed/': {
       id: '/_portal/feed/'
       path: '/feed'
@@ -153,16 +196,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_portal/posts/$postId': {
+      id: '/_portal/posts/$postId'
+      path: '/posts/$postId'
+      fullPath: '/posts/$postId'
+      preLoaderRoute: typeof PortalPostsPostIdRouteImport
+      parentRoute: typeof PortalRouteRoute
+    }
   }
 }
 
 interface PortalRouteRouteChildren {
+  PortalPostsPostIdRoute: typeof PortalPostsPostIdRoute
   PortalFeedIndexRoute: typeof PortalFeedIndexRoute
+  PortalPostsIndexRoute: typeof PortalPostsIndexRoute
   PortalProfileIndexRoute: typeof PortalProfileIndexRoute
 }
 
 const PortalRouteRouteChildren: PortalRouteRouteChildren = {
+  PortalPostsPostIdRoute: PortalPostsPostIdRoute,
   PortalFeedIndexRoute: PortalFeedIndexRoute,
+  PortalPostsIndexRoute: PortalPostsIndexRoute,
   PortalProfileIndexRoute: PortalProfileIndexRoute,
 }
 

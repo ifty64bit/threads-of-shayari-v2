@@ -14,14 +14,25 @@ export const getCloudinarySignature = createServerFn({ method: "GET" })
 		return getSignature(data.folder);
 	});
 
-export const getCloudinaryUrl = (publicId?: string | null) => {
+export const getCloudinaryUrl = (
+	publicId?: string | null,
+	options?: { width?: number; height?: number },
+) => {
 	if (publicId) {
 		const cld = new Cloudinary({
 			cloud: {
 				cloudName: CLOUDINARY_CLOUD_NAME,
 			},
 		});
-		return cld.image(publicId).toURL();
+		const image = cld.image(publicId);
+		if (options?.width || options?.height) {
+			const transforms: string[] = [];
+			if (options.width) transforms.push(`w_${options.width}`);
+			if (options.height) transforms.push(`h_${options.height}`);
+			transforms.push("c_lfill", "f_auto");
+			return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transforms.join(",")}/${publicId}`;
+		}
+		return image.toURL();
 	} else {
 		return `https://placehold.co/40x40.png?text=Avatar`;
 	}

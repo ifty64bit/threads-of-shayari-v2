@@ -19,6 +19,7 @@ const postSchema = z.object({
 	content: z.string().min(1, "Post cannot be empty").max(280),
 	images: z.array(z.instanceof(File)).max(4).optional(),
 });
+
 type PostType = z.infer<typeof postSchema>;
 
 function PostInput() {

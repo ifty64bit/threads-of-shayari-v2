@@ -6,9 +6,11 @@ import {
 	serial,
 	text,
 	timestamp,
+	unique,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./columns.helpers";
 
+//======================= Auth Tables =======================
 export const users = pgTable("users", {
 	id: serial("id").primaryKey(),
 	name: text("name").notNull(),
@@ -61,6 +63,7 @@ export const verifications = pgTable("verifications", {
 	...timestamps,
 });
 
+//======================= Posts Tables =======================
 export const posts = pgTable("posts", (t) => ({
 	id: t.serial("id").primaryKey(),
 	content: t.text("content").notNull(),
@@ -77,8 +80,11 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
 		references: [users.id],
 	}),
 	images: many(postImages),
+	reactions: many(postReactions),
+	comments: many(comments),
 }));
 
+//======================= Post Images Tables =======================
 export const postImages = pgTable("post_images", (t) => ({
 	id: t.serial("id").primaryKey(),
 	url: t.text("url").notNull(),
@@ -94,5 +100,63 @@ export const postImagesRelations = relations(postImages, ({ one }) => ({
 	post: one(posts, {
 		fields: [postImages.postId],
 		references: [posts.id],
+	}),
+}));
+
+//======================= Post Reactions Tables =======================
+export const postReactions = pgTable(
+	"post_reactions",
+	(t) => ({
+		id: t.serial("id").primaryKey(),
+		postId: t
+			.integer("post_id")
+			.notNull()
+			.references(() => posts.id, { onDelete: "cascade" }),
+		userId: t
+			.integer("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		reaction: t.text("reaction").notNull(),
+		...timestamps,
+	}),
+	(table) => [
+		unique("unique_user_post_reaction").on(table.userId, table.postId),
+	],
+);
+
+export const postReactionsRelations = relations(postReactions, ({ one }) => ({
+	post: one(posts, {
+		fields: [postReactions.postId],
+		references: [posts.id],
+	}),
+	user: one(users, {
+		fields: [postReactions.userId],
+		references: [users.id],
+	}),
+}));
+
+//======================= Comments Tables =======================
+export const comments = pgTable("comments", (t) => ({
+	id: t.serial("id").primaryKey(),
+	content: t.text("content").notNull(),
+	postId: t
+		.integer("post_id")
+		.notNull()
+		.references(() => posts.id, { onDelete: "cascade" }),
+	userId: t
+		.integer("user_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	...timestamps,
+}));
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+	post: one(posts, {
+		fields: [comments.postId],
+		references: [posts.id],
+	}),
+	user: one(users, {
+		fields: [comments.userId],
+		references: [users.id],
 	}),
 }));

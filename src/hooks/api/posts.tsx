@@ -1,11 +1,17 @@
 import {
 	type InfiniteData,
 	infiniteQueryOptions,
+	queryOptions,
 	useMutation,
 	useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createPost, deletePost, getPosts } from "@/functions/posts";
+import {
+	createPost,
+	deletePost,
+	getPostById,
+	getPosts,
+} from "@/functions/posts";
 import { uploadImages } from "@/lib/cloudinary";
 
 export function createPostMutation() {
@@ -37,7 +43,7 @@ export function createPostMutation() {
 						if (index === 0) {
 							return {
 								...page,
-								data: [data, ...page.data],
+								data: [{ ...data, reactions: [], comments: [] }, ...page.data],
 							};
 						}
 						return page;
@@ -66,6 +72,13 @@ export const postsQueryOptions = infiniteQueryOptions({
 	initialPageParam: undefined as number | undefined,
 	getNextPageParam: (lastPage) => lastPage.nextCursor,
 });
+
+export function getPostByIdOptions(postId: number) {
+	return queryOptions({
+		queryKey: ["post", postId],
+		queryFn: () => getPostById({ data: { postId } }),
+	});
+}
 
 export function useDeletePostMutation() {
 	const queryClient = useQueryClient();

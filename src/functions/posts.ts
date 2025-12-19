@@ -64,12 +64,25 @@ export const getPosts = createServerFn({ method: "GET" })
 			with: {
 				images: true,
 				author: true,
+				reactions: true,
+				comments: {
+					with: {
+						user: {
+							columns: {
+								id: true,
+								name: true,
+								image: true,
+								username: true,
+							},
+						},
+					},
+				},
 			},
 		});
 
 		let nextCursor: number | null = null;
 		if (postsData.length > limit) {
-			const nextItem = postsData.pop(); // Remove the extra item
+			const nextItem = postsData.pop();
 			if (nextItem) {
 				nextCursor = nextItem.id;
 			}
@@ -81,6 +94,38 @@ export const getPosts = createServerFn({ method: "GET" })
 		};
 	});
 
+export const getPostById = createServerFn({ method: "GET" })
+	.middleware([authMiddleware])
+	.inputValidator(z.object({ postId: z.number() }))
+	.handler(async ({ data }) => {
+		const post = await db.query.posts.findFirst({
+			where: (posts, { eq }) => eq(posts.id, data.postId),
+			with: {
+				images: true,
+				author: true,
+				reactions: true,
+				comments: {
+					with: {
+						user: {
+							columns: {
+								id: true,
+								name: true,
+								image: true,
+								username: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!post) {
+			throw new Error("Post not found");
+		}
+
+		return post;
+	});
+
 export const deletePost = createServerFn({ method: "POST" })
 	.middleware([authMiddleware])
 	.inputValidator(z.object({ postId: z.number() }))
@@ -88,7 +133,14 @@ export const deletePost = createServerFn({ method: "POST" })
 		const post = await db.query.posts.findFirst({
 			where: (posts, { eq }) => eq(posts.id, data.postId),
 			with: {
-				author: true,
+				author: {
+					columns: {
+						id: true,
+						name: true,
+						image: true,
+						username: true,
+					},
+				},
 			},
 		});
 

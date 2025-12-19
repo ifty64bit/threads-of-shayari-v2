@@ -15,6 +15,20 @@
       "when": 1765984361363,
       "tag": "0001_gifted_shiver_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766084739400,
+      "tag": "0002_wakeful_maddog",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1766157555037,
+      "tag": "0003_chemical_hellion",
+      "breakpoints": true
     }
   ]
 }

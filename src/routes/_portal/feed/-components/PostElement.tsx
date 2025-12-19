@@ -1,5 +1,6 @@
+import { ClientOnly, Link } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
-import { MoreHorizontal } from "lucide-react";
+import { Heart, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -10,6 +11,7 @@ import {
 import type { getPosts } from "@/functions/posts";
 import { useDeletePostMutation } from "@/hooks/api/posts";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
+import Reactions from "./Reactions";
 
 type PostElementProps = {
 	post: Awaited<ReturnType<typeof getPosts>>["data"][number];
@@ -48,22 +50,37 @@ function PostElement({ post }: PostElementProps) {
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
-			<p className="whitespace-pre-wrap">{post.content}</p>
+			<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
+				<p className="whitespace-pre-wrap">{post.content}</p>
+			</Link>
 			{post.images && post.images.length > 0 && (
 				<div className="mt-2 flex gap-2 overflow-x-auto">
 					{post.images.map((img) => (
-						<Image
-							layout="constrained"
-							key={img.id}
-							width={600}
-							height={338}
-							src={getCloudinaryUrl(img.url)}
-							alt="Post attachment"
-							className="rounded-lg max-h-60 mx-auto w-full object-cover"
-						/>
+						<ClientOnly fallback={null} key={img.id}>
+							<Image
+								layout="constrained"
+								width={600}
+								height={338}
+								src={getCloudinaryUrl(img.url)}
+								alt="Post attachment"
+								className="rounded-lg max-h-60 mx-auto w-full object-cover"
+							/>
+						</ClientOnly>
 					))}
 				</div>
 			)}
+			<div className="flex items-center justify-between gap-2">
+				<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
+					<Heart size={14} /> {post.reactions.length}
+				</span>
+				<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
+					<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
+						{post.comments.length} comments
+					</span>
+				</Link>
+			</div>
+
+			<Reactions post={post} />
 		</div>
 	);
 }
