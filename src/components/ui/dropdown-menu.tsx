@@ -1,7 +1,13 @@
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
+import {
+	CheckIcon,
+	ChevronRightIcon,
+	CircleIcon,
+	EllipsisVertical,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 function DropdownMenu({
 	...props
@@ -235,6 +241,20 @@ function DropdownMenuSubContent({
 	);
 }
 
+function ThreeDotMenu({ children }: { children: React.ReactNode }) {
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant="ghost" className="h-8 w-8 p-0">
+					<span className="sr-only">Open menu</span>
+					<EllipsisVertical className="h-4 w-4" />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>{children}</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
+
 export {
 	DropdownMenu,
 	DropdownMenuPortal,
@@ -251,4 +271,5 @@ export {
 	DropdownMenuSub,
 	DropdownMenuSubTrigger,
 	DropdownMenuSubContent,
+	ThreeDotMenu,
 };

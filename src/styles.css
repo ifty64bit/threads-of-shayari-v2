@@ -159,7 +159,7 @@ code {
     h5{
         @apply text-lg font-semibold;
     }
-    
+
     h6{
         @apply text-base font-semibold;
     }
@@ -167,4 +167,13 @@ code {
     button{
         @apply hover:cursor-pointer;
     }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
