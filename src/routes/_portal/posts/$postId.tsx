@@ -3,7 +3,7 @@ import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import dayjs from "dayjs";
-import { Heart, MoreHorizontal, Send } from "lucide-react";
+import { MoreHorizontal, Send } from "lucide-react";
 import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -20,6 +20,7 @@ import {
 } from "@/hooks/api/comments";
 import { getPostByIdOptions, useDeletePostMutation } from "@/hooks/api/posts";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
+import Reactions from "@/routes/_portal/feed/-components/Reactions";
 
 export const Route = createFileRoute("/_portal/posts/$postId")({
 	component: RouteComponent,
@@ -86,11 +87,8 @@ function RouteComponent() {
 				</div>
 			)}
 
-			<div className="flex items-center justify-between gap-2">
-				<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
-					<Heart size={14} /> {post.reactions.length}
-				</span>
-
+			<div className="flex items-center justify-between gap-2 border-t pt-2 mt-2">
+				<Reactions post={post as Parameters<typeof Reactions>[0]["post"]} />
 				<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
 					{post.comments.length} comments
 				</span>
