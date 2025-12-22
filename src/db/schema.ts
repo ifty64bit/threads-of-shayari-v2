@@ -19,6 +19,7 @@ export const users = pgTable("users", {
 	emailVerified: boolean("email_verified").notNull(),
 	image: text("image"),
 	coverImage: text("cover_image"),
+	isAdmin: boolean("is_admin").notNull().default(false),
 	...timestamps,
 });
 

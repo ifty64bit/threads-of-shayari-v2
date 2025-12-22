@@ -19,8 +19,11 @@ function App() {
 				Threads of Shayari
 			</h1>
 			{session ? (
-				<Link to="/feed" className="text-lg text-green-600 mt-4 block">
-					Go to Feed
+				<Link
+					to={session.user.isAdmin ? "/dashboard" : "/feed"}
+					className="text-lg text-green-600 mt-4 block"
+				>
+					Go to {session.user.isAdmin ? "Dashboard" : "Feed"}
 				</Link>
 			) : (
 				<Link to="/login" className="text-lg text-red-600 mt-4 block">

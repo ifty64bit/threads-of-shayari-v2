@@ -35,21 +35,26 @@ function LoginPage() {
 		},
 	});
 
-	const handleSubmit = async (data: z.infer<typeof loginSchema>) => {
+	const handleSubmit = async (payload: z.infer<typeof loginSchema>) => {
 		toast.promise(
 			async () => {
-				const { error } = await authClient.signIn.username({
-					username: data.username,
-					password: data.password,
-				});
+				const { error } = await authClient.signIn.username(payload);
 				if (error) {
 					throw new Error(error.message);
 				}
+				// Get the session to access custom fields like isAdmin
+				const { data: session } = await authClient.getSession();
+				return session;
 			},
 			{
 				loading: "Logging in...",
-				success: () => {
-					navigate({ to: "/" });
+				success: (session) => {
+					// Redirect based on user type
+					if (session?.user?.isAdmin) {
+						navigate({ to: "/dashboard" });
+					} else {
+						navigate({ to: "/feed" });
+					}
 					return "Logged in successfully!";
 				},
 				error: (err) => (err instanceof Error ? err.message : "Login failed"),
