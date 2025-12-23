@@ -136,10 +136,22 @@ export const postReactionsRelations = relations(postReactions, ({ one }) => ({
 	}),
 }));
 
-//======================= Comments Tables =======================
+//======================= Audio Presets Tables =======================
+export const audioPresets = pgTable("audio_presets", (t) => ({
+	id: t.serial("id").primaryKey(),
+	displayName: t.text("display_name").notNull(),
+	isPublic: t.boolean("is_public").notNull().default(false),
+	url: t.text("url").notNull(),
+	...timestamps,
+}));
+
+export const audioPresetsRelations = relations(audioPresets, ({ many }) => ({
+	comments: many(comments),
+}));
+
 export const comments = pgTable("comments", (t) => ({
 	id: t.serial("id").primaryKey(),
-	content: t.text("content").notNull(),
+	content: t.text("content"),
 	postId: t
 		.integer("post_id")
 		.notNull()
@@ -148,6 +160,9 @@ export const comments = pgTable("comments", (t) => ({
 		.integer("user_id")
 		.notNull()
 		.references(() => users.id, { onDelete: "cascade" }),
+	audioPresetId: t
+		.integer("audio_preset_id")
+		.references(() => audioPresets.id, { onDelete: "set null" }),
 	...timestamps,
 }));
 
@@ -159,5 +174,9 @@ export const commentsRelations = relations(comments, ({ one }) => ({
 	user: one(users, {
 		fields: [comments.userId],
 		references: [users.id],
+	}),
+	audioPreset: one(audioPresets, {
+		fields: [comments.audioPresetId],
+		references: [audioPresets.id],
 	}),
 }));

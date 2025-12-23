@@ -58,6 +58,7 @@ async function seedAdmin() {
 		username: "overloard",
 		email: "404@gmail.com",
 		password: ADMIN_PASSWORD,
+		emailVerified: true,
 		name: "Admin",
 	};
 
