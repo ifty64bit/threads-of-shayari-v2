@@ -32,7 +32,8 @@
 				"noArrayIndexKey": "off"
 			},
 			"a11y": {
-				"useButtonType": "off"
+				"useButtonType": "off",
+				"useMediaCaption": "off"
 			}
 		}
 	},

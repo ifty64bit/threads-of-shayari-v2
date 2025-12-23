@@ -10,7 +10,7 @@ import {
 	updateUser,
 	updateUserVerification,
 } from "@/functions/users";
-import { uploadImages } from "@/lib/cloudinary";
+import { uploadToCDN } from "@/lib/cloudinary";
 
 export const getCurrentUserOptions = queryOptions({
 	queryKey: ["current-user"],
@@ -56,7 +56,7 @@ export function useUpdateCurrentUserImage() {
 	return useMutation({
 		mutationKey: ["update-current-user-image"],
 		mutationFn: async (file: File) => {
-			const img = await uploadImages([file]);
+			const img = await uploadToCDN([file]);
 			const data = await updateUser({
 				data: {
 					image: img[0],

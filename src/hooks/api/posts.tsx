@@ -13,7 +13,7 @@ import {
 	getPosts,
 	getPostsByUserId,
 } from "@/functions/posts";
-import { uploadImages } from "@/lib/cloudinary";
+import { uploadToCDN } from "@/lib/cloudinary";
 
 export function createPostMutation() {
 	const queryClient = useQueryClient();
@@ -26,7 +26,7 @@ export function createPostMutation() {
 		mutationFn: async ({ data }) => {
 			let imageUrls: string[] = [];
 			if (data.images && data.images.length > 0) {
-				imageUrls = await uploadImages(data.images);
+				imageUrls = await uploadToCDN(data.images);
 			}
 			return await createPost({
 				data: { content: data.content.trim(), images: imageUrls },
