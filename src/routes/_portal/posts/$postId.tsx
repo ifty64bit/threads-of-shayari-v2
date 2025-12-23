@@ -17,6 +17,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	getCommentsByPostIdInfiniteQuery,
 	useCommentMutation,
@@ -46,11 +47,14 @@ function RouteComponent() {
 		<div className="p-4">
 			<div className="flex justify-between items-center">
 				<div className="flex items-center gap-2 mb-2">
-					<img
-						src={getCloudinaryUrl(post.author.image)}
-						alt={post.author.name}
-						className="rounded-full"
-					/>
+					<ClientOnly fallback={<Skeleton className="size-10 rounded-full" />}>
+						<img
+							src={getCloudinaryUrl(post.author.image)}
+							alt={post.author.name}
+							className="rounded-full size-10 object-cover"
+							title="Ekti Bokachoda"
+						/>
+					</ClientOnly>
 					<div>
 						<h6 className="font-semibold text-sm">{post.author.name}</h6>
 						<p className="text-gray-500 text-xs">@{post.author.username}</p>

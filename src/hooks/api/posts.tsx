@@ -11,6 +11,7 @@ import {
 	deletePost,
 	getPostById,
 	getPosts,
+	getPostsByUserId,
 } from "@/functions/posts";
 import { uploadImages } from "@/lib/cloudinary";
 
@@ -113,5 +114,20 @@ export function useDeletePostMutation() {
 		onError: () => {
 			toast.error("Failed to delete post");
 		},
+	});
+}
+
+export function getPostsByUserIdOptions({ userId }: { userId: number }) {
+	return infiniteQueryOptions({
+		queryKey: ["posts", "user", userId],
+		queryFn: ({ pageParam }) =>
+			getPostsByUserId({
+				data: {
+					userId,
+					cursor: pageParam,
+				},
+			}),
+		initialPageParam: undefined as number | undefined,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
 	});
 }

@@ -66,15 +66,53 @@ export const getPosts = createServerFn({ method: "GET" })
 				author: true,
 				reactions: true,
 				comments: {
-					with: {
-						user: {
-							columns: {
-								id: true,
-								name: true,
-								image: true,
-								username: true,
-							},
-						},
+					columns: {
+						id: true,
+					},
+				},
+			},
+		});
+
+		let nextCursor: number | null = null;
+		if (postsData.length > limit) {
+			const nextItem = postsData.pop();
+			if (nextItem) {
+				nextCursor = nextItem.id;
+			}
+		}
+
+		return {
+			data: postsData,
+			nextCursor,
+		};
+	});
+
+export const getPostsByUserId = createServerFn({ method: "GET" })
+	.middleware([authMiddleware])
+	.inputValidator(
+		z.object({
+			userId: z.number(),
+			cursor: z.number().optional(),
+			limit: z.number().default(5),
+		}),
+	)
+	.handler(async ({ data }) => {
+		const { userId, cursor, limit } = data;
+
+		const postsData = await db.query.posts.findMany({
+			where: (posts, { eq, lt, and }) =>
+				cursor
+					? and(eq(posts.authorId, userId), lt(posts.id, cursor))
+					: eq(posts.authorId, userId),
+			orderBy: (posts, { desc }) => [desc(posts.id)],
+			limit: limit + 1,
+			with: {
+				images: true,
+				author: true,
+				reactions: true,
+				comments: {
+					columns: {
+						id: true,
 					},
 				},
 			},

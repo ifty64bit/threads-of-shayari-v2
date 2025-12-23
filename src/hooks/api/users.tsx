@@ -7,8 +7,10 @@ import { toast } from "sonner";
 import {
 	getCurrentUser,
 	getUsers,
+	updateUser,
 	updateUserVerification,
 } from "@/functions/users";
+import { uploadImages } from "@/lib/cloudinary";
 
 export const getCurrentUserOptions = queryOptions({
 	queryKey: ["current-user"],
@@ -42,6 +44,40 @@ export function useUpdateUserVerification() {
 		},
 		onError: (_, __, ctx) => {
 			toast.error("Failed to update user verification", {
+				id: ctx?.toastId,
+			});
+		},
+	});
+}
+
+export function useUpdateCurrentUserImage() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationKey: ["update-current-user-image"],
+		mutationFn: async (file: File) => {
+			const img = await uploadImages([file]);
+			const data = await updateUser({
+				data: {
+					image: img[0],
+				},
+			});
+			return data;
+		},
+		onMutate: () => {
+			const toastId = toast.loading("Updating user image...");
+			return { toastId };
+		},
+		onSuccess: (_, __, ctx) => {
+			toast.success("User image updated successfully", {
+				id: ctx.toastId,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["current-user"],
+			});
+		},
+		onError: (_, __, ctx) => {
+			toast.error("Failed to update user image", {
 				id: ctx?.toastId,
 			});
 		},

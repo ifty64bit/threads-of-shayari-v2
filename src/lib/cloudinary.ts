@@ -7,7 +7,7 @@ import { getSignature } from "./server/cloudinary";
 export const getCloudinarySignature = createServerFn({ method: "GET" })
 	.inputValidator(
 		z.object({
-			folder: z.string().optional(),
+			folder: z.string().default("threads_of_shayari_posts"),
 		}),
 	)
 	.handler(({ data }) => {

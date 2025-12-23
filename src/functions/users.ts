@@ -65,3 +65,34 @@ export const updateUserVerification = createServerFn({ method: "POST" })
 			.where(eq(users.id, Number(data.userId)));
 		return true;
 	});
+
+const profileSchema = z.object({
+	image: z.union([z.string(), z.null()]).optional(),
+	name: z.string().optional(),
+	username: z.string().optional(),
+});
+
+export const updateUser = createServerFn({ method: "POST" })
+	.inputValidator(profileSchema)
+	.middleware([authMiddleware])
+	.handler(async ({ data, context }) => {
+		if (typeof data.image !== "string") {
+			throw new Error("Invalid image");
+		}
+
+		const user = await db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, context.userId),
+		});
+		if (!user) {
+			throw new Error("User not found");
+		}
+		await db
+			.update(users)
+			.set({
+				name: data.name,
+				username: data.username,
+				image: data.image,
+			})
+			.where(eq(users.id, context.userId));
+		return true;
+	});

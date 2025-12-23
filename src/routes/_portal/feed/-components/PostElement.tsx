@@ -8,6 +8,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { getPosts } from "@/functions/posts";
 import { useDeletePostMutation } from "@/hooks/api/posts";
 import { authClient } from "@/lib/auth-client";
@@ -27,11 +28,15 @@ function PostElement({ post }: PostElementProps) {
 		<div key={post.id} className="px-4 pt-4 pb-2 border-b">
 			<div className="flex justify-between items-center">
 				<div className="flex items-center gap-2 mb-2">
-					<img
-						src={getCloudinaryUrl(post.author.image)}
-						alt={post.author.name}
-						className="rounded-full"
-					/>
+					<ClientOnly
+						fallback={<Skeleton className="w-10 h-10 rounded-full" />}
+					>
+						<img
+							src={getCloudinaryUrl(post.author.image)}
+							alt={post.author.name}
+							className="rounded-full w-10 h-10 object-cover"
+						/>
+					</ClientOnly>
 					<div>
 						<h6 className="font-semibold text-sm">{post.author.name}</h6>
 						<p className="text-gray-500 text-xs">@{post.author.username}</p>
@@ -61,7 +66,10 @@ function PostElement({ post }: PostElementProps) {
 			{post.images && post.images.length > 0 && (
 				<div className="mt-2 flex gap-2 overflow-x-auto">
 					{post.images.map((img) => (
-						<ClientOnly fallback={null} key={img.id}>
+						<ClientOnly
+							fallback={<Skeleton className="size-24 rounded-lg" />}
+							key={img.id}
+						>
 							<Image
 								layout="constrained"
 								width={600}
@@ -75,10 +83,12 @@ function PostElement({ post }: PostElementProps) {
 				</div>
 			)}
 
-			<div className="flex items-center gap-2">
-				<Reactions post={post} />
-				<FeedComment postId={post.id} commentCount={post.comments.length} />
-			</div>
+			<ClientOnly fallback={<Skeleton className="h-10 w-full rounded-lg" />}>
+				<div className="flex items-center gap-2">
+					<Reactions post={post} />
+					<FeedComment postId={post.id} commentCount={post.comments.length} />
+				</div>
+			</ClientOnly>
 		</div>
 	);
 }
