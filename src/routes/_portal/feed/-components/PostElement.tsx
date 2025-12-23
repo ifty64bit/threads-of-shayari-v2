@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { getPosts } from "@/functions/posts";
 import { useDeletePostMutation } from "@/hooks/api/posts";
+import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
+import FeedComment from "./FeedComment";
 import Reactions from "./Reactions";
 
 type PostElementProps = {
@@ -19,9 +21,10 @@ type PostElementProps = {
 
 function PostElement({ post }: PostElementProps) {
 	const deletePostMutation = useDeletePostMutation();
+	const { data: session } = authClient.useSession();
 
 	return (
-		<div key={post.id} className="p-4 border-b">
+		<div key={post.id} className="px-4 pt-4 pb-2 border-b">
 			<div className="flex justify-between items-center">
 				<div className="flex items-center gap-2 mb-2">
 					<img
@@ -34,21 +37,23 @@ function PostElement({ post }: PostElementProps) {
 						<p className="text-gray-500 text-xs">@{post.author.username}</p>
 					</div>
 				</div>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" size="icon">
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem
-							variant="destructive"
-							onClick={() => deletePostMutation.mutate({ postId: post.id })}
-						>
-							Delete
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				{Number(session?.user?.id) === post.author.id && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" size="icon">
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem
+								variant="destructive"
+								onClick={() => deletePostMutation.mutate({ postId: post.id })}
+							>
+								Delete
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
 			</div>
 			<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
 				<p className="whitespace-pre-wrap">{post.content}</p>
@@ -69,18 +74,11 @@ function PostElement({ post }: PostElementProps) {
 					))}
 				</div>
 			)}
-			<div className="flex items-center justify-between gap-2">
-				<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
-					<Heart size={14} /> {post.reactions.length}
-				</span>
-				<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
-					<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
-						{post.comments.length} comments
-					</span>
-				</Link>
-			</div>
 
-			<Reactions post={post} />
+			<div className="flex items-center gap-2">
+				<Reactions post={post} />
+				<FeedComment postId={post.id} commentCount={post.comments.length} />
+			</div>
 		</div>
 	);
 }

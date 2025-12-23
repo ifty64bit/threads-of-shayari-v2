@@ -19,6 +19,7 @@ import {
 	useCommentMutation,
 } from "@/hooks/api/comments";
 import { getPostByIdOptions, useDeletePostMutation } from "@/hooks/api/posts";
+import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import Reactions from "@/routes/_portal/feed/-components/Reactions";
 
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/_portal/posts/$postId")({
 function RouteComponent() {
 	const { post } = Route.useLoaderData();
 	const deletePostMutation = useDeletePostMutation();
+	const { data: session } = authClient.useSession();
 
 	return (
 		<div className="p-4">
@@ -50,21 +52,23 @@ function RouteComponent() {
 						<p className="text-gray-500 text-xs">@{post.author.username}</p>
 					</div>
 				</div>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" size="icon">
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem
-							variant="destructive"
-							onClick={() => deletePostMutation.mutate({ postId: post.id })}
-						>
-							Delete
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				{Number(session?.user?.id) === post.author.id && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" size="icon">
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem
+								variant="destructive"
+								onClick={() => deletePostMutation.mutate({ postId: post.id })}
+							>
+								Delete
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
 			</div>
 
 			<p className="whitespace-pre-wrap">{post.content}</p>
@@ -87,11 +91,8 @@ function RouteComponent() {
 				</div>
 			)}
 
-			<div className="flex items-center justify-between gap-2 border-t pt-2 mt-2">
+			<div className="flex items-center justify-between gap-2 border-t py-2 mt-2">
 				<Reactions post={post as Parameters<typeof Reactions>[0]["post"]} />
-				<span className="flex items-center gap-2 text-sm font-light text-gray-500 py-2">
-					{post.comments.length} comments
-				</span>
 			</div>
 
 			<Suspense fallback={<div>Loading comments...</div>}>
