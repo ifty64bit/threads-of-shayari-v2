@@ -10,7 +10,7 @@ import {
 	getAudioPresetsforUsers,
 } from "@/functions/audio";
 import { uploadToCDN } from "@/lib/cloudinary";
-import type { NewAudioPresetSchema } from "@/routes/_admin/audio-presets/-components/NewAudioPreset";
+import type { NewAudioPresetSchema } from "@/lib/schemas/audio";
 
 export function useUplaodAudioPreset() {
 	const queryClient = useQueryClient();

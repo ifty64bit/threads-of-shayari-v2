@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Music, X } from "lucide-react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
 import { Button } from "@/components/ui/button";
 import {
 	closeDialog,
@@ -24,16 +23,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useUplaodAudioPreset } from "@/hooks/api/audio";
-
-export const newAudioPresetSchema = z.object({
-	displayName: z.string().min(3, "Display name must be at least 3 characters"),
-	audio: z.union([z.string().min(3), z.instanceof(File)], {
-		required_error: "Please select an audio file",
-	}),
-	isPublic: z.boolean(),
-});
-
-export type NewAudioPresetSchema = z.infer<typeof newAudioPresetSchema>;
+import {
+	type NewAudioPresetSchema,
+	newAudioPresetSchema,
+} from "@/lib/schemas/audio";
 
 function NewAudioPreset({ children }: { children: React.ReactNode }) {
 	const uploadAudio = useUplaodAudioPreset();

@@ -3,8 +3,8 @@ import { and, desc, eq, ilike } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { audioPresets } from "@/db/schema";
+import { newAudioPresetSchema } from "@/lib/schemas/audio";
 import { adminMiddleware, authMiddleware } from "@/middleware/auth";
-import { newAudioPresetSchema } from "@/routes/_admin/audio-presets/-components/NewAudioPreset";
 
 export const addNewAudioPreset = createServerFn({ method: "POST" })
 	.middleware([adminMiddleware])
