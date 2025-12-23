@@ -1,5 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import {
+	useSuspenseInfiniteQuery,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import dayjs from "dayjs";
@@ -34,7 +37,8 @@ export const Route = createFileRoute("/_portal/posts/$postId")({
 });
 
 function RouteComponent() {
-	const { post } = Route.useLoaderData();
+	const { postId } = Route.useParams();
+	const { data: post } = useSuspenseQuery(getPostByIdOptions(Number(postId)));
 	const deletePostMutation = useDeletePostMutation();
 	const { data: session } = authClient.useSession();
 
@@ -121,7 +125,12 @@ function Comments() {
 		getCommentsByPostIdInfiniteQuery(Number(Route.useParams().postId)),
 	);
 
-	const comments = commentsData.pages.flatMap((page) => page.data);
+	// De-duplicate comments by ID
+	const comments = [
+		...new Map(
+			commentsData.pages.flatMap((page) => page.data).map((c) => [c.id, c]),
+		).values(),
+	];
 
 	function handleComment({ comment }: { comment: string }) {
 		postComment.mutate(

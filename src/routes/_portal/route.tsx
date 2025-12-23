@@ -13,6 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 import { authMiddleware } from "@/middleware/auth";
 
 export const Route = createFileRoute("/_portal")({
@@ -40,9 +41,9 @@ function RouteComponent() {
 				</Link>
 				<div>
 					<DropdownMenu>
-						<DropdownMenuTrigger>
+						<DropdownMenuTrigger title={session?.user?.name}>
 							<img
-								src="https://placehold.co/40x40.png?text=Avatar"
+								src={getCloudinaryUrl(session?.user?.image)}
 								alt="Threads Logo"
 								className="rounded-full"
 							/>

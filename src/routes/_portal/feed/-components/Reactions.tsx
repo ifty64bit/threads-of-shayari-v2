@@ -52,7 +52,7 @@ function Reactions({ post }: ReactionsProps) {
 						variant="ghost"
 						size="icon"
 						disabled={reactionMutation.isPending || !userId}
-						className="relative"
+						className=""
 					>
 						{userReaction ? (
 							<span className="text-xl">

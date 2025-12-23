@@ -35,5 +35,6 @@ export function getCommentsByPostIdInfiniteQuery(postId: number) {
 			getCommentsByPostId({ data: { postId, cursor: pageParam } }),
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
 		initialPageParam: 1,
+		refetchInterval: 30 * 1000, // Refetch every 30 seconds to get latest comments
 	});
 }

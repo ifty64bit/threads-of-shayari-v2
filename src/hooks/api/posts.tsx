@@ -77,6 +77,7 @@ export function getPostByIdOptions(postId: number) {
 	return queryOptions({
 		queryKey: ["post", postId],
 		queryFn: () => getPostById({ data: { postId } }),
+		refetchInterval: 30 * 1000, // Refetch every 30 seconds to get latest reactions
 	});
 }
 
