@@ -35,7 +35,7 @@ function RouteComponent() {
 	}
 
 	return (
-		<main className="max-w-md mx-auto min-h-dvh">
+		<main className="max-w-md mx-auto min-h-dvh mb-16">
 			<section className="sticky top-0 backdrop-blur-lg flex justify-between items-center border-b py-2 px-4 z-50">
 				<Link to="/feed">
 					<h4>NostaGram</h4>
@@ -73,6 +73,14 @@ function RouteComponent() {
 			</section>
 
 			<Outlet />
+
+			<footer className="bg-white fixed bottom-0 left-0 right-0 h-16 flex flex-col items-center justify-center py-2">
+				<p>© 2025 NostaGram. All rights reserved.</p>
+				<div className="flex gap-2">
+					<p>Developed by Cumrunddin Ifty.</p>
+					<p className="text-red-500">Not Developed By Faruk Bhai</p>
+				</div>
+			</footer>
 		</main>
 	);
 }

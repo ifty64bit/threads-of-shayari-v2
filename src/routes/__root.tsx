@@ -60,6 +60,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						TanStackQueryDevtools,
 					]}
 				/>
+				
 				<Scripts />
 				<Toaster />
 				<Analytics />

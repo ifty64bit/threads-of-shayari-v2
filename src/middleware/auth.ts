@@ -14,6 +14,10 @@ export const createAuthMiddleware = (options: AuthMiddlewareOptions = {}) =>
 			throw redirect({ to: "/login" });
 		}
 
+		if (session.user.emailVerified === false) {
+			throw redirect({ to: "/get-approval" });
+		}
+
 		if (options.requireAdmin && !session.user.isAdmin) {
 			throw redirect({ to: "/feed" }); // Or throw an error
 		}

@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Form,
 	FormControl,
@@ -29,9 +30,13 @@ const userSchema = z.object({
 const signupSchema = userSchema
 	.extend({
 		confirm_password: z.string().min(4),
+		acceptTerms: z.boolean().refine((val) => val === true, {
+			message: "বোকাচোদাদের খেলায় নেই না!",
+		}),
 	})
 	.refine((data) => data.password === data.confirm_password, {
 		message: "Passwords do not match",
+		path: ["confirm_password"],
 	});
 
 const signupFn = createServerFn({ method: "POST" })
@@ -71,6 +76,7 @@ function SignupPage() {
 			email: "",
 			password: "",
 			confirm_password: "",
+			acceptTerms: false,
 		},
 	});
 
@@ -158,6 +164,29 @@ function SignupPage() {
 								<FormControl>
 									<Input type="password" {...field} />
 								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="acceptTerms"
+						render={({ field }) => (
+							<FormItem>
+								<div className="flex flex-row items-center gap-2 space-y-0">
+									<FormControl>
+										<Checkbox
+											id="acceptTerms"
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+
+									<FormLabel htmlFor="acceptTerms">
+										আমি স্বীকার করছ যে আমি সার্টিফাইড বোকাচোদা না!
+									</FormLabel>
+								</div>
 								<FormMessage />
 							</FormItem>
 						)}

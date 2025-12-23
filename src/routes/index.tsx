@@ -22,6 +22,7 @@ function App() {
 				<Link
 					to={session.user.isAdmin ? "/dashboard" : "/feed"}
 					className="text-lg text-green-600 mt-4 block"
+					preload={false}
 				>
 					Go to {session.user.isAdmin ? "Dashboard" : "Feed"}
 				</Link>

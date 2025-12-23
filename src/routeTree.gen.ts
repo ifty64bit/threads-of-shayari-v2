@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as GetApprovalRouteImport } from './routes/get-approval'
 import { Route as PortalRouteRouteImport } from './routes/_portal/route'
 import { Route as AdminRouteRouteImport } from './routes/_admin/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ const SignupRoute = SignupRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GetApprovalRoute = GetApprovalRouteImport.update({
+  id: '/get-approval',
+  path: '/get-approval',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRouteRoute = PortalRouteRouteImport.update({
@@ -83,6 +89,7 @@ const PortalPostsPostIdRoute = PortalPostsPostIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/get-approval': typeof GetApprovalRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AdminDashboardRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/get-approval': typeof GetApprovalRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AdminDashboardRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteRouteWithChildren
   '/_portal': typeof PortalRouteRouteWithChildren
+  '/get-approval': typeof GetApprovalRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/get-approval'
     | '/login'
     | '/signup'
     | '/dashboard'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/get-approval'
     | '/login'
     | '/signup'
     | '/dashboard'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_admin'
     | '/_portal'
+    | '/get-approval'
     | '/login'
     | '/signup'
     | '/_admin/dashboard'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   PortalRouteRoute: typeof PortalRouteRouteWithChildren
+  GetApprovalRoute: typeof GetApprovalRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/get-approval': {
+      id: '/get-approval'
+      path: '/get-approval'
+      fullPath: '/get-approval'
+      preLoaderRoute: typeof GetApprovalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_portal': {
@@ -295,6 +315,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   PortalRouteRoute: PortalRouteRouteWithChildren,
+  GetApprovalRoute: GetApprovalRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
