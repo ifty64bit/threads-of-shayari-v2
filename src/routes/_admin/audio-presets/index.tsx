@@ -11,6 +11,7 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Switch } from "@/components/ui/switch";
 import {
 	Table,
 	TableBody,
@@ -19,7 +20,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { getAudioPresetsForAdminOptions } from "@/hooks/api/audio";
+import {
+	getAudioPresetsForAdminOptions,
+	useUpdateAudioPreset,
+} from "@/hooks/api/audio";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import NewAudioPreset from "./-components/NewAudioPreset";
 
@@ -53,6 +57,8 @@ function RouteComponent() {
 			search,
 		}),
 	);
+
+	const updateAudioPreset = useUpdateAudioPreset();
 
 	const { presets, total } = data;
 	const currentPage = Math.floor(offset / limit) + 1;
@@ -98,6 +104,7 @@ function RouteComponent() {
 						<TableHead className="w-24 text-center">ID</TableHead>
 						<TableHead className="text-center">Display Name</TableHead>
 						<TableHead className="text-center">Audio</TableHead>
+						<TableHead className="text-center">Is Public</TableHead>
 						<TableHead className="text-center">Uploaded At</TableHead>
 						<TableHead className="text-center">Actions</TableHead>
 					</TableRow>
@@ -122,6 +129,22 @@ function RouteComponent() {
 										/>
 									</audio>
 								</ClientOnly>
+							</TableCell>
+							<TableCell className="text-center">
+								<Switch
+									checked={preset.isPublic}
+									onCheckedChange={(checked) => {
+										updateAudioPreset.mutate({
+											id: preset.id,
+											data: {
+												isPublic: checked,
+											},
+											limit,
+											offset,
+											search,
+										});
+									}}
+								/>
 							</TableCell>
 							<TableCell className="text-center">
 								{dayjs(preset.createdAt).format("D MMM YYYY h:mmA")}

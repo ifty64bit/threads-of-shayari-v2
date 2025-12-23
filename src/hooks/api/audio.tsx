@@ -8,6 +8,7 @@ import {
 	addNewAudioPreset,
 	getAudioPresetsforAdmin,
 	getAudioPresetsforUsers,
+	updateAudioPreset,
 } from "@/functions/audio";
 import { uploadToCDN } from "@/lib/cloudinary";
 import type { NewAudioPresetSchema } from "@/lib/schemas/audio";
@@ -67,5 +68,55 @@ export function getAudioPresetsForAdminOptions({
 	return queryOptions({
 		queryKey: ["audio-presets-admin", { search, limit, offset }],
 		queryFn: () => getAudioPresetsforAdmin({ data: { search, limit, offset } }),
+	});
+}
+
+export function useUpdateAudioPreset() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: async ({
+			id,
+			data,
+		}: {
+			id: number;
+			data: { displayName?: string; isPublic?: boolean };
+			limit?: number;
+			offset?: number;
+			search?: string;
+		}) => {
+			return await updateAudioPreset({ data: { id, data } });
+		},
+		onMutate: () => {
+			const toastId = toast.loading("Updating Audio Preset");
+			return {
+				toastId,
+			};
+		},
+		onSuccess: (data, variables, ctx) => {
+			toast.success("Audio Preset Updated Successfully", {
+				id: ctx.toastId,
+			});
+			queryClient.setQueryData(
+				getAudioPresetsForAdminOptions({
+					search: variables.search,
+					limit: variables.limit,
+					offset: variables.offset,
+				}).queryKey,
+				(oldData) => {
+					if (!oldData) return oldData;
+					return {
+						...oldData,
+						presets: oldData.presets.map((preset) =>
+							preset.id === variables.id ? { ...preset, ...data } : preset,
+						),
+					};
+				},
+			);
+		},
+		onError: (_, __, ctx) => {
+			toast.error("Failed to Update Audio Preset", {
+				id: ctx?.toastId,
+			});
+		},
 	});
 }

@@ -79,3 +79,23 @@ export const getAudioPresetsforAdmin = createServerFn({ method: "GET" })
 			total: totalResult[0]?.count ?? 0,
 		};
 	});
+
+export const updateAudioPreset = createServerFn({ method: "POST" })
+	.inputValidator(
+		z.object({
+			id: z.number(),
+			data: z.object({
+				displayName: z.string().optional(),
+				isPublic: z.boolean().optional(),
+			}),
+		}),
+	)
+	.middleware([adminMiddleware])
+	.handler(async ({ data }) => {
+		const result = await db
+			.update(audioPresets)
+			.set(data.data)
+			.where(eq(audioPresets.id, data.id))
+			.returning();
+		return result[0];
+	});
