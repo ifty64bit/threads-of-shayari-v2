@@ -1,5 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link, useRouter } from "@tanstack/react-router";
 import { LayoutDashboard, Users } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "./ui/button";
 import {
 	Sidebar,
 	SidebarContent,
@@ -23,6 +26,10 @@ const links = [
 ];
 
 function AppSidebar() {
+	const router = useRouter();
+	const { signOut } = authClient;
+	const queryClient = useQueryClient();
+
 	return (
 		<Sidebar>
 			<SidebarHeader>Lara Choda</SidebarHeader>
@@ -37,7 +44,19 @@ function AppSidebar() {
 					</SidebarMenuItem>
 				))}
 			</SidebarContent>
-			<SidebarFooter />
+			<SidebarFooter>
+				<Button
+					variant="ghost"
+					className="w-full mb-4"
+					onClick={async () => {
+						queryClient.clear();
+						router.invalidate();
+						await signOut();
+					}}
+				>
+					Logout
+				</Button>
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

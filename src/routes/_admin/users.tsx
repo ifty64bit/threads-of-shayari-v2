@@ -49,11 +49,11 @@ function RouteComponent() {
 			<Table>
 				<TableHeader>
 					<TableRow className="text-center">
-						<TableHead className="w-[100px] text-center">ID</TableHead>
+						<TableHead className="w-24 text-center">ID</TableHead>
 						<TableHead className="text-center">Name</TableHead>
 						<TableHead className="text-center">Username</TableHead>
 						<TableHead className="text-center">Email</TableHead>
-						<TableHead className="text-center">Verified</TableHead>
+						<TableHead className="text-center">Approved</TableHead>
 						<TableHead className="text-center">Joined</TableHead>
 						<TableHead className="text-center">Actions</TableHead>
 					</TableRow>
