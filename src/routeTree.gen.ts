@@ -20,6 +20,7 @@ import { Route as AdminDashboardRouteImport } from './routes/_admin/dashboard'
 import { Route as PortalProfileIndexRouteImport } from './routes/_portal/profile/index'
 import { Route as PortalPostsIndexRouteImport } from './routes/_portal/posts/index'
 import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
+import { Route as AdminAudioPresetsIndexRouteImport } from './routes/_admin/audio-presets/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as PortalPostsPostIdRouteImport } from './routes/_portal/posts/$postId'
 
@@ -76,6 +77,11 @@ const PortalFeedIndexRoute = PortalFeedIndexRouteImport.update({
   path: '/feed/',
   getParentRoute: () => PortalRouteRoute,
 } as any)
+const AdminAudioPresetsIndexRoute = AdminAudioPresetsIndexRouteImport.update({
+  id: '/audio-presets/',
+  path: '/audio-presets/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PortalPostsPostIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/audio-presets': typeof AdminAudioPresetsIndexRoute
   '/feed': typeof PortalFeedIndexRoute
   '/posts': typeof PortalPostsIndexRoute
   '/profile': typeof PortalProfileIndexRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PortalPostsPostIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/audio-presets': typeof AdminAudioPresetsIndexRoute
   '/feed': typeof PortalFeedIndexRoute
   '/posts': typeof PortalPostsIndexRoute
   '/profile': typeof PortalProfileIndexRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/_admin/users': typeof AdminUsersRoute
   '/_portal/posts/$postId': typeof PortalPostsPostIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_admin/audio-presets/': typeof AdminAudioPresetsIndexRoute
   '/_portal/feed/': typeof PortalFeedIndexRoute
   '/_portal/posts/': typeof PortalPostsIndexRoute
   '/_portal/profile/': typeof PortalProfileIndexRoute
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/posts/$postId'
     | '/api/auth/$'
+    | '/audio-presets'
     | '/feed'
     | '/posts'
     | '/profile'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/posts/$postId'
     | '/api/auth/$'
+    | '/audio-presets'
     | '/feed'
     | '/posts'
     | '/profile'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/_admin/users'
     | '/_portal/posts/$postId'
     | '/api/auth/$'
+    | '/_admin/audio-presets/'
     | '/_portal/feed/'
     | '/_portal/posts/'
     | '/_portal/profile/'
@@ -262,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalFeedIndexRouteImport
       parentRoute: typeof PortalRouteRoute
     }
+    '/_admin/audio-presets/': {
+      id: '/_admin/audio-presets/'
+      path: '/audio-presets'
+      fullPath: '/audio-presets'
+      preLoaderRoute: typeof AdminAudioPresetsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -282,11 +301,13 @@ declare module '@tanstack/react-router' {
 interface AdminRouteRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminAudioPresetsIndexRoute: typeof AdminAudioPresetsIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminAudioPresetsIndexRoute: AdminAudioPresetsIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
