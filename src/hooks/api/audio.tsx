@@ -33,7 +33,7 @@ export function useUplaodAudioPreset() {
 				id: ctx.toastId,
 			});
 			queryClient.invalidateQueries({
-				queryKey: ["audio-presets"],
+				queryKey: ["audio-presets-admin"],
 			});
 		},
 		onError: (_, __, ctx) => {
@@ -65,7 +65,7 @@ export function getAudioPresetsForAdminOptions({
 	offset?: number;
 }) {
 	return queryOptions({
-		queryKey: ["audio-presets", { search, limit, offset }],
+		queryKey: ["audio-presets-admin", { search, limit, offset }],
 		queryFn: () => getAudioPresetsforAdmin({ data: { search, limit, offset } }),
 	});
 }

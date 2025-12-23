@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, desc, eq, ilike } from "drizzle-orm";
+import { and, count, desc, eq, ilike } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { audioPresets } from "@/db/schema";
@@ -59,15 +59,23 @@ export const getAudioPresetsforAdmin = createServerFn({ method: "GET" })
 		}),
 	)
 	.handler(async ({ data }) => {
-		const presets = await db
-			.select()
-			.from(audioPresets)
-			.limit(data.limit)
-			.offset(data.offset)
-			.where(
-				data.search
-					? ilike(audioPresets.displayName, `%${data.search}%`)
-					: undefined,
-			);
-		return presets;
+		const whereClause = data.search
+			? ilike(audioPresets.displayName, `%${data.search}%`)
+			: undefined;
+
+		const [presets, totalResult] = await Promise.all([
+			db
+				.select()
+				.from(audioPresets)
+				.limit(data.limit)
+				.offset(data.offset)
+				.where(whereClause)
+				.orderBy(desc(audioPresets.createdAt)),
+			db.select({ count: count() }).from(audioPresets).where(whereClause),
+		]);
+
+		return {
+			presets,
+			total: totalResult[0]?.count ?? 0,
+		};
 	});

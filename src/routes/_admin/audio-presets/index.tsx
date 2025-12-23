@@ -1,9 +1,16 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { useState } from "react";
 import z from "zod";
 import { Button } from "@/components/ui/button";
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
 	Table,
 	TableBody,
@@ -36,17 +43,46 @@ export const Route = createFileRoute("/_admin/audio-presets/")({
 });
 
 function RouteComponent() {
-	const [limit, setLimit] = useState(10);
-	const [offset, setOffset] = useState(0);
-	const [search, setSearch] = useState("");
+	const { limit, offset, search } = Route.useSearch();
+	const navigate = Route.useNavigate();
 
-	const { data: presets } = useSuspenseQuery(
+	const { data } = useSuspenseQuery(
 		getAudioPresetsForAdminOptions({
 			limit,
 			offset,
 			search,
 		}),
 	);
+
+	const { presets, total } = data;
+	const currentPage = Math.floor(offset / limit) + 1;
+	const totalPages = Math.ceil(total / limit);
+
+	const goToPage = (page: number) => {
+		navigate({
+			search: {
+				limit,
+				offset: (page - 1) * limit,
+				search,
+			},
+		});
+	};
+
+	const getVisiblePages = () => {
+		const pages: number[] = [];
+		const maxVisible = 5;
+		let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+		const end = Math.min(totalPages, start + maxVisible - 1);
+
+		if (end - start + 1 < maxVisible) {
+			start = Math.max(1, end - maxVisible + 1);
+		}
+
+		for (let i = start; i <= end; i++) {
+			pages.push(i);
+		}
+		return pages;
+	};
 
 	return (
 		<div className="space-y-4">
@@ -62,7 +98,6 @@ function RouteComponent() {
 						<TableHead className="w-24 text-center">ID</TableHead>
 						<TableHead className="text-center">Display Name</TableHead>
 						<TableHead className="text-center">Audio</TableHead>
-
 						<TableHead className="text-center">Uploaded At</TableHead>
 						<TableHead className="text-center">Actions</TableHead>
 					</TableRow>
@@ -77,14 +112,16 @@ function RouteComponent() {
 								{preset.displayName}
 							</TableCell>
 							<TableCell className="text-center">
-								<audio controls>
-									<source
-										src={
-											getCloudinaryUrl(preset.url, { type: "audio" }) ??
-											undefined
-										}
-									/>
-								</audio>
+								<ClientOnly>
+									<audio controls>
+										<source
+											src={
+												getCloudinaryUrl(preset.url, { type: "audio" }) ??
+												undefined
+											}
+										/>
+									</audio>
+								</ClientOnly>
 							</TableCell>
 							<TableCell className="text-center">
 								{dayjs(preset.createdAt).format("D MMM YYYY h:mmA")}
@@ -94,6 +131,48 @@ function RouteComponent() {
 					))}
 				</TableBody>
 			</Table>
+
+			{totalPages > 1 && (
+				<Pagination>
+					<PaginationContent>
+						<PaginationItem>
+							<PaginationPrevious
+								onClick={() => goToPage(currentPage - 1)}
+								aria-disabled={currentPage <= 1}
+								className={
+									currentPage <= 1
+										? "pointer-events-none opacity-50"
+										: "cursor-pointer"
+								}
+							/>
+						</PaginationItem>
+
+						{getVisiblePages().map((page) => (
+							<PaginationItem key={page}>
+								<PaginationLink
+									onClick={() => goToPage(page)}
+									isActive={page === currentPage}
+									className="cursor-pointer"
+								>
+									{page}
+								</PaginationLink>
+							</PaginationItem>
+						))}
+
+						<PaginationItem>
+							<PaginationNext
+								onClick={() => goToPage(currentPage + 1)}
+								aria-disabled={currentPage >= totalPages}
+								className={
+									currentPage >= totalPages
+										? "pointer-events-none opacity-50"
+										: "cursor-pointer"
+								}
+							/>
+						</PaginationItem>
+					</PaginationContent>
+				</Pagination>
+			)}
 		</div>
 	);
 }
