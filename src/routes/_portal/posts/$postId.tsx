@@ -90,7 +90,7 @@ function RouteComponent() {
 								layout="constrained"
 								width={600}
 								height={338}
-								src={getCloudinaryUrl(img.url)}
+								src={getCloudinaryUrl(img.url) ?? ""}
 								alt="Post attachment"
 								className="rounded-lg max-h-60 mx-auto w-full object-cover"
 							/>
@@ -183,7 +183,7 @@ function Comments() {
 								layout="constrained"
 								width={30}
 								height={30}
-								src={getCloudinaryUrl(comment.user.image)}
+								src={getCloudinaryUrl(comment.user.image) ?? ""}
 								alt="Post attachment"
 								className="rounded-full max-h-60 mx-auto w-full object-cover "
 							/>

@@ -74,7 +74,7 @@ function PostElement({ post }: PostElementProps) {
 								layout="constrained"
 								width={600}
 								height={338}
-								src={getCloudinaryUrl(img.url)}
+								src={getCloudinaryUrl(img.url) ?? ""}
 								alt="Post attachment"
 								className="rounded-lg max-h-60 mx-auto w-full object-cover"
 							/>

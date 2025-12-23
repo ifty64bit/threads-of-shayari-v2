@@ -29,7 +29,7 @@ export const getCloudinaryUrl = (
 	if (!publicId) {
 		return type === "image"
 			? "https://placehold.co/40x40.png?text=Avatar"
-			: null;
+			: undefined;
 	}
 
 	const cld = new Cloudinary({
