@@ -71,7 +71,7 @@ function PostElement({ post }: PostElementProps) {
 				<div className="mt-2 flex gap-2 overflow-x-auto">
 					{post.images.map((img) => (
 						<ClientOnly
-							fallback={<Skeleton className="size-24 rounded-lg" />}
+							fallback={<Skeleton className="w-full aspect-video rounded-lg" />}
 							key={img.id}
 						>
 							<Image

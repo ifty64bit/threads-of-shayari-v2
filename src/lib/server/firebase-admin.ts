@@ -6,23 +6,42 @@ const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 let firebaseApp: admin.app.App | undefined;
 
 function getFirebaseApp() {
-	if (!firebaseApp && serviceAccountJson) {
-		try {
-			const serviceAccount = JSON.parse(serviceAccountJson);
-			firebaseApp = admin.initializeApp({
-				credential: admin.credential.cert(serviceAccount),
-			});
-		} catch (error) {
-			console.error("Failed to initialize Firebase Admin:", error);
-		}
+	if (firebaseApp) {
+		return firebaseApp;
 	}
+
+	if (!serviceAccountJson) {
+		console.error(
+			"[Firebase] FIREBASE_SERVICE_ACCOUNT_JSON environment variable is not set",
+		);
+		return undefined;
+	}
+
+	try {
+		console.log("[Firebase] Parsing service account JSON...");
+		const serviceAccount = JSON.parse(serviceAccountJson);
+		console.log(
+			"[Firebase] Service account project:",
+			serviceAccount.project_id,
+		);
+
+		firebaseApp = admin.initializeApp({
+			credential: admin.credential.cert(serviceAccount),
+		});
+		console.log("[Firebase] Admin SDK initialized successfully");
+	} catch (error) {
+		console.error("[Firebase] Failed to initialize Firebase Admin:", error);
+	}
+
 	return firebaseApp;
 }
 
 export function getMessaging() {
 	const app = getFirebaseApp();
 	if (!app) {
-		console.warn("Firebase Admin not initialized - notifications disabled");
+		console.warn(
+			"[Firebase] Admin not initialized - notifications disabled. Check FIREBASE_SERVICE_ACCOUNT_JSON env var.",
+		);
 		return null;
 	}
 	return admin.messaging(app);
