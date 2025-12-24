@@ -11,8 +11,15 @@ export function useCommentMutation() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({ postId, comment }: { postId: number; comment: string }) =>
-			postComment({ data: { postId, comment } }),
+		mutationFn: ({
+			postId,
+			comment,
+			audioPresetId,
+		}: {
+			postId: number;
+			comment?: string;
+			audioPresetId?: number;
+		}) => postComment({ data: { postId, comment, audioPresetId } }),
 		onSuccess: (_data, { postId }) => {
 			queryClient.invalidateQueries({
 				queryKey: postsQueryOptions.queryKey,

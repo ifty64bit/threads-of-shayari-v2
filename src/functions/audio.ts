@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, count, desc, eq, ilike } from "drizzle-orm";
+import { count, desc, eq, ilike } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { audioPresets } from "@/db/schema";
@@ -27,26 +27,41 @@ export const getAudioPresetsforUsers = createServerFn({ method: "GET" })
 	.inputValidator(
 		z.object({
 			search: z.string().optional(),
+			cursor: z.number().optional(),
+			limit: z.number().optional().default(10),
 		}),
 	)
 	.handler(async ({ data }) => {
-		const presets = await db
-			.select({
-				id: audioPresets.id,
-				displayName: audioPresets.displayName,
-				url: audioPresets.url,
-			})
-			.from(audioPresets)
-			.where(
+		const presets = await db.query.audioPresets.findMany({
+			columns: {
+				id: true,
+				displayName: true,
+				url: true,
+			},
+			where: (fields, { and, ilike, lt, eq }) =>
 				and(
 					data.search
-						? ilike(audioPresets.displayName, `%${data.search}%`)
+						? ilike(fields.displayName, `%${data.search}%`)
 						: undefined,
-					eq(audioPresets.isPublic, true),
+					eq(fields.isPublic, true),
+					data.cursor ? lt(fields.id, data.cursor) : undefined,
 				),
-			)
-			.orderBy(desc(audioPresets.createdAt));
-		return presets;
+			orderBy: (fields, { desc }) => [desc(fields.id)],
+			limit: data.limit + 1,
+		});
+
+		let nextCursor: number | null = null;
+		if (presets.length > data.limit) {
+			const nextItem = presets.pop();
+			if (nextItem) {
+				nextCursor = nextItem.id;
+			}
+		}
+
+		return {
+			data: presets,
+			nextCursor,
+		};
 	});
 
 export const getAudioPresetsforAdmin = createServerFn({ method: "GET" })

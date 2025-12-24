@@ -6,8 +6,8 @@ import {
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import dayjs from "dayjs";
-import { MoreHorizontal, Send } from "lucide-react";
-import { Suspense } from "react";
+import { MoreHorizontal, Music, Send, Volume2, X } from "lucide-react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { getAudioPresetsforUsers } from "@/functions/audio";
 import {
 	getCommentsByPostIdInfiniteQuery,
 	useCommentMutation,
@@ -26,6 +27,7 @@ import { getPostByIdOptions, useDeletePostMutation } from "@/hooks/api/posts";
 import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import Reactions from "@/routes/_portal/feed/-components/Reactions";
+import AudioPresetSelector from "./-components/AudioPresetSelector";
 
 export const Route = createFileRoute("/_portal/posts/$postId")({
 	component: RouteComponent,
@@ -103,28 +105,143 @@ function RouteComponent() {
 				<Reactions post={post as Parameters<typeof Reactions>[0]["post"]} />
 			</div>
 
-			<Suspense fallback={<div>Loading comments...</div>}>
-				<Comments />
-			</Suspense>
+			<section className="space-y-4 border-t pt-4">
+				<h6>Comments</h6>
+
+				<NewComment />
+				<Suspense fallback={<div>Loading comments...</div>}>
+					<Comments postAuthorId={post.author.id} />
+				</Suspense>
+			</section>
 		</div>
 	);
 }
 
-function Comments() {
+type AudioType = Awaited<
+	ReturnType<typeof getAudioPresetsforUsers>
+>["data"][number];
+
+function NewComment() {
 	const { postId } = Route.useParams();
 	const postComment = useCommentMutation();
+	const [audio, setAudio] = useState<AudioType | null>(null);
 
 	const form = useForm({
 		resolver: zodResolver(
-			z.object({
-				comment: z.string().min(1).max(280),
-			}),
+			z
+				.object({
+					comment: z.string().max(280).optional(),
+					audioPresetId: z.number().optional(),
+				})
+				.refine((data) => data.comment?.trim() || data.audioPresetId, {
+					message: "Please add a comment or select an audio",
+				}),
 		),
 		defaultValues: {
 			comment: "",
 		},
 	});
 
+	function handleComment(data: { comment?: string; audioPresetId?: number }) {
+		postComment.mutate(
+			{
+				postId: Number(postId),
+				comment: data.comment,
+				audioPresetId: data.audioPresetId,
+			},
+			{
+				onSuccess: () => {
+					form.reset();
+					setAudio(null);
+				},
+			},
+		);
+	}
+
+	return (
+		<div className="space-y-3">
+			<form onSubmit={form.handleSubmit(handleComment)} className="space-y-3">
+				{/* Comment Input Area */}
+				<div className="relative">
+					<textarea
+						id="comment-input"
+						className="w-full min-h-24 px-4 py-3 outline-none bg-muted/50 resize-none overflow-y-auto border rounded-xl placeholder:text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+						placeholder="Write a comment..."
+						rows={3}
+						{...form.register("comment")}
+					/>
+				</div>
+
+				{/* Audio Preview Card */}
+				{audio?.url && (
+					<div className="relative bg-linear-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+						<div className="flex items-center gap-3">
+							<div className="shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+								<Music className="h-5 w-5 text-primary" />
+							</div>
+							<div className="flex-1 min-w-0">
+								<p className="text-sm font-medium truncate">
+									{audio.displayName}
+								</p>
+								<audio
+									src={getCloudinaryUrl(audio.url, { type: "audio" })}
+									controls
+									className="w-full h-8 mt-1 [&::-webkit-media-controls-panel]:bg-transparent"
+								/>
+							</div>
+							<button
+								type="button"
+								onClick={() => {
+									setAudio(null);
+									form.setValue("audioPresetId", undefined);
+								}}
+								className="shrink-0 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+								title="Remove audio"
+							>
+								<X className="h-4 w-4" />
+							</button>
+						</div>
+					</div>
+				)}
+
+				{/* Actions Row */}
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-1">
+						<AudioPresetSelector
+							value={form.watch("audioPresetId")}
+							onChange={(value) => {
+								form.setValue("audioPresetId", value.id);
+								setAudio(value);
+							}}
+						>
+							<div
+								className={`flex items-center gap-1.5 ${audio ? "text-primary" : "text-muted-foreground"}`}
+							>
+								<Volume2 className="h-4 w-4" />
+								<span className="text-xs">Add audio</span>
+							</div>
+						</AudioPresetSelector>
+					</div>
+
+					<Button
+						type="submit"
+						size="sm"
+						isLoading={postComment.isPending}
+						disabled={
+							!form.watch("comment")?.trim() && !form.watch("audioPresetId")
+						}
+						className="rounded-full px-4"
+					>
+						<Send className="h-4 w-4 mr-1.5" />
+						Comment
+					</Button>
+				</div>
+			</form>
+		</div>
+	);
+}
+
+function Comments({ postAuthorId }: { postAuthorId: number }) {
 	const { data: commentsData } = useSuspenseInfiniteQuery(
 		getCommentsByPostIdInfiniteQuery(Number(Route.useParams().postId)),
 	);
@@ -136,70 +253,66 @@ function Comments() {
 		).values(),
 	];
 
-	function handleComment({ comment }: { comment: string }) {
-		postComment.mutate(
-			{ postId: Number(postId), comment },
-			{
-				onSuccess: () => {
-					form.reset();
-				},
-			},
-		);
-	}
-
 	return (
-		<section className="space-y-4 border-t pt-4">
-			<div className="flex items-center gap-2">
-				<h6>Comments</h6>
-			</div>
-			<div>
-				<form
-					onSubmit={form.handleSubmit(handleComment)}
-					className="flex items-end gap-2"
-				>
-					<textarea
-						id="comment-input"
-						className="w-full min-h-6  px-4 py-2 outline-none bg-transparent resize-none overflow-y-auto border rounded-md placeholder:text-sm"
-						placeholder="Write a comment..."
-						rows={4}
-						{...form.register("comment")}
-					/>
-					<Button
-						type="submit"
-						size={"sm"}
-						variant={"ghost"}
-						isLoading={postComment.isPending}
-					>
-						<Send />
-					</Button>
-				</form>
-			</div>
-			<div className="space-y-2">
-				{comments.map((comment) => (
-					<div key={comment.id} className="flex justify-start gap-2">
-						<ClientOnly fallback={null}>
-							<Image
-								cdn="cloudinary"
-								layout="constrained"
-								width={30}
-								height={30}
-								src={getCloudinaryUrl(comment.user.image) ?? ""}
-								alt="Post attachment"
-								className="rounded-full max-h-60 mx-auto w-full object-cover "
-							/>
-						</ClientOnly>
-						<div className="w-full bg-gray-100 p-2 rounded-lg">
-							<div>
-								<h6 className="text-sm">{comment.user.name}</h6>
-							</div>
-							<p className="whitespace-pre-wrap text-xs">{comment.content}</p>
-							<span className="text-right text-xs text-gray-500 block">
-								{dayjs(comment.createdAt).format("D MMM YYYY h:mmA")}
-							</span>
+		<div className="space-y-3">
+			{comments.map((comment) => (
+				<div key={comment.id} className="flex justify-start gap-2">
+					<ClientOnly fallback={null}>
+						<Image
+							cdn="cloudinary"
+							layout="constrained"
+							width={30}
+							height={30}
+							src={getCloudinaryUrl(comment.user.image) ?? ""}
+							alt="Comment author"
+							className="rounded-full size-8 object-cover shrink-0"
+						/>
+					</ClientOnly>
+					<div className="flex-1 bg-muted/50 p-3 rounded-xl">
+						<div className="flex items-center gap-2">
+							<h6 className="text-sm font-medium">{comment.user.name}</h6>
+							{comment.user.id === postAuthorId && (
+								<span className="px-1.5 py-0.5 text-[10px] font-semibold bg-primary/10 text-primary rounded">
+									OP
+								</span>
+							)}
 						</div>
+
+						{comment.content && (
+							<p className="whitespace-pre-wrap text-sm mt-1">
+								{comment.content}
+							</p>
+						)}
+
+						{/* Audio Player */}
+						{comment.audioPreset && (
+							<div className="mt-2 bg-linear-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-2">
+								<div className="flex items-center gap-2">
+									<div className="shrink-0 w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center">
+										<Music className="h-4 w-4 text-primary" />
+									</div>
+									<div className="flex-1 min-w-0">
+										<p className="text-xs font-medium truncate">
+											{comment.audioPreset.displayName}
+										</p>
+										<audio
+											src={getCloudinaryUrl(comment.audioPreset.url, {
+												type: "audio",
+											})}
+											controls
+											className="w-full h-7 mt-0.5 [&::-webkit-media-controls-panel]:bg-transparent"
+										/>
+									</div>
+								</div>
+							</div>
+						)}
+
+						<span className="text-right text-xs text-muted-foreground block mt-2">
+							{dayjs(comment.createdAt).format("D MMM YYYY h:mmA")}
+						</span>
 					</div>
-				))}
-			</div>
-		</section>
+				</div>
+			))}
+		</div>
 	);
 }

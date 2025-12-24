@@ -1,4 +1,5 @@
 import {
+	infiniteQueryOptions,
 	queryOptions,
 	useMutation,
 	useQueryClient,
@@ -45,14 +46,19 @@ export function useUplaodAudioPreset() {
 	});
 }
 
-export function getAudioPresetsForUsersOptions({
+export function getInfiniteAudioPresetsForUsersOptions({
 	search,
 }: {
 	search?: string;
 }) {
-	return queryOptions({
+	return infiniteQueryOptions({
 		queryKey: ["audio-presets", { search }],
-		queryFn: () => getAudioPresetsforUsers({ data: { search } }),
+		queryFn: ({ pageParam }) =>
+			getAudioPresetsforUsers({
+				data: { search, cursor: pageParam ?? undefined },
+			}),
+		initialPageParam: null as number | null,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
 	});
 }
 

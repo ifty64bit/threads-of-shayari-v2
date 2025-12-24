@@ -27,6 +27,7 @@ export const getCommentsByPostId = createServerFn({ method: "GET" })
 						username: true,
 					},
 				},
+				audioPreset: true,
 			},
 		});
 		let nextCursor: number | null = null;
@@ -44,14 +45,25 @@ export const getCommentsByPostId = createServerFn({ method: "GET" })
 
 export const postComment = createServerFn({ method: "POST" })
 	.middleware([authMiddleware])
-	.inputValidator(z.object({ postId: z.number(), comment: z.string() }))
+	.inputValidator(
+		z
+			.object({
+				postId: z.number(),
+				comment: z.string().max(280).optional(),
+				audioPresetId: z.number().optional(),
+			})
+			.refine((data) => data.comment?.trim() || data.audioPresetId, {
+				message: "Please add a comment or select an audio",
+			}),
+	)
 	.handler(async ({ data, context }) => {
 		const [comment] = await db
 			.insert(comments)
 			.values({
-				content: data.comment,
+				content: data.comment || null,
 				postId: data.postId,
 				userId: context.userId,
+				audioPresetId: data.audioPresetId,
 			})
 			.returning();
 		return comment;
