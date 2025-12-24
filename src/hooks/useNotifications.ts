@@ -26,7 +26,49 @@ export function useNotifications() {
 	const [status, setStatus] = useState<NotificationStatus>("idle");
 	const [isSupported, setIsSupported] = useState(false);
 
-	// Check if notifications are supported
+	/**
+	 * Set up the foreground message listener for toast notifications
+	 */
+	const setupForegroundListener = useCallback(() => {
+		if (typeof window === "undefined" || !isFirebaseConfigured()) return;
+
+		try {
+			let app = getApps()[0];
+			if (!app) {
+				app = initializeApp(firebaseConfig);
+			}
+
+			const messaging = getMessaging(app);
+
+			// Set up foreground message handler
+			onMessage(messaging, (payload) => {
+				console.log("Foreground message received:", payload);
+
+				const title = payload.notification?.title || "New Notification";
+				const body = payload.notification?.body || "";
+				const postId = payload.data?.postId;
+
+				// Show toast notification
+				toast(title, {
+					description: body,
+					action: postId
+						? {
+								label: "View",
+								onClick: () => {
+									window.location.href = `/posts/${postId}`;
+								},
+							}
+						: undefined,
+				});
+			});
+
+			console.log("Foreground message listener set up");
+		} catch (error) {
+			console.error("Failed to setup foreground listener:", error);
+		}
+	}, []);
+
+	// Check if notifications are supported and set up listener if already granted
 	useEffect(() => {
 		const supported =
 			typeof window !== "undefined" &&
@@ -39,10 +81,12 @@ export function useNotifications() {
 		// Set initial status based on current permission
 		if (supported && Notification.permission === "granted") {
 			setStatus("granted");
+			// Set up the foreground listener for already-granted permissions
+			setupForegroundListener();
 		} else if (Notification.permission === "denied") {
 			setStatus("denied");
 		}
-	}, []);
+	}, [setupForegroundListener]);
 
 	/**
 	 * Register the service worker and get FCM token
