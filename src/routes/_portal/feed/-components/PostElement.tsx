@@ -13,7 +13,11 @@ import type { getPosts } from "@/functions/posts";
 import { useDeletePostMutation } from "@/hooks/api/posts";
 import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
-import FeedComment from "./FeedComment";
+import {
+	FeedCommentForm,
+	FeedCommentProvider,
+	FeedCommentTrigger,
+} from "./FeedComment";
 import Reactions from "./Reactions";
 
 type PostElementProps = {
@@ -84,10 +88,18 @@ function PostElement({ post }: PostElementProps) {
 			)}
 
 			<ClientOnly fallback={<Skeleton className="h-10 w-full rounded-lg" />}>
-				<div className="flex items-center gap-2">
-					<Reactions post={post} />
-					<FeedComment postId={post.id} commentCount={post.comments.length} />
-				</div>
+				<FeedCommentProvider>
+					{/* Top row: Reactions + Comment icon + count */}
+					<div className="flex items-center gap-2">
+						<Reactions post={post} />
+						<FeedCommentTrigger
+							postId={post.id}
+							commentCount={post.comments.length}
+						/>
+					</div>
+					{/* Bottom row: Comment form (full width) */}
+					<FeedCommentForm postId={post.id} />
+				</FeedCommentProvider>
 			</ClientOnly>
 		</div>
 	);
