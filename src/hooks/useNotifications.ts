@@ -98,6 +98,40 @@ export function useNotifications() {
 				"/firebase-messaging-sw.js",
 			);
 			console.log("Service Worker registered:", registration);
+
+			// Wait for the service worker to be ready (active)
+			if (registration.installing) {
+				console.log(
+					"[FCM] Service worker installing, waiting for activation...",
+				);
+				await new Promise<void>((resolve) => {
+					registration.installing!.addEventListener("statechange", (e) => {
+						const sw = e.target as ServiceWorker;
+						console.log("[FCM] Service worker state:", sw.state);
+						if (sw.state === "activated") {
+							resolve();
+						}
+					});
+				});
+			} else if (registration.waiting) {
+				console.log("[FCM] Service worker waiting, waiting for activation...");
+				await new Promise<void>((resolve) => {
+					registration.waiting!.addEventListener("statechange", (e) => {
+						const sw = e.target as ServiceWorker;
+						if (sw.state === "activated") {
+							resolve();
+						}
+					});
+				});
+			}
+
+			// Ensure the service worker is controlling the page
+			if (!navigator.serviceWorker.controller) {
+				console.log("[FCM] Waiting for service worker to control page...");
+				await navigator.serviceWorker.ready;
+			}
+
+			console.log("[FCM] Service worker is ready and active");
 			return registration;
 		} catch (error) {
 			console.error("Service Worker registration failed:", error);
