@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/login")({
 	component: LoginPage,
@@ -36,6 +37,10 @@ function LoginPage() {
 	});
 
 	const handleSubmit = async (payload: z.infer<typeof loginSchema>) => {
+		const audio = getCloudinaryUrl(
+			"threads_of_shayari_audio/mzdadwdnbxyot0oxm6g6",
+			{ type: "audio" },
+		);
 		toast.promise(
 			async () => {
 				const { error } = await authClient.signIn.username(payload);
@@ -49,6 +54,8 @@ function LoginPage() {
 			{
 				loading: "Logging in...",
 				success: (session) => {
+					const player = new Audio(audio);
+					player.play();
 					// Redirect based on user type
 					if (session?.user?.isAdmin) {
 						navigate({ to: "/dashboard" });
