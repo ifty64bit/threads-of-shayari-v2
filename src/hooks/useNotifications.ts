@@ -109,22 +109,37 @@ export function useNotifications() {
 	 * Initialize Firebase and get the FCM token
 	 */
 	const initializeFirebaseMessaging = useCallback(async () => {
+		console.log("[FCM] Initializing Firebase Messaging...");
+
 		// Initialize Firebase app if not already done
 		let app = getApps()[0];
 		if (!app) {
+			console.log("[FCM] Creating new Firebase app");
 			app = initializeApp(firebaseConfig);
+		} else {
+			console.log("[FCM] Using existing Firebase app");
 		}
 
 		const messaging = getMessaging(app);
+		console.log("[FCM] Got messaging instance");
 
 		// Get the service worker registration
 		const swRegistration = await registerServiceWorker();
+		console.log("[FCM] Service worker registered");
 
 		// Get the FCM token
+		console.log(
+			"[FCM] Getting token with VAPID key:",
+			VAPID_KEY?.substring(0, 20) + "...",
+		);
 		const token = await getToken(messaging, {
 			vapidKey: VAPID_KEY,
 			serviceWorkerRegistration: swRegistration,
 		});
+		console.log(
+			"[FCM] Got token:",
+			token ? token.substring(0, 30) + "..." : "NO TOKEN",
+		);
 
 		return { messaging, token };
 	}, [registerServiceWorker]);
@@ -159,14 +174,21 @@ export function useNotifications() {
 				const { messaging, token } = await initializeFirebaseMessaging();
 
 				if (token) {
+					console.log("[FCM] Registering token with server...");
 					// Register token with server
-					await registerFCMToken({
-						data: {
-							token,
-							deviceInfo: navigator.userAgent,
-						},
-					});
-					console.log("FCM token registered successfully");
+					try {
+						const result = await registerFCMToken({
+							data: {
+								token,
+								deviceInfo: navigator.userAgent,
+							},
+						});
+						console.log("[FCM] Token registration result:", result);
+					} catch (regError) {
+						console.error("[FCM] Token registration failed:", regError);
+						throw regError;
+					}
+					console.log("[FCM] Token registered successfully");
 
 					// Set up foreground message handler for toast notifications
 					onMessage(messaging, (payload) => {
