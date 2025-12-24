@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { postReactions } from "@/db/schema";
 import { REACTIONS } from "@/lib/reactions";
+import { sendNotificationToUser } from "@/lib/server/notifications";
 import { authMiddleware } from "@/middleware/auth";
 
 const toggleReactionSchema = z.object({
@@ -55,6 +56,33 @@ export const toggleReaction = createServerFn({ method: "POST" })
 			userId: context.userId,
 			reaction: data.reaction,
 		});
+
+		// Send notification to post author (if not self-reaction)
+		const post = await db.query.posts.findFirst({
+			where: (p, { eq }) => eq(p.id, data.postId),
+			with: {
+				author: {
+					columns: { id: true, name: true },
+				},
+			},
+		});
+
+		if (post && post.authorId !== context.userId) {
+			// Get the reactor's name
+			const reactor = await db.query.users.findFirst({
+				where: (u, { eq }) => eq(u.id, context.userId),
+				columns: { name: true },
+			});
+
+			const reactionEmoji =
+				REACTIONS[data.reaction as keyof typeof REACTIONS] || data.reaction;
+
+			sendNotificationToUser(post.authorId, {
+				title: "New Reaction",
+				body: `${reactor?.name || "Someone"} reacted ${reactionEmoji} to your post`,
+				data: { postId: data.postId.toString() },
+			}).catch(console.error); // Fire and forget
+		}
 
 		return { action: "added" as const, postId: data.postId };
 	});

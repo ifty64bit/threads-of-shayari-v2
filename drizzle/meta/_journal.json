@@ -43,6 +43,13 @@
       "when": 1766490598089,
       "tag": "0005_freezing_purple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1766568786282,
+      "tag": "0006_greedy_luckman",
+      "breakpoints": true
     }
   ]
 }

@@ -180,3 +180,26 @@ export const commentsRelations = relations(comments, ({ one }) => ({
 		references: [audioPresets.id],
 	}),
 }));
+
+//======================= FCM Tokens Tables =======================
+export const fcmTokens = pgTable(
+	"fcm_tokens",
+	(t) => ({
+		id: t.serial("id").primaryKey(),
+		userId: t
+			.integer("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		token: t.text("token").notNull(),
+		deviceInfo: t.text("device_info"),
+		...timestamps,
+	}),
+	(table) => [unique("unique_user_token").on(table.userId, table.token)],
+);
+
+export const fcmTokensRelations = relations(fcmTokens, ({ one }) => ({
+	user: one(users, {
+		fields: [fcmTokens.userId],
+		references: [users.id],
+	}),
+}));

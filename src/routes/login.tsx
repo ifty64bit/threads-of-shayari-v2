@@ -13,6 +13,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useNotifications } from "@/hooks/useNotifications";
 import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 
@@ -27,6 +28,7 @@ const loginSchema = z.object({
 
 function LoginPage() {
 	const navigate = Route.useNavigate();
+	const { requestPermission, isSupported, status } = useNotifications();
 
 	const form = useForm<z.infer<typeof loginSchema>>({
 		resolver: zodResolver(loginSchema),
@@ -56,6 +58,15 @@ function LoginPage() {
 				success: (session) => {
 					const player = new Audio(audio);
 					player.play();
+
+					// Request notification permission after successful login
+					if (isSupported && status !== "granted" && status !== "denied") {
+						// Delay slightly to not overwhelm user right after login
+						setTimeout(() => {
+							requestPermission();
+						}, 2000);
+					}
+
 					// Redirect based on user type
 					if (session?.user?.isAdmin) {
 						navigate({ to: "/dashboard" });

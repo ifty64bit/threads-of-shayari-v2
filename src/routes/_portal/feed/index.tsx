@@ -1,5 +1,6 @@
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
+import { NotificationPrompt } from "@/components/NotificationPrompt";
 import { postsQueryOptions } from "@/hooks/api/posts";
 import PostElement from "./-components/PostElement";
 import PostInput from "./-components/PostInput";
@@ -19,6 +20,9 @@ function RouteComponent() {
 	return (
 		<>
 			<PostInput />
+			<ClientOnly fallback={null}>
+				<NotificationPrompt />
+			</ClientOnly>
 
 			<section className="flex flex-col">
 				{posts.map((post) => (
