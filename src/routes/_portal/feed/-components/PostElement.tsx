@@ -29,21 +29,23 @@ function PostElement({ post }: PostElementProps) {
 	const { data: session } = authClient.useSession();
 
 	return (
-		<div key={post.id} className="px-4 pt-4 pb-2 border-b">
-			<div className="flex justify-between items-center">
-				<div className="flex items-center gap-2 mb-2">
+		<div key={post.id} className="card-elevated mx-2 my-3 pb-2 overflow-hidden">
+			<div className="flex justify-between items-center bg-muted/50 px-4 pt-4 pb-2 shadow-sm">
+				<div className="flex items-center gap-3 mb-2">
 					<ClientOnly
 						fallback={<Skeleton className="w-10 h-10 rounded-full" />}
 					>
 						<img
 							src={getCloudinaryUrl(post.author.image)}
 							alt={post.author.name}
-							className="rounded-full w-10 h-10 object-cover"
+							className="rounded-full w-10 h-10 object-cover ring-2 ring-background depth-2"
 						/>
 					</ClientOnly>
 					<div>
 						<h6 className="font-semibold text-sm">{post.author.name}</h6>
-						<p className="text-gray-500 text-xs">@{post.author.username}</p>
+						<p className="text-muted-foreground text-xs">
+							@{post.author.username}
+						</p>
 					</div>
 				</div>
 				{Number(session?.user?.id) === post.author.id && (
@@ -64,43 +66,46 @@ function PostElement({ post }: PostElementProps) {
 					</DropdownMenu>
 				)}
 			</div>
-			<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
-				<p className="whitespace-pre-wrap">{post.content}</p>
-			</Link>
-			{post.images && post.images.length > 0 && (
-				<div className="mt-2 flex gap-2 overflow-x-auto">
-					{post.images.map((img) => (
-						<ClientOnly
-							fallback={<Skeleton className="w-full aspect-video rounded-lg" />}
-							key={img.id}
-						>
-							<Image
-								layout="constrained"
-								width={600}
-								height={338}
-								src={getCloudinaryUrl(img.url) ?? ""}
-								alt="Post attachment"
-								className="rounded-lg max-h-60 mx-auto w-full object-cover"
-							/>
-						</ClientOnly>
-					))}
-				</div>
-			)}
-
-			<ClientOnly fallback={<Skeleton className="h-10 w-full rounded-lg" />}>
-				<FeedCommentProvider>
-					{/* Top row: Reactions + Comment icon + count */}
-					<div className="flex items-center gap-2">
-						<Reactions post={post} />
-						<FeedCommentTrigger
-							postId={post.id}
-							commentCount={post.comments.length}
-						/>
+			<div className="px-4">
+				<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
+					<p className="whitespace-pre-wrap">{post.content}</p>
+				</Link>
+				{post.images && post.images.length > 0 && (
+					<div className="mt-3 flex gap-2 overflow-x-auto">
+						{post.images.map((img) => (
+							<ClientOnly
+								fallback={
+									<Skeleton className="w-full aspect-video rounded-lg" />
+								}
+								key={img.id}
+							>
+								<Image
+									layout="constrained"
+									width={600}
+									height={338}
+									src={getCloudinaryUrl(img.url) ?? ""}
+									alt="Post attachment"
+									className="rounded-xl max-h-60 mx-auto w-full object-cover image-depth"
+								/>
+							</ClientOnly>
+						))}
 					</div>
-					{/* Bottom row: Comment form (full width) */}
-					<FeedCommentForm postId={post.id} />
-				</FeedCommentProvider>
-			</ClientOnly>
+				)}
+				<ClientOnly fallback={<Skeleton className="h-10 w-full rounded-lg" />}>
+					<FeedCommentProvider>
+						{/* Top row: Reactions + Comment icon + count */}
+						<div className="flex items-center gap-2">
+							<Reactions post={post} />
+							<FeedCommentTrigger
+								postId={post.id}
+								commentCount={post.comments.length}
+							/>
+						</div>
+						{/* Bottom row: Comment form (full width) */}
+						<FeedCommentForm postId={post.id} />
+					</FeedCommentProvider>
+				</ClientOnly>
+			</div>
 		</div>
 	);
 }

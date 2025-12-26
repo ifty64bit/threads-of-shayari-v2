@@ -36,9 +36,11 @@ function RouteComponent() {
 
 	return (
 		<main className="max-w-md mx-auto min-h-dvh mb-16">
-			<section className="sticky top-0 backdrop-blur-lg flex justify-between items-center border-b py-2 px-4 z-50">
-				<Link to="/feed">
-					<h4>NostaGram</h4>
+			<section className="sticky top-0 glass flex justify-between items-center py-3 px-4 z-50 depth-3 rounded-b-2xl">
+				<Link to="/feed" className="depth-transition hover:opacity-80">
+					<h4 className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+						NostaGram
+					</h4>
 				</Link>
 				<ClientOnly
 					fallback={<div className="w-10 h-10 rounded-full bg-gray-400" />}
@@ -74,11 +76,15 @@ function RouteComponent() {
 
 			<Outlet />
 
-			<footer className="bg-white fixed bottom-0 left-0 right-0 h-16 flex flex-col items-center justify-center py-2">
-				<p>© 2025 NostaGram. All rights reserved.</p>
-				<div className="flex gap-2">
-					<p>Developed by Cumrunddin Ifty.</p>
-					<p className="text-red-500">Not Developed By Faruk Bhai</p>
+			<footer className="glass fixed bottom-0 left-0 right-0 h-16 flex flex-col items-center justify-center py-2 depth-4">
+				<p className="text-sm text-muted-foreground">
+					© 2025 NostaGram. All rights reserved.
+				</p>
+				<div className="flex gap-2 text-xs">
+					<p className="text-muted-foreground">Developed by Cumrunddin Ifty.</p>
+					<p className="text-destructive font-medium">
+						Not Developed By Faruk Bhai
+					</p>
 				</div>
 			</footer>
 		</main>

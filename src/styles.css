@@ -177,3 +177,236 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+/* ===== DEPTH ENHANCEMENT SYSTEM ===== */
+
+/* Shadow tokens for depth hierarchy */
+:root {
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  
+  /* Colored glow shadows */
+  --shadow-glow-primary: 0 0 20px -5px oklch(0.21 0.006 285.885 / 0.3);
+  --shadow-glow-accent: 0 0 25px -5px oklch(0.6 0.2 250 / 0.25);
+}
+
+.dark {
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.2);
+  
+  /* Colored glow shadows for dark mode */
+  --shadow-glow-primary: 0 0 30px -5px oklch(0.7 0.15 285 / 0.3);
+  --shadow-glow-accent: 0 0 35px -5px oklch(0.6 0.25 250 / 0.35);
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: oklch(1 0 0 / 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid oklch(0.9 0 0 / 0.3);
+}
+
+.dark .glass {
+  background: oklch(0.15 0.005 285 / 0.75);
+  border: 1px solid oklch(0.3 0.01 285 / 0.3);
+}
+
+.glass-subtle {
+  background: oklch(1 0 0 / 0.5);
+  backdrop-filter: blur(8px) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+}
+
+.dark .glass-subtle {
+  background: oklch(0.15 0.005 285 / 0.5);
+}
+
+/* Elevated card with layered depth */
+.card-elevated {
+  background: var(--background);
+  box-shadow: 
+    0 0 0 1px oklch(0 0 0 / 0.03),
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 4px 8px oklch(0 0 0 / 0.04),
+    0 8px 16px oklch(0 0 0 / 0.03);
+  border-radius: var(--radius);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .card-elevated {
+  box-shadow: 
+    0 0 0 1px oklch(1 0 0 / 0.05),
+    0 1px 2px oklch(0 0 0 / 0.3),
+    0 4px 8px oklch(0 0 0 / 0.25),
+    0 8px 16px oklch(0 0 0 / 0.2);
+}
+
+.card-elevated:hover {
+  box-shadow: 
+    0 0 0 1px oklch(0 0 0 / 0.05),
+    0 2px 4px oklch(0 0 0 / 0.05),
+    0 8px 16px oklch(0 0 0 / 0.06),
+    0 16px 32px oklch(0 0 0 / 0.05);
+  transform: translateY(-2px);
+}
+
+.dark .card-elevated:hover {
+  box-shadow: 
+    0 0 0 1px oklch(1 0 0 / 0.08),
+    0 2px 4px oklch(0 0 0 / 0.35),
+    0 8px 16px oklch(0 0 0 / 0.3),
+    0 16px 32px oklch(0 0 0 / 0.25);
+}
+
+/* Floating effect for buttons and interactive elements */
+.float-interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.float-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.float-interactive:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Input focus glow effect */
+.input-glow:focus {
+  box-shadow: 
+    0 0 0 3px oklch(0.6 0.15 250 / 0.15),
+    0 1px 2px oklch(0 0 0 / 0.05);
+}
+
+.dark .input-glow:focus {
+  box-shadow: 
+    0 0 0 3px oklch(0.6 0.2 250 / 0.25),
+    0 1px 2px oklch(0 0 0 / 0.2);
+}
+
+/* Gradient accents */
+.gradient-border {
+  position: relative;
+  background: var(--background);
+  border-radius: var(--radius);
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, oklch(0.7 0.15 250), oklch(0.6 0.2 320));
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Subtle gradient backgrounds */
+.bg-gradient-subtle {
+  background: linear-gradient(
+    180deg,
+    oklch(0.98 0.005 285) 0%,
+    oklch(0.96 0.01 250) 100%
+  );
+}
+
+.dark .bg-gradient-subtle {
+  background: linear-gradient(
+    180deg,
+    oklch(0.16 0.01 285) 0%,
+    oklch(0.14 0.015 250) 100%
+  );
+}
+
+/* Inset pressed effect */
+.pressed-effect:active {
+  box-shadow: var(--shadow-inner);
+  transform: scale(0.98);
+}
+
+/* Depth layers for stacking contexts */
+.depth-1 { box-shadow: var(--shadow-xs); }
+.depth-2 { box-shadow: var(--shadow-sm); }
+.depth-3 { box-shadow: var(--shadow-md); }
+.depth-4 { box-shadow: var(--shadow-lg); }
+.depth-5 { box-shadow: var(--shadow-xl); }
+
+/* Smooth transitions for depth changes */
+.depth-transition {
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Image depth effect */
+.image-depth {
+  box-shadow: 
+    0 2px 4px oklch(0 0 0 / 0.1),
+    0 8px 16px oklch(0 0 0 / 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.image-depth:hover {
+  box-shadow: 
+    0 4px 8px oklch(0 0 0 / 0.15),
+    0 12px 24px oklch(0 0 0 / 0.15);
+}
+
+/* Neumorphism-lite for special elements */
+.neu-raised {
+  background: linear-gradient(145deg, oklch(0.98 0 0), oklch(0.92 0 0));
+  box-shadow: 
+    5px 5px 10px oklch(0 0 0 / 0.08),
+    -5px -5px 10px oklch(1 0 0 / 0.9);
+}
+
+.dark .neu-raised {
+  background: linear-gradient(145deg, oklch(0.18 0.005 285), oklch(0.12 0.005 285));
+  box-shadow: 
+    5px 5px 10px oklch(0 0 0 / 0.4),
+    -5px -5px 10px oklch(0.25 0.01 285 / 0.3);
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(0.95 0 0) 25%,
+    oklch(0.9 0 0) 50%,
+    oklch(0.95 0 0) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(0.22 0.005 285) 25%,
+    oklch(0.28 0.005 285) 50%,
+    oklch(0.22 0.005 285) 75%
+  );
+  background-size: 200% 100%;
+}

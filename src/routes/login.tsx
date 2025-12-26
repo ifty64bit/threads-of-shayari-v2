@@ -81,53 +81,63 @@ function LoginPage() {
 	};
 
 	return (
-		<main className="p-4 max-w-md mx-auto h-dvh flex flex-col justify-center gap-4">
-			<div className="text-center">
-				<h1 className="text-2xl font-bold">Welcome back</h1>
-				<p className="opacity-50">Enter your credentials to log in</p>
-			</div>
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-					<FormField
-						control={form.control}
-						name="username"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Username</FormLabel>
-								<FormControl>
-									<Input {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="password"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Password</FormLabel>
-								<FormControl>
-									<Input type="password" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+		<main className="p-4 max-w-md mx-auto h-dvh flex flex-col justify-center gap-4 bg-gradient-subtle">
+			<div className="card-elevated p-6 space-y-6">
+				<div className="text-center">
+					<h1 className="text-2xl font-bold">Welcome back</h1>
+					<p className="text-muted-foreground">
+						Enter your credentials to log in
+					</p>
+				</div>
+				<Form {...form}>
+					<form
+						onSubmit={form.handleSubmit(handleSubmit)}
+						className="space-y-4"
+					>
+						<FormField
+							control={form.control}
+							name="username"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Username</FormLabel>
+									<FormControl>
+										<Input {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="password"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Password</FormLabel>
+									<FormControl>
+										<Input type="password" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-					<Button type="submit" className="w-full ">
-						Login
-					</Button>
-				</form>
-			</Form>
+						<Button type="submit" className="w-full ">
+							Login
+						</Button>
+					</form>
+				</Form>
 
-			<div>
-				<p className="text-center">
-					Don't have an account?{" "}
-					<Link to="/signup" className="font-semibold">
-						Signup
-					</Link>
-				</p>
+				<div className="text-center">
+					<p>
+						Don't have an account?{" "}
+						<Link
+							to="/signup"
+							className="font-semibold text-primary hover:underline"
+						>
+							Signup
+						</Link>
+					</p>
+				</div>
 			</div>
 		</main>
 	);

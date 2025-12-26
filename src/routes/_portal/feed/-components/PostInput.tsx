@@ -71,7 +71,7 @@ function PostInput() {
 	};
 
 	return (
-		<section className="border-b group transition-all duration-300 ease-in-out">
+		<section className="card-elevated mx-2 my-3 group transition-all duration-300 ease-in-out">
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
 					<FormField

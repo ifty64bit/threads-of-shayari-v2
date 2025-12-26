@@ -7,7 +7,7 @@ import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import dayjs from "dayjs";
 import { MoreHorizontal, Music, Send, Volume2, X } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/ui/button";
@@ -45,71 +45,100 @@ function RouteComponent() {
 	const deletePostMutation = useDeletePostMutation();
 	const { data: session } = authClient.useSession();
 
+	// Scroll to top when navigating to this page
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "instant" });
+	}, []);
+
 	return (
-		<div className="p-4">
-			<div className="flex justify-between items-center">
-				<div className="flex items-center gap-2 mb-2">
-					<ClientOnly fallback={<Skeleton className="size-10 rounded-full" />}>
-						<img
-							src={getCloudinaryUrl(post.author.image)}
-							alt={post.author.name}
-							className="rounded-full size-10 object-cover"
-							title="Ekti Bokachoda"
-						/>
-					</ClientOnly>
-					<div>
-						<h6 className="font-semibold text-sm">{post.author.name}</h6>
-						<p className="text-gray-500 text-xs">@{post.author.username}</p>
-					</div>
-				</div>
-				{Number(session?.user?.id) === post.author.id && (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" size="icon">
-								<MoreHorizontal />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent>
-							<DropdownMenuItem
-								variant="destructive"
-								onClick={() => deletePostMutation.mutate({ postId: post.id })}
-							>
-								Delete
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				)}
-			</div>
-
-			<p className="whitespace-pre-wrap">{post.content}</p>
-
-			{post.images && post.images.length > 0 && (
-				<div className="mt-2 flex gap-2 overflow-x-auto">
-					{post.images.map((img) => (
-						<ClientOnly fallback={null} key={img.id}>
-							<Image
-								cdn="cloudinary"
-								layout="constrained"
-								width={600}
-								height={338}
-								src={getCloudinaryUrl(img.url) ?? ""}
-								alt="Post attachment"
-								className="rounded-lg max-h-60 mx-auto w-full object-cover"
+		<div className="pt-4">
+			<div className="card-elevated overflow-hidden">
+				{/* Post Header */}
+				<div className="flex justify-between items-center bg-muted/50 px-4 pt-4 pb-3 shadow-sm">
+					<div className="flex items-center gap-3">
+						<ClientOnly
+							fallback={<Skeleton className="size-12 rounded-full" />}
+						>
+							<img
+								src={getCloudinaryUrl(post.author.image)}
+								alt={post.author.name}
+								className="rounded-full size-12 object-cover ring-2 ring-background depth-2"
 							/>
 						</ClientOnly>
-					))}
+						<div>
+							<h6 className="font-semibold">{post.author.name}</h6>
+							<p className="text-muted-foreground text-xs">
+								@{post.author.username}
+							</p>
+						</div>
+					</div>
+					{Number(session?.user?.id) === post.author.id && (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" size="icon">
+									<MoreHorizontal />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent>
+								<DropdownMenuItem
+									variant="destructive"
+									onClick={() => deletePostMutation.mutate({ postId: post.id })}
+								>
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					)}
 				</div>
-			)}
 
-			<div className="flex items-center justify-between gap-2 border-t py-2 mt-2">
-				<Reactions post={post as Parameters<typeof Reactions>[0]["post"]} />
+				{/* Post Content */}
+				<div className="px-4 py-4">
+					<p className="whitespace-pre-wrap text-base leading-relaxed">
+						{post.content}
+					</p>
+
+					{post.images && post.images.length > 0 && (
+						<div className="mt-4 flex gap-2 overflow-x-auto">
+							{post.images.map((img) => (
+								<ClientOnly
+									fallback={
+										<Skeleton className="w-full aspect-video rounded-xl" />
+									}
+									key={img.id}
+								>
+									<Image
+										cdn="cloudinary"
+										layout="constrained"
+										width={600}
+										height={338}
+										src={getCloudinaryUrl(img.url) ?? ""}
+										alt="Post attachment"
+										className="rounded-xl max-h-80 mx-auto w-full object-cover image-depth"
+									/>
+								</ClientOnly>
+							))}
+						</div>
+					)}
+
+					{/* Reactions Bar */}
+					<div className="flex items-center justify-between gap-2 border-t border-border/50 pt-3 mt-4">
+						<Reactions post={post as Parameters<typeof Reactions>[0]["post"]} />
+					</div>
+				</div>
 			</div>
 
-			<section className="space-y-4 border-t pt-4">
-				<h6>Comments</h6>
+			{/* Comments Section */}
+			<section className="card-elevated mt-3 p-4 space-y-4">
+				<h6 className="font-semibold">Comments</h6>
 
 				<NewComment />
-				<Suspense fallback={<div>Loading comments...</div>}>
+				<Suspense
+					fallback={
+						<div className="text-muted-foreground text-sm">
+							Loading comments...
+						</div>
+					}
+				>
 					<Comments postAuthorId={post.author.id} />
 				</Suspense>
 			</section>
