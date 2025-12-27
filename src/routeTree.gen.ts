@@ -22,6 +22,7 @@ import { Route as PortalPostsIndexRouteImport } from './routes/_portal/posts/ind
 import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
 import { Route as AdminAudioPresetsIndexRouteImport } from './routes/_admin/audio-presets/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as PortalProfileUserIdRouteImport } from './routes/_portal/profile/$userId'
 import { Route as PortalPostsPostIdRouteImport } from './routes/_portal/posts/$postId'
 
 const SignupRoute = SignupRouteImport.update({
@@ -87,6 +88,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalProfileUserIdRoute = PortalProfileUserIdRouteImport.update({
+  id: '/profile/$userId',
+  path: '/profile/$userId',
+  getParentRoute: () => PortalRouteRoute,
+} as any)
 const PortalPostsPostIdRoute = PortalPostsPostIdRouteImport.update({
   id: '/posts/$postId',
   path: '/posts/$postId',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AdminDashboardRoute
   '/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PortalPostsPostIdRoute
+  '/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
   '/feed': typeof PortalFeedIndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AdminDashboardRoute
   '/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PortalPostsPostIdRoute
+  '/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
   '/feed': typeof PortalFeedIndexRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/_admin/dashboard': typeof AdminDashboardRoute
   '/_admin/users': typeof AdminUsersRoute
   '/_portal/posts/$postId': typeof PortalPostsPostIdRoute
+  '/_portal/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_admin/audio-presets/': typeof AdminAudioPresetsIndexRoute
   '/_portal/feed/': typeof PortalFeedIndexRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/users'
     | '/posts/$postId'
+    | '/profile/$userId'
     | '/api/auth/$'
     | '/audio-presets'
     | '/feed'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/users'
     | '/posts/$postId'
+    | '/profile/$userId'
     | '/api/auth/$'
     | '/audio-presets'
     | '/feed'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/_admin/dashboard'
     | '/_admin/users'
     | '/_portal/posts/$postId'
+    | '/_portal/profile/$userId'
     | '/api/auth/$'
     | '/_admin/audio-presets/'
     | '/_portal/feed/'
@@ -288,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_portal/profile/$userId': {
+      id: '/_portal/profile/$userId'
+      path: '/profile/$userId'
+      fullPath: '/profile/$userId'
+      preLoaderRoute: typeof PortalProfileUserIdRouteImport
+      parentRoute: typeof PortalRouteRoute
+    }
     '/_portal/posts/$postId': {
       id: '/_portal/posts/$postId'
       path: '/posts/$postId'
@@ -316,6 +335,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 
 interface PortalRouteRouteChildren {
   PortalPostsPostIdRoute: typeof PortalPostsPostIdRoute
+  PortalProfileUserIdRoute: typeof PortalProfileUserIdRoute
   PortalFeedIndexRoute: typeof PortalFeedIndexRoute
   PortalPostsIndexRoute: typeof PortalPostsIndexRoute
   PortalProfileIndexRoute: typeof PortalProfileIndexRoute
@@ -323,6 +343,7 @@ interface PortalRouteRouteChildren {
 
 const PortalRouteRouteChildren: PortalRouteRouteChildren = {
   PortalPostsPostIdRoute: PortalPostsPostIdRoute,
+  PortalProfileUserIdRoute: PortalProfileUserIdRoute,
   PortalFeedIndexRoute: PortalFeedIndexRoute,
   PortalPostsIndexRoute: PortalPostsIndexRoute,
   PortalProfileIndexRoute: PortalProfileIndexRoute,

@@ -6,6 +6,7 @@ import {
 import { toast } from "sonner";
 import {
 	getCurrentUser,
+	getUserById,
 	getUsers,
 	updateUser,
 	updateUserVerification,
@@ -16,6 +17,13 @@ export const getCurrentUserOptions = queryOptions({
 	queryKey: ["current-user"],
 	queryFn: () => getCurrentUser(),
 });
+
+export function getUserByIdOptions(userId: number) {
+	return queryOptions({
+		queryKey: ["user", userId],
+		queryFn: () => getUserById({ data: { userId } }),
+	});
+}
 
 export function getUsersOptions(data: { offset: number; limit: number }) {
 	return queryOptions({

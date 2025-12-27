@@ -14,6 +14,23 @@ export const getCurrentUser = createServerFn({ method: "GET" })
 		return user;
 	});
 
+export const getUserById = createServerFn({ method: "GET" })
+	.inputValidator(z.object({ userId: z.number() }))
+	.middleware([authMiddleware])
+	.handler(async ({ data }) => {
+		const user = await db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, data.userId),
+			columns: {
+				id: true,
+				name: true,
+				username: true,
+				image: true,
+				createdAt: true,
+			},
+		});
+		return user;
+	});
+
 export const getUsers = createServerFn({ method: "GET" })
 	.inputValidator(
 		z.object({

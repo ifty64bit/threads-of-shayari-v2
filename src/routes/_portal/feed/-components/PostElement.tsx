@@ -31,7 +31,15 @@ function PostElement({ post }: PostElementProps) {
 	return (
 		<div key={post.id} className="card-elevated mx-2 my-3 pb-2 overflow-hidden">
 			<div className="flex justify-between items-center bg-muted/50 px-4 pt-4 pb-2 shadow-sm">
-				<div className="flex items-center gap-3 mb-2">
+				<Link
+					to={
+						Number(session?.user?.id) === post.author.id
+							? "/profile"
+							: "/profile/$userId"
+					}
+					params={{ userId: post.author.id.toString() }}
+					className="flex flex-1 items-center gap-3 mb-2"
+				>
 					<ClientOnly
 						fallback={<Skeleton className="w-10 h-10 rounded-full" />}
 					>
@@ -47,7 +55,7 @@ function PostElement({ post }: PostElementProps) {
 							@{post.author.username}
 						</p>
 					</div>
-				</div>
+				</Link>
 				{Number(session?.user?.id) === post.author.id && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -66,7 +74,7 @@ function PostElement({ post }: PostElementProps) {
 					</DropdownMenu>
 				)}
 			</div>
-			<div className="px-4">
+			<div className="px-4 pt-2">
 				<Link to="/posts/$postId" params={{ postId: post.id.toString() }}>
 					<p className="whitespace-pre-wrap">{post.content}</p>
 				</Link>
