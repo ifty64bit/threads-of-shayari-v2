@@ -4,7 +4,11 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getCommentsByPostId, postComment } from "@/functions/comments";
+import {
+	adminDeleteComment,
+	getCommentsByPostId,
+	postComment,
+} from "@/functions/comments";
 import { postsQueryOptions } from "./posts";
 
 export function useCommentMutation() {
@@ -43,5 +47,26 @@ export function getCommentsByPostIdInfiniteQuery(postId: number) {
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
 		initialPageParam: 1,
 		refetchInterval: 30 * 1000, // Refetch every 30 seconds to get latest comments
+	});
+}
+
+export function useAdminDeleteCommentMutation() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ commentId }: { commentId: number }) =>
+			adminDeleteComment({ data: { commentId } }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["admin-user-detail"],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["comments"],
+			});
+			toast.success("Comment deleted");
+		},
+		onError: () => {
+			toast.error("Failed to delete comment");
+		},
 	});
 }

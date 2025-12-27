@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+	adminDeletePost,
 	createPost,
 	deletePost,
 	getPostById,
@@ -129,5 +130,26 @@ export function getPostsByUserIdOptions({ userId }: { userId: number }) {
 			}),
 		initialPageParam: undefined as number | undefined,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
+	});
+}
+
+export function useAdminDeletePostMutation() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ postId }: { postId: number }) =>
+			adminDeletePost({ data: { postId } }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["admin-user-detail"],
+			});
+			queryClient.invalidateQueries({
+				queryKey: postsQueryOptions.queryKey,
+			});
+			toast.success("Post deleted");
+		},
+		onError: () => {
+			toast.error("Failed to delete post");
+		},
 	});
 }

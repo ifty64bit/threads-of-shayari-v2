@@ -15,15 +15,16 @@ import { Route as GetApprovalRouteImport } from './routes/get-approval'
 import { Route as PortalRouteRouteImport } from './routes/_portal/route'
 import { Route as AdminRouteRouteImport } from './routes/_admin/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminUsersRouteImport } from './routes/_admin/users'
 import { Route as AdminDashboardRouteImport } from './routes/_admin/dashboard'
 import { Route as PortalProfileIndexRouteImport } from './routes/_portal/profile/index'
 import { Route as PortalPostsIndexRouteImport } from './routes/_portal/posts/index'
 import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
+import { Route as AdminUsersIndexRouteImport } from './routes/_admin/users/index'
 import { Route as AdminAudioPresetsIndexRouteImport } from './routes/_admin/audio-presets/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as PortalProfileUserIdRouteImport } from './routes/_portal/profile/$userId'
 import { Route as PortalPostsPostIdRouteImport } from './routes/_portal/posts/$postId'
+import { Route as AdminUsersUserIdRouteImport } from './routes/_admin/users/$userId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -53,11 +54,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -77,6 +73,11 @@ const PortalFeedIndexRoute = PortalFeedIndexRouteImport.update({
   id: '/feed/',
   path: '/feed/',
   getParentRoute: () => PortalRouteRoute,
+} as any)
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminAudioPresetsIndexRoute = AdminAudioPresetsIndexRouteImport.update({
   id: '/audio-presets/',
@@ -98,6 +99,11 @@ const PortalPostsPostIdRoute = PortalPostsPostIdRouteImport.update({
   path: '/posts/$postId',
   getParentRoute: () => PortalRouteRoute,
 } as any)
+const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
+  id: '/users/$userId',
+  path: '/users/$userId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,11 +111,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AdminDashboardRoute
-  '/users': typeof AdminUsersRoute
+  '/users/$userId': typeof AdminUsersUserIdRoute
   '/posts/$postId': typeof PortalPostsPostIdRoute
   '/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
+  '/users': typeof AdminUsersIndexRoute
   '/feed': typeof PortalFeedIndexRoute
   '/posts': typeof PortalPostsIndexRoute
   '/profile': typeof PortalProfileIndexRoute
@@ -120,11 +127,12 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AdminDashboardRoute
-  '/users': typeof AdminUsersRoute
+  '/users/$userId': typeof AdminUsersUserIdRoute
   '/posts/$postId': typeof PortalPostsPostIdRoute
   '/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
+  '/users': typeof AdminUsersIndexRoute
   '/feed': typeof PortalFeedIndexRoute
   '/posts': typeof PortalPostsIndexRoute
   '/profile': typeof PortalProfileIndexRoute
@@ -138,11 +146,12 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
-  '/_admin/users': typeof AdminUsersRoute
+  '/_admin/users/$userId': typeof AdminUsersUserIdRoute
   '/_portal/posts/$postId': typeof PortalPostsPostIdRoute
   '/_portal/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_admin/audio-presets/': typeof AdminAudioPresetsIndexRoute
+  '/_admin/users/': typeof AdminUsersIndexRoute
   '/_portal/feed/': typeof PortalFeedIndexRoute
   '/_portal/posts/': typeof PortalPostsIndexRoute
   '/_portal/profile/': typeof PortalProfileIndexRoute
@@ -155,11 +164,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard'
-    | '/users'
+    | '/users/$userId'
     | '/posts/$postId'
     | '/profile/$userId'
     | '/api/auth/$'
     | '/audio-presets'
+    | '/users'
     | '/feed'
     | '/posts'
     | '/profile'
@@ -170,11 +180,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard'
-    | '/users'
+    | '/users/$userId'
     | '/posts/$postId'
     | '/profile/$userId'
     | '/api/auth/$'
     | '/audio-presets'
+    | '/users'
     | '/feed'
     | '/posts'
     | '/profile'
@@ -187,11 +198,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/_admin/dashboard'
-    | '/_admin/users'
+    | '/_admin/users/$userId'
     | '/_portal/posts/$postId'
     | '/_portal/profile/$userId'
     | '/api/auth/$'
     | '/_admin/audio-presets/'
+    | '/_admin/users/'
     | '/_portal/feed/'
     | '/_portal/posts/'
     | '/_portal/profile/'
@@ -251,13 +263,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_admin/users': {
-      id: '/_admin/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/_admin/dashboard': {
       id: '/_admin/dashboard'
       path: '/dashboard'
@@ -285,6 +290,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/feed'
       preLoaderRoute: typeof PortalFeedIndexRouteImport
       parentRoute: typeof PortalRouteRoute
+    }
+    '/_admin/users/': {
+      id: '/_admin/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/_admin/audio-presets/': {
       id: '/_admin/audio-presets/'
@@ -314,19 +326,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalPostsPostIdRouteImport
       parentRoute: typeof PortalRouteRoute
     }
+    '/_admin/users/$userId': {
+      id: '/_admin/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminUsersRoute: typeof AdminUsersRoute
+  AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
   AdminAudioPresetsIndexRoute: typeof AdminAudioPresetsIndexRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
-  AdminUsersRoute: AdminUsersRoute,
+  AdminUsersUserIdRoute: AdminUsersUserIdRoute,
   AdminAudioPresetsIndexRoute: AdminAudioPresetsIndexRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

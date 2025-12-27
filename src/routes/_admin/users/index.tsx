@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { CircleX, Pencil, SearchCheck } from "lucide-react";
 import { useState } from "react";
@@ -32,7 +32,7 @@ import {
 	useUpdateUserVerification,
 } from "@/hooks/api/users";
 
-export const Route = createFileRoute("/_admin/users")({
+export const Route = createFileRoute("/_admin/users/")({
 	component: RouteComponent,
 	validateSearch: z.object({
 		offset: z.number().optional().default(0),
@@ -100,10 +100,38 @@ function RouteComponent() {
 				<TableBody>
 					{users.map((user) => (
 						<TableRow key={user.id}>
-							<TableCell className="font-medium">{user.id}</TableCell>
-							<TableCell>{user.name}</TableCell>
-							<TableCell>{user.username}</TableCell>
-							<TableCell>{user.email}</TableCell>
+							<TableCell className="font-medium">
+								<Link
+									to={`/users/$userId`}
+									params={{ userId: user.id.toString() }}
+								>
+									{user.id}
+								</Link>
+							</TableCell>
+							<TableCell>
+								<Link
+									to={`/users/$userId`}
+									params={{ userId: user.id.toString() }}
+								>
+									{user.name}
+								</Link>
+							</TableCell>
+							<TableCell>
+								<Link
+									to={`/users/$userId`}
+									params={{ userId: user.id.toString() }}
+								>
+									{user.username}
+								</Link>
+							</TableCell>
+							<TableCell>
+								<Link
+									to={`/users/$userId`}
+									params={{ userId: user.id.toString() }}
+								>
+									{user.email}
+								</Link>
+							</TableCell>
 							<TableCell>{user.emailVerified ? "Yes" : "No"}</TableCell>
 							<TableCell>
 								{dayjs(user.createdAt).format("D MMM YYYY h:mmA")}

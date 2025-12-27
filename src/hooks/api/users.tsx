@@ -6,6 +6,7 @@ import {
 import { toast } from "sonner";
 import {
 	adminUpdateUser,
+	getAdminUserDetail,
 	getCurrentUser,
 	getUserById,
 	getUsers,
@@ -30,6 +31,13 @@ export function getUsersOptions(data: { offset: number; limit: number }) {
 	return queryOptions({
 		queryKey: ["users", data.offset, data.limit],
 		queryFn: () => getUsers({ data }),
+	});
+}
+
+export function getAdminUserDetailOptions(userId: number) {
+	return queryOptions({
+		queryKey: ["admin-user-detail", userId],
+		queryFn: () => getAdminUserDetail({ data: { userId } }),
 	});
 }
 

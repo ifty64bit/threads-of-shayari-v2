@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { postImages, posts } from "@/db/schema";
-import { authMiddleware } from "@/middleware/auth";
+import { adminMiddleware, authMiddleware } from "@/middleware/auth";
 
 const createPostSchema = z.object({
 	content: z.string().min(1).max(280),
@@ -189,6 +189,23 @@ export const deletePost = createServerFn({ method: "POST" })
 		if (post.author.id !== context.userId) {
 			throw new Error("Unauthorized");
 		}
+		await db.delete(posts).where(eq(posts.id, data.postId));
+		await db.delete(postImages).where(eq(postImages.postId, data.postId));
+		return true;
+	});
+
+export const adminDeletePost = createServerFn({ method: "POST" })
+	.middleware([adminMiddleware])
+	.inputValidator(z.object({ postId: z.number() }))
+	.handler(async ({ data }) => {
+		const post = await db.query.posts.findFirst({
+			where: (posts, { eq }) => eq(posts.id, data.postId),
+		});
+
+		if (!post) {
+			throw new Error("Post not found");
+		}
+
 		await db.delete(posts).where(eq(posts.id, data.postId));
 		await db.delete(postImages).where(eq(postImages.postId, data.postId));
 		return true;

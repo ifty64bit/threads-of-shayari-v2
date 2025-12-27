@@ -1,9 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { comments } from "@/db/schema";
 import { sendNotificationToUser } from "@/lib/server/notifications";
-import { authMiddleware } from "@/middleware/auth";
+import { adminMiddleware, authMiddleware } from "@/middleware/auth";
 
 export const getCommentsByPostId = createServerFn({ method: "GET" })
 	.middleware([authMiddleware])
@@ -93,4 +94,20 @@ export const postComment = createServerFn({ method: "POST" })
 		}
 
 		return comment;
+	});
+
+export const adminDeleteComment = createServerFn({ method: "POST" })
+	.middleware([adminMiddleware])
+	.inputValidator(z.object({ commentId: z.number() }))
+	.handler(async ({ data }) => {
+		const comment = await db.query.comments.findFirst({
+			where: (comments, { eq }) => eq(comments.id, data.commentId),
+		});
+
+		if (!comment) {
+			throw new Error("Comment not found");
+		}
+
+		await db.delete(comments).where(eq(comments.id, data.commentId));
+		return true;
 	});

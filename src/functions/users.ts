@@ -31,6 +31,55 @@ export const getUserById = createServerFn({ method: "GET" })
 		return user;
 	});
 
+export const getAdminUserDetail = createServerFn({ method: "GET" })
+	.inputValidator(z.object({ userId: z.number() }))
+	.middleware([adminMiddleware])
+	.handler(async ({ data }) => {
+		const user = await db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, data.userId),
+			columns: {
+				id: true,
+				name: true,
+				username: true,
+				email: true,
+				image: true,
+				emailVerified: true,
+				isAdmin: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+			with: {
+				posts: {
+					columns: {
+						id: true,
+						content: true,
+						createdAt: true,
+					},
+					orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+					limit: 20,
+				},
+				comments: {
+					columns: {
+						id: true,
+						content: true,
+						createdAt: true,
+					},
+					with: {
+						post: {
+							columns: {
+								id: true,
+								content: true,
+							},
+						},
+					},
+					orderBy: (comments, { desc }) => [desc(comments.createdAt)],
+					limit: 20,
+				},
+			},
+		});
+		return user;
+	});
+
 export const getUsers = createServerFn({ method: "GET" })
 	.inputValidator(
 		z.object({
