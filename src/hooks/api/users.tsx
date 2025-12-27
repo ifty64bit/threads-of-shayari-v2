@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+	adminUpdateUser,
 	getCurrentUser,
 	getUserById,
 	getUsers,
@@ -52,6 +53,32 @@ export function useUpdateUserVerification() {
 		},
 		onError: (_, __, ctx) => {
 			toast.error("Failed to update user verification", {
+				id: ctx?.toastId,
+			});
+		},
+	});
+}
+
+export function useAdminUpdateUser() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationKey: ["admin-update-user"],
+		mutationFn: adminUpdateUser,
+		onMutate: () => {
+			const toastId = toast.loading("Updating user...");
+			return { toastId };
+		},
+		onSuccess: (_, __, ctx) => {
+			toast.success("User updated successfully", {
+				id: ctx.toastId,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["users"],
+			});
+		},
+		onError: (_, __, ctx) => {
+			toast.error("Failed to update user", {
 				id: ctx?.toastId,
 			});
 		},
