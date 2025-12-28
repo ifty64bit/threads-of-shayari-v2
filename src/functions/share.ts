@@ -199,7 +199,7 @@ export const generatePostCard = createServerFn({ method: "GET" })
 								src: postImageBase64,
 								style: {
 									width: "100%",
-									maxHeight: 200,
+									height: 180,
 									objectFit: "cover",
 									borderRadius: "12px",
 									marginTop: "16px",

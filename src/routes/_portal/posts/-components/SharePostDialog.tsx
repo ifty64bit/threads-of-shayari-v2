@@ -16,6 +16,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { generatePostCard } from "@/functions/share";
+import { config } from "@/lib/config";
 
 type SharePostDialogProps = {
 	post: {
@@ -110,7 +111,8 @@ export const SharePostDialog = memo(function SharePostDialog({
 			const imageData = await generatePostCard({ data: { postId: post.id } });
 			setGeneratedImage(imageData);
 			return imageData;
-		} catch (_err) {
+		} catch (err) {
+			console.error("Failed to generate image:", err);
 			setError("Failed to generate image");
 			return null;
 		} finally {
@@ -127,7 +129,7 @@ export const SharePostDialog = memo(function SharePostDialog({
 				const url = URL.createObjectURL(pngBlob);
 
 				const link = document.createElement("a");
-				link.download = `shayari-${post.id}.png`;
+				link.download = `${config.BRAND_NAME}-${post.author.username}-${post.id}.png`;
 				link.href = url;
 				document.body.appendChild(link);
 				link.click();
@@ -136,14 +138,14 @@ export const SharePostDialog = memo(function SharePostDialog({
 				setTimeout(() => URL.revokeObjectURL(url), 100);
 			} catch (_err) {
 				const link = document.createElement("a");
-				link.download = `shayari-${post.id}.png`;
+				link.download = `${config.BRAND_NAME}-${post.author.username}-${post.id}.png`;
 				link.href = imageData;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
 			}
 		},
-		[post.id],
+		[post.id, post.author.username],
 	);
 
 	const handleDownload = useCallback(async () => {
