@@ -1,18 +1,7 @@
 import { Cloudinary } from "@cloudinary/url-gen";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
+import { Resize } from "@cloudinary/url-gen/actions/resize";
+import { getCloudinarySignature } from "@/functions/cloudinary";
 import { config } from "./config";
-import { getSignature } from "./server/cloudinary";
-
-export const getCloudinarySignature = createServerFn({ method: "GET" })
-	.inputValidator(
-		z.object({
-			folder: z.string().default("threads_of_shayari_posts"),
-		}),
-	)
-	.handler(({ data }) => {
-		return getSignature(data.folder);
-	});
 
 type CloudinaryResourceType = "image" | "video" | "audio";
 
@@ -24,7 +13,7 @@ export const getCloudinaryUrl = (
 		height?: number;
 	},
 ) => {
-	const { type = "image", width, height } = options ?? {};
+	const { type = "image", width = 1920, height = 1080 } = options ?? {};
 
 	if (!publicId) {
 		return type === "image"
@@ -41,19 +30,22 @@ export const getCloudinaryUrl = (
 	// Audio uses the video resource type in Cloudinary
 	if (type === "audio" || type === "video") {
 		const video = cld.video(publicId);
+		if (width) {
+			video.resize(Resize.scale().width(width));
+		}
+		if (height) {
+			video.resize(Resize.scale().height(height));
+		}
 		return video.toURL();
 	}
 
-	// Image with optional transformations
-	if (width || height) {
-		const transforms: string[] = [];
-		if (width) transforms.push(`w_${width}`);
-		if (height) transforms.push(`h_${height}`);
-		transforms.push("c_lfill", "f_auto");
-		return `https://res.cloudinary.com/${config.CLOUDINARY_CLOUD_NAME}/image/upload/${transforms.join(",")}/${publicId}`;
-	}
-
 	const image = cld.image(publicId);
+	if (width) {
+		image.resize(Resize.scale().width(width));
+	}
+	if (height) {
+		image.resize(Resize.scale().height(height));
+	}
 	return image.toURL();
 };
 

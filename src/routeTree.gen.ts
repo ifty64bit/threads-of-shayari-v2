@@ -21,6 +21,7 @@ import { Route as PortalPostsIndexRouteImport } from './routes/_portal/posts/ind
 import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/_admin/users/index'
 import { Route as AdminAudioPresetsIndexRouteImport } from './routes/_admin/audio-presets/index'
+import { Route as SharePostsPostIdRouteImport } from './routes/share/posts/$postId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as PortalProfileUserIdRouteImport } from './routes/_portal/profile/$userId'
 import { Route as PortalPostsPostIdRouteImport } from './routes/_portal/posts/$postId'
@@ -84,6 +85,11 @@ const AdminAudioPresetsIndexRoute = AdminAudioPresetsIndexRouteImport.update({
   path: '/audio-presets/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const SharePostsPostIdRoute = SharePostsPostIdRouteImport.update({
+  id: '/share/posts/$postId',
+  path: '/share/posts/$postId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/posts/$postId': typeof PortalPostsPostIdRoute
   '/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/share/posts/$postId': typeof SharePostsPostIdRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/feed': typeof PortalFeedIndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/posts/$postId': typeof PortalPostsPostIdRoute
   '/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/share/posts/$postId': typeof SharePostsPostIdRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/feed': typeof PortalFeedIndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/_portal/posts/$postId': typeof PortalPostsPostIdRoute
   '/_portal/profile/$userId': typeof PortalProfileUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/share/posts/$postId': typeof SharePostsPostIdRoute
   '/_admin/audio-presets/': typeof AdminAudioPresetsIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_portal/feed/': typeof PortalFeedIndexRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/posts/$postId'
     | '/profile/$userId'
     | '/api/auth/$'
+    | '/share/posts/$postId'
     | '/audio-presets'
     | '/users'
     | '/feed'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/posts/$postId'
     | '/profile/$userId'
     | '/api/auth/$'
+    | '/share/posts/$postId'
     | '/audio-presets'
     | '/users'
     | '/feed'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/_portal/posts/$postId'
     | '/_portal/profile/$userId'
     | '/api/auth/$'
+    | '/share/posts/$postId'
     | '/_admin/audio-presets/'
     | '/_admin/users/'
     | '/_portal/feed/'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  SharePostsPostIdRoute: typeof SharePostsPostIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -305,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAudioPresetsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/share/posts/$postId': {
+      id: '/share/posts/$postId'
+      path: '/share/posts/$postId'
+      fullPath: '/share/posts/$postId'
+      preLoaderRoute: typeof SharePostsPostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -382,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  SharePostsPostIdRoute: SharePostsPostIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

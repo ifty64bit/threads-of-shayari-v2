@@ -69,6 +69,7 @@ export const verifications = pgTable("verifications", {
 export const posts = pgTable("posts", (t) => ({
 	id: t.serial("id").primaryKey(),
 	content: t.text("content").notNull(),
+	ogImage: t.text("og_image"),
 	authorId: t
 		.integer("author_id")
 		.notNull()

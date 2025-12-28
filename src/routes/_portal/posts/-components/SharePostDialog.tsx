@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { generatePostCard } from "@/functions/share";
 import { config } from "@/lib/config";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 type SharePostDialogProps = {
 	post: {
@@ -109,8 +110,8 @@ export const SharePostDialog = memo(function SharePostDialog({
 		setError(null);
 		try {
 			const imageData = await generatePostCard({ data: { postId: post.id } });
-			setGeneratedImage(imageData);
-			return imageData;
+			setGeneratedImage(imageData ?? null);
+			return imageData ?? null;
 		} catch (err) {
 			console.error("Failed to generate image:", err);
 			setError("Failed to generate image");
@@ -123,7 +124,7 @@ export const SharePostDialog = memo(function SharePostDialog({
 	const downloadImage = useCallback(
 		async (imageData: string) => {
 			try {
-				const response = await fetch(imageData);
+				const response = await fetch(getCloudinaryUrl(imageData) as string);
 				const blob = await response.blob();
 				const pngBlob = new Blob([blob], { type: "image/png" });
 				const url = URL.createObjectURL(pngBlob);
@@ -159,38 +160,43 @@ export const SharePostDialog = memo(function SharePostDialog({
 		);
 	}, [post.content, post.author.name, post.author.username]);
 
+	const getShareUrl = useCallback(() => {
+		const baseUrl = window.location.origin;
+		return `${baseUrl}/share/posts/${post.id}`;
+	}, [post.id]);
+
 	const handleShare = useCallback(
 		async (platform: string) => {
 			await handleDownload();
+			const shareUrl = encodeURIComponent(getShareUrl());
 
 			switch (platform) {
 				case "whatsapp":
-					window.open(`https://wa.me/?text=${getShareText()}`, "_blank");
-					break;
-				case "facebook": {
-					const fbUrl = encodeURIComponent(window.location.href);
 					window.open(
-						`https://www.facebook.com/sharer/sharer.php?u=${fbUrl}`,
+						`https://wa.me/?text=${getShareText()}%0A${shareUrl}`,
 						"_blank",
 					);
 					break;
-				}
+				case "facebook":
+					window.open(
+						`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+						"_blank",
+					);
+					break;
 				case "instagram":
 					alert(
 						"Image downloaded! Open Instagram and share from your gallery.",
 					);
 					break;
-				case "telegram": {
-					const tgUrl = encodeURIComponent(window.location.href);
+				case "telegram":
 					window.open(
-						`https://t.me/share/url?url=${tgUrl}&text=${getShareText()}`,
+						`https://t.me/share/url?url=${shareUrl}&text=${getShareText()}`,
 						"_blank",
 					);
 					break;
-				}
 			}
 		},
-		[handleDownload, getShareText],
+		[handleDownload, getShareText, getShareUrl],
 	);
 
 	const handleOpenChange = useCallback(
@@ -229,7 +235,7 @@ export const SharePostDialog = memo(function SharePostDialog({
 						</div>
 					) : generatedImage ? (
 						<img
-							src={generatedImage}
+							src={getCloudinaryUrl(generatedImage)}
 							alt="Share card preview"
 							className="max-w-full max-h-[400px] rounded-lg shadow-lg"
 						/>

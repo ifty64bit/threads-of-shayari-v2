@@ -1,8 +1,11 @@
 import { Resvg } from "@resvg/resvg-js";
 import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
 import satori from "satori";
 import { z } from "zod";
 import { db } from "@/db";
+import { posts } from "@/db/schema";
+import { uploadBase64Image } from "@/lib/server/cloudinary";
 import { serverConfig } from "@/lib/server-config";
 import { authMiddleware } from "@/middleware/auth";
 
@@ -38,12 +41,19 @@ export const generatePostCard = createServerFn({ method: "GET" })
 			throw new Error("Post not found");
 		}
 
+		// Check if OG image already exists (stored as publicId)
+		if (post.ogImage) {
+			const cachedUrl = post.ogImage;
+			console.log("Using cached OG image:", cachedUrl);
+			return cachedUrl;
+		}
+
 		// Helper function to construct Cloudinary URL
 		function getImageUrl(publicIdOrUrl: string): string {
 			if (publicIdOrUrl.startsWith("http")) {
 				return publicIdOrUrl;
 			}
-			return `https://res.cloudinary.com/dx39kajoq/image/upload/${publicIdOrUrl}`;
+			return publicIdOrUrl;
 		}
 
 		// Helper function to fetch image as base64 with correct mime type
@@ -254,6 +264,16 @@ export const generatePostCard = createServerFn({ method: "GET" })
 		const pngData = resvg.render();
 		const pngBuffer = pngData.asPng();
 
-		// Return as base64
-		return `data:image/png;base64,${Buffer.from(pngBuffer).toString("base64")}`;
+		// Upload to Cloudinary
+		const base64Data = `data:image/png;base64,${Buffer.from(pngBuffer).toString("base64")}`;
+		const publicId = `post_${post.id}_${Date.now()}`;
+		const ogImagePublicId = await uploadBase64Image(base64Data, publicId);
+
+		// Save publicId to database (not full URL)
+		await db
+			.update(posts)
+			.set({ ogImage: ogImagePublicId })
+			.where(eq(posts.id, post.id));
+
+		return ogImagePublicId;
 	});

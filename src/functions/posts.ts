@@ -210,3 +210,33 @@ export const adminDeletePost = createServerFn({ method: "POST" })
 		await db.delete(postImages).where(eq(postImages.postId, data.postId));
 		return true;
 	});
+
+/**
+ * Get post by ID for public share page (no auth required)
+ * Returns null if post doesn't exist or hasn't been shared (no ogImage)
+ */
+export const getPublicPostById = createServerFn({ method: "GET" })
+	.inputValidator(z.object({ postId: z.number() }))
+	.handler(async ({ data }) => {
+		const post = await db.query.posts.findFirst({
+			where: (posts, { eq }) => eq(posts.id, data.postId),
+			with: {
+				author: {
+					columns: {
+						id: true,
+						name: true,
+						username: true,
+						image: true,
+					},
+				},
+				images: true,
+			},
+		});
+
+		// Only return if post exists AND has ogImage (was shared)
+		if (!post || !post.ogImage) {
+			return null;
+		}
+
+		return post;
+	});

@@ -38,6 +38,35 @@ export const Route = createFileRoute("/_portal/posts/$postId")({
 		);
 		return { post };
 	},
+	head: ({ loaderData }) => {
+		const post = loaderData?.post;
+		const title = post
+			? `${post.author.name} (@${post.author.username})`
+			: "Post";
+		const description = post?.content?.slice(0, 160) || "";
+		// Generate full Cloudinary URL from publicId
+		const ogImageUrl = post?.ogImage
+			? getCloudinaryUrl(post.ogImage)
+			: undefined;
+
+		return {
+			meta: [
+				{ title },
+				{ name: "description", content: description },
+				{ property: "og:title", content: title },
+				{ property: "og:description", content: description },
+				{ property: "og:type", content: "article" },
+				...(ogImageUrl ? [{ property: "og:image", content: ogImageUrl }] : []),
+				{
+					name: "twitter:card",
+					content: ogImageUrl ? "summary_large_image" : "summary",
+				},
+				{ name: "twitter:title", content: title },
+				{ name: "twitter:description", content: description },
+				...(ogImageUrl ? [{ name: "twitter:image", content: ogImageUrl }] : []),
+			],
+		};
+	},
 });
 
 function RouteComponent() {

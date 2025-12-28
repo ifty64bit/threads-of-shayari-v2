@@ -1,7 +1,8 @@
 import admin from "firebase-admin";
+import { serverConfig } from "../server-config";
 
 // Parse the service account JSON from environment variable
-const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+const serviceAccountJson = serverConfig.FIREBASE_SERVICE_ACCOUNT_JSON;
 
 let firebaseApp: admin.app.App | undefined;
 
