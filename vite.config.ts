@@ -8,6 +8,9 @@ import { nitro } from 'nitro/vite'
 import neon from './neon-vite-plugin.ts'
 
 const config = defineConfig({
+  optimizeDeps: {
+    exclude: ['@resvg/resvg-js'],
+  },
   plugins: [
     devtools(),
     nitro({

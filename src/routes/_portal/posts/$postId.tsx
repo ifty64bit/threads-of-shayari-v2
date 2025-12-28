@@ -6,7 +6,7 @@ import {
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import dayjs from "dayjs";
-import { MoreHorizontal, Music, Send, Volume2, X } from "lucide-react";
+import { MoreHorizontal, Music, Send, Share2, Volume2, X } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -28,6 +28,7 @@ import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import Reactions from "@/routes/_portal/feed/-components/Reactions";
 import AudioPresetSelector from "./-components/AudioPresetSelector";
+import { SharePostDialog } from "./-components/SharePostDialog";
 
 export const Route = createFileRoute("/_portal/posts/$postId")({
 	component: RouteComponent,
@@ -123,6 +124,15 @@ function RouteComponent() {
 					{/* Reactions Bar */}
 					<div className="flex items-center justify-between gap-2 border-t border-border/50 pt-3 mt-4">
 						<Reactions post={post as Parameters<typeof Reactions>[0]["post"]} />
+						<SharePostDialog
+							post={post}
+							trigger={
+								<Button variant="ghost" size="sm" className="gap-2">
+									<Share2 className="h-4 w-4" />
+									Share
+								</Button>
+							}
+						/>
 					</div>
 				</div>
 			</div>
