@@ -1,7 +1,7 @@
 import { Cloudinary } from "@cloudinary/url-gen";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { CLOUDINARY_CLOUD_NAME } from "./env";
+import { config } from "./config";
 import { getSignature } from "./server/cloudinary";
 
 export const getCloudinarySignature = createServerFn({ method: "GET" })
@@ -34,7 +34,7 @@ export const getCloudinaryUrl = (
 
 	const cld = new Cloudinary({
 		cloud: {
-			cloudName: CLOUDINARY_CLOUD_NAME,
+			cloudName: config.CLOUDINARY_CLOUD_NAME,
 		},
 	});
 
@@ -50,7 +50,7 @@ export const getCloudinaryUrl = (
 		if (width) transforms.push(`w_${width}`);
 		if (height) transforms.push(`h_${height}`);
 		transforms.push("c_lfill", "f_auto");
-		return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transforms.join(",")}/${publicId}`;
+		return `https://res.cloudinary.com/${config.CLOUDINARY_CLOUD_NAME}/image/upload/${transforms.join(",")}/${publicId}`;
 	}
 
 	const image = cld.image(publicId);

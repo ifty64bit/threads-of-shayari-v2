@@ -1,6 +1,6 @@
 import { createServerOnlyFn } from "@tanstack/react-start";
 
-const getEnv = (key: string) => {
+export const getEnv = (key: string) => {
 	return createServerOnlyFn(() => {
 		const value = process.env[key];
 		if (!value) {
@@ -9,8 +9,3 @@ const getEnv = (key: string) => {
 		return value;
 	})();
 };
-
-const DATABASE_URL = getEnv("DATABASE_URL");
-const CLOUDINARY_API_SECRET = getEnv("CLOUDINARY_API_SECRET");
-
-export { DATABASE_URL, CLOUDINARY_API_SECRET };
