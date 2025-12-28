@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import satori from "satori";
 import { z } from "zod";
 import { db } from "@/db";
+import { serverConfig } from "@/lib/server-config";
 import { authMiddleware } from "@/middleware/auth";
 
 // Load a font for Satori
@@ -224,7 +225,7 @@ export const generatePostCard = createServerFn({ method: "GET" })
 								fontSize: 12,
 							},
 						},
-						"Threads of Shayari",
+						serverConfig.BRAND_NAME,
 					),
 				),
 			),

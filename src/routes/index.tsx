@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getUserSession } from "@/functions/auth";
+import { config } from "@/lib/config";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -16,7 +17,7 @@ function App() {
 		<main className="container mx-auto p-4 flex flex-col items-center justify-center min-h-screen">
 			<h2 className="text-2xl font-bold">Welcome to the</h2>
 			<h1 className="text-4xl font-extrabold text-blue-600">
-				Threads of Shayari
+				{config.BRAND_NAME}
 			</h1>
 			{session ? (
 				<Link
