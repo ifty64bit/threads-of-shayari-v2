@@ -138,12 +138,10 @@ function RouteComponent() {
 								>
 									<Image
 										cdn="cloudinary"
-										layout="constrained"
-										width={600}
-										height={338}
+										layout="fullWidth"
 										src={getCloudinaryUrl(img.url) ?? ""}
 										alt="Post attachment"
-										className="rounded-xl max-h-80 mx-auto w-full object-cover image-depth"
+										className="rounded-xl max-h-80 mx-auto w-full object-cover"
 									/>
 								</ClientOnly>
 							))}

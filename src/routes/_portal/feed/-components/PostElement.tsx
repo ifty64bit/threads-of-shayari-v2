@@ -88,12 +88,11 @@ function PostElement({ post }: PostElementProps) {
 								key={img.id}
 							>
 								<Image
-									layout="constrained"
-									width={600}
-									height={338}
+									cdn="cloudinary"
+									layout="fullWidth"
 									src={getCloudinaryUrl(img.url) ?? ""}
 									alt="Post attachment"
-									className="rounded-xl max-h-60 mx-auto w-full object-cover image-depth"
+									className="rounded-xl max-h-60 mx-auto w-full object-contain"
 								/>
 							</ClientOnly>
 						))}

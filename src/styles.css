@@ -355,62 +355,6 @@ code {
               transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Image depth effect */
-.image-depth {
-  box-shadow: 
-    0 2px 4px oklch(0 0 0 / 0.1),
-    0 8px 16px oklch(0 0 0 / 0.1);
-  transition: box-shadow 0.3s ease;
-}
-
-.image-depth:hover {
-  box-shadow: 
-    0 4px 8px oklch(0 0 0 / 0.15),
-    0 12px 24px oklch(0 0 0 / 0.15);
-}
-
-/* Neumorphism-lite for special elements */
-.neu-raised {
-  background: linear-gradient(145deg, oklch(0.98 0 0), oklch(0.92 0 0));
-  box-shadow: 
-    5px 5px 10px oklch(0 0 0 / 0.08),
-    -5px -5px 10px oklch(1 0 0 / 0.9);
-}
-
-.dark .neu-raised {
-  background: linear-gradient(145deg, oklch(0.18 0.005 285), oklch(0.12 0.005 285));
-  box-shadow: 
-    5px 5px 10px oklch(0 0 0 / 0.4),
-    -5px -5px 10px oklch(0.25 0.01 285 / 0.3);
-}
-
-/* Shimmer loading effect */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    oklch(0.95 0 0) 25%,
-    oklch(0.9 0 0) 50%,
-    oklch(0.95 0 0) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-.dark .shimmer {
-  background: linear-gradient(
-    90deg,
-    oklch(0.22 0.005 285) 25%,
-    oklch(0.28 0.005 285) 50%,
-    oklch(0.22 0.005 285) 75%
-  );
-  background-size: 200% 100%;
-}
-
 /* ===== VIEW TRANSITIONS API ===== */
 /* Native browser page transition animations - no external library needed */
 

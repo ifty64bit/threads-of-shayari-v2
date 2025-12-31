@@ -111,12 +111,10 @@ function PublicPostView() {
 									<Image
 										key={img.id}
 										cdn="cloudinary"
-										layout="constrained"
-										width={600}
-										height={338}
+										layout="fullWidth"
 										src={getCloudinaryUrl(img.url) ?? ""}
 										alt="Post attachment"
-										className="rounded-xl max-h-80 w-full object-cover"
+										className="rounded-xl max-h-80 w-full object-contain image-depth"
 									/>
 								))}
 							</div>
