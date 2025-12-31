@@ -410,3 +410,77 @@ code {
   );
   background-size: 200% 100%;
 }
+
+/* ===== VIEW TRANSITIONS API ===== */
+/* Native browser page transition animations - no external library needed */
+
+/* Enable view transitions for the root */
+@view-transition {
+  navigation: auto;
+}
+
+/* Default cross-fade animation (built-in, but we can customize duration) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide-in animation for new page */
+@keyframes slide-in-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide-out animation for old page */
+@keyframes slide-out-to-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+
+/* Apply slide animations */
+::view-transition-old(root) {
+  animation: slide-out-to-left 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+::view-transition-new(root) {
+  animation: slide-in-from-right 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Named transitions for specific elements (use with view-transition-name CSS property) */
+/* Apply to an element: style="view-transition-name: main-content" */
+::view-transition-old(main-content),
+::view-transition-new(main-content) {
+  animation-duration: 250ms;
+}
+
+/* Shared element transitions - for elements that should morph between pages */
+/* Apply: style="view-transition-name: profile-image" on both pages */
+::view-transition-group(profile-image) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+  
+  ::view-transition-group(*) {
+    animation-duration: 0ms;
+  }
+}
