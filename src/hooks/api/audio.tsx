@@ -10,7 +10,7 @@ import {
 	getAudioPresetsforAdmin,
 	getAudioPresetsforUsers,
 	updateAudioPreset,
-} from "@/functions/audio";
+} from "@/data/functions/audio";
 import { uploadToCDN } from "@/lib/cloudinary";
 import type { NewAudioPresetSchema } from "@/lib/schemas/audio";
 

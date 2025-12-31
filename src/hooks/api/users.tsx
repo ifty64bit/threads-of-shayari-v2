@@ -12,7 +12,7 @@ import {
 	getUsers,
 	updateUser,
 	updateUserVerification,
-} from "@/functions/users";
+} from "@/data/functions/users";
 import { uploadToCDN } from "@/lib/cloudinary";
 
 export const getCurrentUserOptions = queryOptions({

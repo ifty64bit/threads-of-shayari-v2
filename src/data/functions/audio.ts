@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { count, desc, eq, ilike } from "drizzle-orm";
 import z from "zod";
-import { db } from "@/db";
-import { audioPresets } from "@/db/schema";
+import { db } from "@/data/db";
+import { audioPresets } from "@/data/db/schema";
 import { newAudioPresetSchema } from "@/lib/schemas/audio";
 import { adminMiddleware, authMiddleware } from "@/middleware/auth";
 

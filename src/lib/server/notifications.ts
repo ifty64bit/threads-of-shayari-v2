@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { fcmTokens } from "@/db/schema";
+import { db } from "@/data/db";
+import { fcmTokens } from "@/data/db/schema";
 import { getMessaging } from "./firebase-admin";
 
 type NotificationPayload = {

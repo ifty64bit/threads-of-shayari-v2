@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "@/db";
-import { postImages, posts } from "@/db/schema";
+import { db } from "@/data/db";
+import { postImages, posts } from "@/data/db/schema";
 import { adminMiddleware, authMiddleware } from "@/middleware/auth";
 
 const createPostSchema = z.object({

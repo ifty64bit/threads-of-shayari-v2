@@ -1,6 +1,6 @@
 import { Cloudinary } from "@cloudinary/url-gen";
 import { Resize } from "@cloudinary/url-gen/actions/resize";
-import { getCloudinarySignature } from "@/functions/cloudinary";
+import { getCloudinarySignature } from "@/data/functions/cloudinary";
 import { config } from "./config";
 
 type CloudinaryResourceType = "image" | "video" | "audio";

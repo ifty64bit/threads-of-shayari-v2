@@ -8,7 +8,7 @@ import {
 	adminDeleteComment,
 	getCommentsByPostId,
 	postComment,
-} from "@/functions/comments";
+} from "@/data/functions/comments";
 import { postsQueryOptions } from "./posts";
 
 export function useCommentMutation() {

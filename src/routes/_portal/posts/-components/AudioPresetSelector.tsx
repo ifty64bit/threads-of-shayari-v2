@@ -22,7 +22,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import type { getAudioPresetsforUsers } from "@/functions/audio";
+import type { getAudioPresetsforUsers } from "@/data/functions/audio";
 import { getInfiniteAudioPresetsForUsersOptions } from "@/hooks/api/audio";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";

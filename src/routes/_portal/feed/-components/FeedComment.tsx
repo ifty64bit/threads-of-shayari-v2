@@ -5,7 +5,7 @@ import { createContext, useContext, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/ui/button";
-import type { getAudioPresetsforUsers } from "@/functions/audio";
+import type { getAudioPresetsforUsers } from "@/data/functions/audio";
 import { useCommentMutation } from "@/hooks/api/comments";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import AudioPresetSelector from "@/routes/_portal/posts/-components/AudioPresetSelector";

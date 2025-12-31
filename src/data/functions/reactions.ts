@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "@/db";
-import { postReactions } from "@/db/schema";
+import { db } from "@/data/db";
+import { postReactions } from "@/data/db/schema";
 import { REACTIONS } from "@/lib/reactions";
 import { sendNotificationToUser } from "@/lib/server/notifications";
 import { authMiddleware } from "@/middleware/auth";

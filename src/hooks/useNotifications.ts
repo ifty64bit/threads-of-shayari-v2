@@ -2,7 +2,7 @@ import { getApps, initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { registerFCMToken } from "@/functions/notifications";
+import { registerFCMToken } from "@/data/functions/notifications";
 import {
 	firebaseConfig,
 	isFirebaseConfigured,

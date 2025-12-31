@@ -6,7 +6,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import type { getPosts } from "@/functions/posts";
+import type { getPosts } from "@/data/functions/posts";
 import { useReactionMutation } from "@/hooks/api/reactions";
 import { authClient } from "@/lib/auth-client";
 import { REACTIONS, type ReactionType } from "@/lib/reactions";

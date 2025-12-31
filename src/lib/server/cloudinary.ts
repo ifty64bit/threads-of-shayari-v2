@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { config } from "../config";
-import { serverConfig } from "../server-config";
+import { serverConfig } from "./server-config";
 
 export { cloudinary };
 

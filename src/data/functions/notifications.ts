@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "@/db";
-import { fcmTokens } from "@/db/schema";
+import { db } from "@/data/db";
+import { fcmTokens } from "@/data/db/schema";
 import { authMiddleware } from "@/middleware/auth";
 
 /**

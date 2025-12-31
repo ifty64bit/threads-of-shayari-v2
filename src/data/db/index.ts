@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/neon-http";
-import { serverConfig } from "@/lib/server-config.ts";
+import { serverConfig } from "@/lib/server/server-config";
 import * as schema from "./schema.ts";
 
 config();

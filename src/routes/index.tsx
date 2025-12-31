@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getUserSession } from "@/functions/auth";
+import { getUserSession } from "@/data/functions/auth";
 import { config } from "@/lib/config";
 
 export const Route = createFileRoute("/")({

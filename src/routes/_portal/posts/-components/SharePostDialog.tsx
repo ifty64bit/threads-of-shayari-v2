@@ -15,9 +15,9 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { generatePostCard } from "@/functions/share";
-import { config } from "@/lib/config";
+import { generatePostCard } from "@/data/functions/share";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { config } from "@/lib/config";
 
 type SharePostDialogProps = {
 	post: {

@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import { serverConfig } from "../server-config";
+import { serverConfig } from "./server-config";
 
 // Parse the service account JSON from environment variable
 const serviceAccountJson = serverConfig.FIREBASE_SERVICE_ACCOUNT_JSON;

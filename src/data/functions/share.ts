@@ -3,10 +3,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import satori from "satori";
 import { z } from "zod";
-import { db } from "@/db";
-import { posts } from "@/db/schema";
+import { db } from "@/data/db";
+import { posts } from "@/data/db/schema";
 import { uploadBase64Image } from "@/lib/server/cloudinary";
-import { serverConfig } from "@/lib/server-config";
+import { serverConfig } from "@/lib/server/server-config";
 import { authMiddleware } from "@/middleware/auth";
 
 // Load a font for Satori

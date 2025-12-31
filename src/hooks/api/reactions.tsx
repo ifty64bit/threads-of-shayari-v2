@@ -3,8 +3,8 @@ import {
 	useMutation,
 	useQueryClient,
 } from "@tanstack/react-query";
-import type { getPostById, getPosts } from "@/functions/posts";
-import { toggleReaction } from "@/functions/reactions";
+import type { getPostById, getPosts } from "@/data/functions/posts";
+import { toggleReaction } from "@/data/functions/reactions";
 import type { ReactionType } from "@/lib/reactions";
 import { postsQueryOptions } from "./posts";
 

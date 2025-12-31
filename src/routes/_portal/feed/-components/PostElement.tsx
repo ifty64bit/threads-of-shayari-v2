@@ -9,7 +9,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { getPosts } from "@/functions/posts";
+import type { getPosts } from "@/data/functions/posts";
 import { useDeletePostMutation } from "@/hooks/api/posts";
 import { authClient } from "@/lib/auth-client";
 import { getCloudinaryUrl } from "@/lib/cloudinary";

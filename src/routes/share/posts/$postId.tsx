@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import dayjs from "dayjs";
-import { getUserSession } from "@/functions/auth";
-import { getPublicPostById } from "@/functions/posts";
+import { getUserSession } from "@/data/functions/auth";
+import { getPublicPostById } from "@/data/functions/posts";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 import { config } from "@/lib/config";
 

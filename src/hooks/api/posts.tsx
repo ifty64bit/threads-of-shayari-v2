@@ -13,7 +13,7 @@ import {
 	getPostById,
 	getPosts,
 	getPostsByUserId,
-} from "@/functions/posts";
+} from "@/data/functions/posts";
 import { uploadToCDN } from "@/lib/cloudinary";
 
 export function createPostMutation() {

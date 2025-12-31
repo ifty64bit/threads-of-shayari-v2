@@ -18,7 +18,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { getAudioPresetsforUsers } from "@/functions/audio";
+import type { getAudioPresetsforUsers } from "@/data/functions/audio";
 import {
 	getCommentsByPostIdInfiniteQuery,
 	useCommentMutation,
