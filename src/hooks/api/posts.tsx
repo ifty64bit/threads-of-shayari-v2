@@ -13,6 +13,7 @@ import {
 	getPostById,
 	getPosts,
 	getPostsByUserId,
+	getPostsForAdmin,
 } from "@/data/functions/posts";
 import { uploadToCDN } from "@/lib/cloudinary";
 
@@ -133,6 +134,21 @@ export function getPostsByUserIdOptions({ userId }: { userId: number }) {
 	});
 }
 
+export function getPostsForAdminOptions({
+	search,
+	limit,
+	offset,
+}: {
+	search?: string;
+	limit?: number;
+	offset?: number;
+}) {
+	return queryOptions({
+		queryKey: ["admin-posts", { search, limit, offset }],
+		queryFn: () => getPostsForAdmin({ data: { search, limit, offset } }),
+	});
+}
+
 export function useAdminDeletePostMutation() {
 	const queryClient = useQueryClient();
 
@@ -142,6 +158,9 @@ export function useAdminDeletePostMutation() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: ["admin-user-detail"],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["admin-posts"],
 			});
 			queryClient.invalidateQueries({
 				queryKey: postsQueryOptions.queryKey,

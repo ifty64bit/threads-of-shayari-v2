@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { count, desc, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/data/db";
 import { postImages, posts } from "@/data/db/schema";
@@ -239,4 +239,55 @@ export const getPublicPostById = createServerFn({ method: "GET" })
 		}
 
 		return post;
+	});
+
+export const getPostsForAdmin = createServerFn({ method: "GET" })
+	.middleware([adminMiddleware])
+	.inputValidator(
+		z.object({
+			limit: z.number().optional().default(10),
+			offset: z.number().optional().default(0),
+			search: z.string().optional(),
+		}),
+	)
+	.handler(async ({ data }) => {
+		const whereClause = data.search
+			? ilike(posts.content, `%${data.search}%`)
+			: undefined;
+
+		const [postsData, totalResult] = await Promise.all([
+			db.query.posts.findMany({
+				where: () => whereClause,
+				orderBy: () => [desc(posts.createdAt)],
+				limit: data.limit,
+				offset: data.offset,
+				with: {
+					author: {
+						columns: {
+							id: true,
+							name: true,
+							username: true,
+							image: true,
+						},
+					},
+					images: true,
+					comments: {
+						columns: {
+							id: true,
+						},
+					},
+					reactions: {
+						columns: {
+							id: true,
+						},
+					},
+				},
+			}),
+			db.select({ count: count() }).from(posts).where(whereClause),
+		]);
+
+		return {
+			posts: postsData,
+			total: totalResult[0]?.count ?? 0,
+		};
 	});

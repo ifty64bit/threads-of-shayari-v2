@@ -5,10 +5,10 @@ import {
 	Heart,
 	MessageCircle,
 	Music,
-	User,
 	Users,
 } from "lucide-react";
 import { getDashboardStats } from "@/data/functions/dashboard";
+import { getCloudinaryUrl } from "../../lib/cloudinary";
 
 export const Route = createFileRoute("/_admin/dashboard")({
 	component: RouteComponent,
@@ -72,7 +72,7 @@ function RouteComponent() {
 			title: "Total Posts",
 			value: data.totalPosts,
 			icon: <FileText className="h-6 w-6 text-emerald-500" />,
-			href: "/dashboard",
+			href: "/manage-posts",
 			gradient:
 				"bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent",
 		},
@@ -147,17 +147,12 @@ function RouteComponent() {
 							params={{ userId: String(user.id) }}
 							className="flex items-center gap-4 rounded-xl p-3 -mx-3 transition-colors hover:bg-muted/50"
 						>
-							{user.image ? (
-								<img
-									src={user.image}
-									alt={user.name}
-									className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
-								/>
-							) : (
-								<div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted ring-2 ring-border">
-									<User className="h-5 w-5 text-muted-foreground" />
-								</div>
-							)}
+							<img
+								src={getCloudinaryUrl(user.image)}
+								alt={user.name}
+								className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
+							/>
+
 							<div className="flex-1 min-w-0">
 								<p className="font-medium truncate">{user.name}</p>
 								<p className="text-sm text-muted-foreground truncate">

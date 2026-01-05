@@ -20,6 +20,7 @@ import { Route as PortalProfileIndexRouteImport } from './routes/_portal/profile
 import { Route as PortalPostsIndexRouteImport } from './routes/_portal/posts/index'
 import { Route as PortalFeedIndexRouteImport } from './routes/_portal/feed/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/_admin/users/index'
+import { Route as AdminManagePostsIndexRouteImport } from './routes/_admin/manage-posts/index'
 import { Route as AdminAudioPresetsIndexRouteImport } from './routes/_admin/audio-presets/index'
 import { Route as SharePostsPostIdRouteImport } from './routes/share/posts/$postId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -80,6 +81,11 @@ const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminManagePostsIndexRoute = AdminManagePostsIndexRouteImport.update({
+  id: '/manage-posts/',
+  path: '/manage-posts/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminAudioPresetsIndexRoute = AdminAudioPresetsIndexRouteImport.update({
   id: '/audio-presets/',
   path: '/audio-presets/',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/share/posts/$postId': typeof SharePostsPostIdRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
+  '/manage-posts': typeof AdminManagePostsIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/feed': typeof PortalFeedIndexRoute
   '/posts': typeof PortalPostsIndexRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/share/posts/$postId': typeof SharePostsPostIdRoute
   '/audio-presets': typeof AdminAudioPresetsIndexRoute
+  '/manage-posts': typeof AdminManagePostsIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/feed': typeof PortalFeedIndexRoute
   '/posts': typeof PortalPostsIndexRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/share/posts/$postId': typeof SharePostsPostIdRoute
   '/_admin/audio-presets/': typeof AdminAudioPresetsIndexRoute
+  '/_admin/manage-posts/': typeof AdminManagePostsIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_portal/feed/': typeof PortalFeedIndexRoute
   '/_portal/posts/': typeof PortalPostsIndexRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/share/posts/$postId'
     | '/audio-presets'
+    | '/manage-posts'
     | '/users'
     | '/feed'
     | '/posts'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/share/posts/$postId'
     | '/audio-presets'
+    | '/manage-posts'
     | '/users'
     | '/feed'
     | '/posts'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/share/posts/$postId'
     | '/_admin/audio-presets/'
+    | '/_admin/manage-posts/'
     | '/_admin/users/'
     | '/_portal/feed/'
     | '/_portal/posts/'
@@ -311,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/manage-posts/': {
+      id: '/_admin/manage-posts/'
+      path: '/manage-posts'
+      fullPath: '/manage-posts'
+      preLoaderRoute: typeof AdminManagePostsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/audio-presets/': {
       id: '/_admin/audio-presets/'
       path: '/audio-presets'
@@ -360,6 +379,7 @@ interface AdminRouteRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
   AdminAudioPresetsIndexRoute: typeof AdminAudioPresetsIndexRoute
+  AdminManagePostsIndexRoute: typeof AdminManagePostsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
@@ -367,6 +387,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRoute,
   AdminAudioPresetsIndexRoute: AdminAudioPresetsIndexRoute,
+  AdminManagePostsIndexRoute: AdminManagePostsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 

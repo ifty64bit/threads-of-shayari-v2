@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { AudioLines, LayoutDashboard, Users } from "lucide-react";
+import { AudioLines, FileText, LayoutDashboard, Users } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
 import {
@@ -22,6 +22,11 @@ const links = [
 		label: "Users",
 		icon: Users,
 		path: "/users",
+	},
+	{
+		label: "Posts",
+		icon: FileText,
+		path: "/posts",
 	},
 	{
 		label: "Audio Presets",
