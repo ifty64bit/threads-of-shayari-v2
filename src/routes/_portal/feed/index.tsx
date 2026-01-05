@@ -26,7 +26,7 @@ function RouteComponent() {
 
 			<section className="flex flex-col">
 				{posts.length === 0 ? (
-					<p className="text-muted-foreground">No posts yet</p>
+					<p className="text-muted-foreground text-center">No posts yet</p>
 				) : (
 					posts.map((post) => <PostElement key={post.id} post={post} />)
 				)}
