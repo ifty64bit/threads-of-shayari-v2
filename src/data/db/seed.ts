@@ -56,7 +56,7 @@ async function seedAdmin() {
 
 	const adminData = {
 		username: "overloard",
-		email: "404@gmail.com",
+		email: "efte404@gmail.com",
 		password: ADMIN_PASSWORD,
 		emailVerified: true,
 		name: "Admin",
