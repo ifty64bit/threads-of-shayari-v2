@@ -90,14 +90,16 @@ function PostsSection() {
 		}),
 	);
 
+    const flatPosts = posts?.pages.flatMap((page) => page.data) || [];
+
+    if (flatPosts.length === 0) {
+        return <p className="text-center text-muted-foreground">No posts yet</p>;
+    }
+
 	return (
 		<section>
-			{posts?.pages.map((page) => (
-				<div key={page.data[0].id}>
-					{page.data.map((post) => (
+            {flatPosts.map((post) => (
 						<PostElement key={post.id} post={post} />
-					))}
-				</div>
 			))}
 
 			{hasNextPage && (
