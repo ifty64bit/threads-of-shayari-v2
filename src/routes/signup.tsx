@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -14,22 +13,18 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { auth } from "@/lib/server/auth";
+import { useSignup } from "@/hooks/api/auth";
+import { userSchema } from "@/lib/schemas/user";
 
 export const Route = createFileRoute("/signup")({
 	component: SignupPage,
 });
 
-const userSchema = z.object({
-	name: z.string(),
-	username: z.string(),
-	email: z.string().email(),
-	password: z.string().min(4),
-});
-
 const signupSchema = userSchema
 	.extend({
-		confirm_password: z.string().min(4),
+		confirm_password: z
+			.string()
+			.min(4, "Confirm password must be at least 4 characters"),
 		acceptTerms: z.boolean().refine((val) => val === true, {
 			message: "বোকাচোদাদের খেলায় নেই না!",
 		}),
@@ -37,33 +32,6 @@ const signupSchema = userSchema
 	.refine((data) => data.password === data.confirm_password, {
 		message: "Passwords do not match",
 		path: ["confirm_password"],
-	});
-
-const signupFn = createServerFn({ method: "POST" })
-	.inputValidator(userSchema)
-	.handler(async ({ data }) => {
-		const res = await auth.api.signUpEmail({
-			body: {
-				email: data.email,
-				password: data.password,
-				name: data.name,
-				username: data.username,
-			},
-			asResponse: true,
-		});
-
-		if (!res.ok) {
-			let errorMessage = "Signup failed";
-			try {
-				const error = await res.json();
-				errorMessage = error.message || errorMessage;
-			} catch {
-				// ignore json parse error
-			}
-			throw new Error(errorMessage);
-		}
-
-		return { success: true };
 	});
 
 function SignupPage() {
@@ -78,7 +46,10 @@ function SignupPage() {
 			confirm_password: "",
 			acceptTerms: false,
 		},
+		mode: "all",
 	});
+
+	const signup = useSignup();
 
 	return (
 		<main className="p-4 max-w-md mx-auto h-dvh flex flex-col justify-center gap-4">
@@ -89,14 +60,13 @@ function SignupPage() {
 			<Form {...form}>
 				<form
 					className="space-y-4"
-					onSubmit={form.handleSubmit(async (data) => {
-						try {
-							await signupFn({ data });
-							navigate({ to: "/" });
-						} catch (error) {
-							console.error(error);
-							alert(error instanceof Error ? error.message : "Signup failed");
-						}
+					onSubmit={form.handleSubmit((data) => {
+						signup.mutate(
+							{ data },
+							{
+								onSuccess: () => navigate({ to: "/" }),
+							},
+						);
 					})}
 				>
 					<FormField
@@ -192,7 +162,7 @@ function SignupPage() {
 						)}
 					/>
 
-					<Button type="submit" className="w-full">
+					<Button type="submit" className="w-full" isLoading={signup.isPending}>
 						Sign Up
 					</Button>
 				</form>

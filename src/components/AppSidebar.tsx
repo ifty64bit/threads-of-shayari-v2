@@ -26,7 +26,7 @@ const links = [
 	{
 		label: "Posts",
 		icon: FileText,
-		path: "/posts",
+		path: "/manage-posts",
 	},
 	{
 		label: "Audio Presets",
