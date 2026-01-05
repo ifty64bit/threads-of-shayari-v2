@@ -24,7 +24,7 @@ const signupSchema = userSchema
 	.extend({
 		confirm_password: z
 			.string()
-			.min(4, "Confirm password must be at least 4 characters"),
+			.min(6, "Confirm password must be at least 6 characters"),
 		acceptTerms: z.boolean().refine((val) => val === true, {
 			message: "বোকাচোদাদের খেলায় নেই না!",
 		}),
