@@ -1,6 +1,7 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import { MoreHorizontal } from "lucide-react";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -80,20 +81,22 @@ function PostElement({ post }: PostElementProps) {
 				</Link>
 				{post.images && post.images.length > 0 && (
 					<div className="mt-3 flex gap-2 overflow-x-auto">
-						{post.images.map((img) => (
+						{post.images.map((img, index) => (
 							<ClientOnly
 								fallback={
 									<Skeleton className="w-full aspect-video rounded-lg" />
 								}
 								key={img.id}
 							>
-								<Image
-									cdn="cloudinary"
-									layout="fullWidth"
-									src={getCloudinaryUrl(img.url) ?? ""}
-									alt="Post attachment"
-									className="rounded-xl max-h-60 mx-auto w-full object-contain"
-								/>
+								<ImageLightbox images={post.images} initialImageIndex={index}>
+									<Image
+										cdn="cloudinary"
+										layout="fullWidth"
+										src={getCloudinaryUrl(img.url) ?? ""}
+										alt="Post attachment"
+										className="rounded-xl max-h-60 mx-auto w-full object-contain cursor-pointer hover:opacity-95 transition-opacity"
+									/>
+								</ImageLightbox>
 							</ClientOnly>
 						))}
 					</div>
