@@ -50,6 +50,13 @@
       "when": 1766568786282,
       "tag": "0006_greedy_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1767587297790,
+      "tag": "0007_fluffy_talkback",
+      "breakpoints": true
     }
   ]
 }

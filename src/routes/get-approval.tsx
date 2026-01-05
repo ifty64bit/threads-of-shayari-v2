@@ -8,12 +8,7 @@ export const Route = createFileRoute("/get-approval")({
 
 function RouteComponent() {
 	const navigate = Route.useNavigate();
-	const {
-		isPending,
-		data: session,
-		refetch,
-		isRefetching,
-	} = authClient.useSession();
+	const { data: session, refetch, isRefetching } = authClient.useSession();
 
 	async function recheck() {
 		await refetch();
@@ -34,8 +29,8 @@ function RouteComponent() {
 			<Button
 				className="mt-4"
 				onClick={recheck}
-				disabled={isPending || isRefetching}
-				isLoading={isPending || isRefetching}
+				disabled={isRefetching}
+				isLoading={isRefetching}
 			>
 				Recheck
 			</Button>

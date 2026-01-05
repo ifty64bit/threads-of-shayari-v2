@@ -25,9 +25,11 @@ function RouteComponent() {
 			</ClientOnly>
 
 			<section className="flex flex-col">
-				{posts.map((post) => (
-					<PostElement key={post.id} post={post} />
-				))}
+				{posts.length === 0 ? (
+					<p className="text-muted-foreground">No posts yet</p>
+				) : (
+					posts.map((post) => <PostElement key={post.id} post={post} />)
+				)}
 			</section>
 
 			{hasNextPage && (

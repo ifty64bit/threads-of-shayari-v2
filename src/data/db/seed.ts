@@ -93,10 +93,10 @@ async function seedAdmin() {
 
 		console.log(`✅ User created with ID: ${result.user.id}`);
 
-		// Update the user to set isAdmin = true
+		// Update the user to set isAdmin = true and emailVerified = true
 		await db
 			.update(users)
-			.set({ isAdmin: true })
+			.set({ isAdmin: true, emailVerified: true })
 			.where(eq(users.id, Number(result.user.id)));
 
 		console.log("✅ Admin privileges granted!");
