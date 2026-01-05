@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
@@ -8,14 +9,17 @@ export const Route = createFileRoute("/get-approval")({
 
 function RouteComponent() {
 	const navigate = Route.useNavigate();
-	const { data: session, refetch, isRefetching } = authClient.useSession();
+	const [isChecking, setIsChecking] = useState(false);
 
 	async function recheck() {
-		await refetch();
-		if (session) {
-			if (session.user.emailVerified) {
+		setIsChecking(true);
+		try {
+			const { data: newSession } = await authClient.getSession();
+			if (newSession?.user?.emailVerified) {
 				navigate({ to: "/feed" });
 			}
+		} finally {
+			setIsChecking(false);
 		}
 	}
 	return (
@@ -29,8 +33,8 @@ function RouteComponent() {
 			<Button
 				className="mt-4"
 				onClick={recheck}
-				disabled={isRefetching}
-				isLoading={isRefetching}
+				disabled={isChecking}
+				isLoading={isChecking}
 			>
 				Recheck
 			</Button>
