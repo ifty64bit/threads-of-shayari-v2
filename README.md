@@ -24,7 +24,9 @@ Threads of Shayari is a community-driven platform where users can share text and
 ### 🤝 Engagement
 
 - **Express Emotions**: "As a user, I can react to posts using a variety of emojis (Like, Love, Haha, Wow, Sad, Angry) to express how I feel."
+- **Audio Comments**: "As a user, I can add audio presets (sound effects/music) to my comments to make them more expressive and fun."
 - **Join Conversations**: "As a user, I can comment on posts to discuss topics with other community members."
+- **Share Snapshots**: "As a user, I can generate beautiful image cards of posts to share on Instagram, WhatsApp, and other platforms."
 
 ### 👤 Profile
 

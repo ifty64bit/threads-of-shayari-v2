@@ -19,9 +19,9 @@ function App() {
 	return (
 		<div className="min-h-screen flex flex-col">
 			{/* Hero Section */}
-			<section className="bg-gradient-to-b from-background to-muted/50 py-20 px-4">
+			<section className="bg-linear-to-b from-background to-muted/50 py-20 px-4">
 				<div className="container mx-auto max-w-4xl text-center space-y-6">
-					<h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+					<h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
 						{config.BRAND_NAME}
 					</h1>
 					<p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
