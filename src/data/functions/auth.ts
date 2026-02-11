@@ -1,5 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import { eq } from "drizzle-orm";
+import { db } from "@/data/db";
+import { users } from "@/data/db/schema";
 import { userSchema } from "@/lib/schemas/user";
 import { auth } from "@/lib/server/auth";
 
@@ -35,6 +38,12 @@ export const signupFn = createServerFn({ method: "POST" })
 			}
 			throw new Error(errorMessage);
 		}
+
+		// Auto approve user
+		await db
+			.update(users)
+			.set({ emailVerified: true })
+			.where(eq(users.email, data.email));
 
 		return { success: true };
 	});

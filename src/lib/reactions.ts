@@ -1,9 +1,10 @@
 export const REACTIONS = {
-	dhon: "🍆",
-	sperm: "💦",
-	cumshot: "🌊",
-	gok_gok: "😮",
-	choto_nunu: "🤏",
+	like: "👍",
+	love: "❤️",
+	haha: "😂",
+	wow: "😮",
+	sad: "😢",
+	angry: "😡",
 } as const;
 
 export type ReactionType = keyof typeof REACTIONS;

@@ -26,7 +26,7 @@ const signupSchema = userSchema
 			.string()
 			.min(6, "Confirm password must be at least 6 characters"),
 		acceptTerms: z.boolean().refine((val) => val === true, {
-			message: "বোকাচোদাদের খেলায় নেই না!",
+			message: "You must accept the terms",
 		}),
 	})
 	.refine((data) => data.password === data.confirm_password, {
@@ -154,7 +154,7 @@ function SignupPage() {
 									</FormControl>
 
 									<FormLabel htmlFor="acceptTerms">
-										আমি স্বীকার করছ যে আমি সার্টিফাইড বোকাচোদা না!
+										I agree to the terms and conditions
 									</FormLabel>
 								</div>
 								<FormMessage />

@@ -28,7 +28,7 @@ function RouteComponent() {
 			<p>Thank you for signing up! Please wait for approval.</p>
 			<p>
 				Until then, you can explore our{" "}
-				<span className="text-red-500">Lara's ass.</span>
+				<span className="text-primary font-medium">public posts.</span>
 			</p>
 			<Button
 				className="mt-4"
