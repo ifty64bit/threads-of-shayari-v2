@@ -60,8 +60,8 @@ function AppSidebar() {
 					className="w-full mb-4"
 					onClick={async () => {
 						queryClient.clear();
-						router.invalidate();
 						await signOut();
+						router.navigate({ to: "/login" });
 					}}
 				>
 					Logout

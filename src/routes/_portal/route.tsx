@@ -63,8 +63,8 @@ function RouteComponent() {
 									variant="destructive"
 									onClick={async () => {
 										queryClient.clear();
-										router.invalidate();
 										await authClient.signOut();
+										router.navigate({ to: "/login" });
 									}}
 								>
 									Logout
